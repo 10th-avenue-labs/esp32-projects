@@ -1,0 +1,299 @@
+Espruino Command-line Tool 0.1.56
+-----------------------------------
+
+ General
+=========
+
+General Web IDE Settings
+
+
+ Communications
+================
+
+Settings for communicating with the Espruino Board
+
+Reset before Send (RESET_BEFORE_SEND)
+---------------------------------------
+Reset Espruino before sending code from the editor pane?
+Type: "boolean"
+Default: --config RESET_BEFORE_SEND=true
+Current: --config RESET_BEFORE_SEND=true
+
+Store line numbers (STORE_LINE_NUMBERS)
+-----------------------------------------
+Should Espruino store line numbers for each function? This uses one extra variable per function, but allows you to get source code debugging in the Web IDE
+Type: "boolean"
+Default: --config STORE_LINE_NUMBERS=true
+Current: --config STORE_LINE_NUMBERS=true
+
+Request board details on connect (ENV_ON_CONNECT)
+---------------------------------------------------
+Just after the board is connected, should we query `process.env` to find out which board we're connected to? This enables the Web IDE's code completion, compiler features, and firmware update notice.
+Type: "boolean"
+Default: --config ENV_ON_CONNECT=true
+Current: --config ENV_ON_CONNECT=true
+
+Module URL (MODULE_URL)
+-------------------------
+Where to search online for modules when `require()` is used. Can supply more than one URL, separated by '|'
+Type: "string"
+Default: --config MODULE_URL=https://www.espruino.com/modules|https://banglejs.com/apps/modules
+Current: --config MODULE_URL=https://www.espruino.com/modules|https://banglejs.com/apps/modules
+
+Module Extensions (MODULE_EXTENSIONS)
+---------------------------------------
+The file extensions to use for each module. These are checked in order and the first that exists is used. One or more file extensions (including the dot) separated by `|`
+Type: "string"
+Default: --config MODULE_EXTENSIONS=.min.js|.js
+Current: --config MODULE_EXTENSIONS=.min.js|.js
+
+Modules uploaded as functions (MODULE_AS_FUNCTION)
+----------------------------------------------------
+Espruino 1v90 and later ONLY. Upload modules as Functions, allowing any functions inside them to be loaded directly from flash when 'Save on Send' is enabled.
+Type: "boolean"
+Default: --config MODULE_AS_FUNCTION=true
+Current: --config MODULE_AS_FUNCTION=true
+
+Enable Proxy (MODULE_PROXY_ENABLED)
+-------------------------------------
+Enable Proxy for loading the modules when `require()` is used (only in native IDE)
+Type: "boolean"
+Default: --config MODULE_PROXY_ENABLED=false
+Current: --config MODULE_PROXY_ENABLED=false
+
+Proxy URL (MODULE_PROXY_URL)
+------------------------------
+Proxy URL for loading the modules when `require()` is used (only in native IDE)
+Type: "string"
+Default: --config MODULE_PROXY_URL=
+Current: --config MODULE_PROXY_URL=
+
+Proxy Port (MODULE_PROXY_PORT)
+--------------------------------
+Proxy Port for loading the modules when `require()` is used (only in native IDE)
+Type: "string"
+Default: --config MODULE_PROXY_PORT=
+Current: --config MODULE_PROXY_PORT=
+
+Baud Rate (BAUD_RATE)
+-----------------------
+When connecting over serial, this is the baud rate that is used. 9600 is the default for Espruino
+Type: {
+  "9600": 9600,
+  "14400": 14400,
+  "19200": 19200,
+  "28800": 28800,
+  "38400": 38400,
+  "57600": 57600,
+  "115200": 115200
+}
+Default: --config BAUD_RATE=9600
+Current: --config BAUD_RATE=9600
+
+Ignore Serial Ports (SERIAL_IGNORE)
+-------------------------------------
+A '|' separated list of serial port paths to ignore, eg `/dev/ttyS*|/dev/*.SOC`
+Type: "string"
+Default: --config SERIAL_IGNORE=/dev/ttyS*|/dev/*.SOC|/dev/*.MALS
+Current: --config SERIAL_IGNORE=/dev/ttyS*|/dev/*.SOC|/dev/*.MALS
+
+Software Flow Control (SERIAL_FLOW_CONTROL)
+---------------------------------------------
+Respond to XON/XOFF flow control characters to throttle data uploads. By default Espruino sends XON/XOFF for USB and Bluetooth (on 2v05+).
+Type: "boolean"
+Default: --config SERIAL_FLOW_CONTROL=true
+Current: --config SERIAL_FLOW_CONTROL=true
+
+Connect over Bluetooth Smart (BTLE) via 'noble' (BLUETOOTH_LOW_ENERGY)
+------------------------------------------------------------------------
+Type: "boolean"
+Default: --config BLUETOOTH_LOW_ENERGY=true
+Current: --config BLUETOOTH_LOW_ENERGY=true
+
+Connect over Audio (SERIAL_AUDIO)
+-----------------------------------
+Type: {
+  "0": "Disabled",
+  "PP": "Normal Signal Polarity",
+  "NN": "Fully Inverted",
+  "NP": "Input Inverted",
+  "PN": "Output Inverted"
+}
+Default: --config SERIAL_AUDIO=0
+Current: --config SERIAL_AUDIO=0
+
+Connect over Bluetooth LE (Web Bluetooth) (WEB_BLUETOOTH)
+-----------------------------------------------------------
+Type: "boolean"
+Default: --config WEB_BLUETOOTH=true
+Current: --config WEB_BLUETOOTH=true
+
+Bluetooth LE (Web Bluetooth) Filter (WEB_BLUETOOTH_FILTER)
+------------------------------------------------------------
+Type: "string"
+Default: --config WEB_BLUETOOTH_FILTER=
+Current: --config WEB_BLUETOOTH_FILTER=
+
+Connect over Serial (Web Serial) (WEB_SERIAL)
+-----------------------------------------------
+Type: "boolean"
+Default: --config WEB_SERIAL=true
+Current: --config WEB_SERIAL=true
+
+Remote Connection Bridge Peer ID (WEBRTC_BRIDGE_ID)
+-----------------------------------------------------
+Type: "string"
+Default: --config WEBRTC_BRIDGE_ID=
+Current: --config WEBRTC_BRIDGE_ID=
+
+Relay Key (RELAY_KEY)
+-----------------------
+The key displayed when https://www.espruino.com/ide/relay is viewed on a phone. You'll then be able to use the Web IDE on your PC
+Type: "string"
+Default: --config RELAY_KEY=
+Current: --config RELAY_KEY=
+
+JavaScript Compiler (COMPILATION)
+-----------------------------------
+Type: "boolean"
+Default: --config COMPILATION=true
+Current: --config COMPILATION=true
+
+JavaScript Compiler URL (COMPILATION_URL)
+-------------------------------------------
+When JavaScript Compilation is enabled, this is the URL of the JavaScript compiler
+Type: "string"
+Default: --config COMPILATION_URL=https://www.espruino.com/service/compiler
+Current: --config COMPILATION_URL=https://www.espruino.com/service/compiler
+
+Espruino modules folder name (MODULES_DIR_NAME)
+-------------------------------------------------
+Name of the folder containing espruino modules.
+Type: "string"
+Default: --config MODULES_DIR_NAME=modules
+Current: --config MODULES_DIR_NAME=modules
+
+Path to modules (MODULES_CWD)
+-------------------------------
+The filesystem path to use when looking for modules. When calling require('./foo.js') it will load the file at MODULES_CWD+'./foo.js'.
+Type: "string"
+Default: --config MODULES_CWD=
+Current: --config MODULES_CWD=
+
+Unicode transforms (UNICODE)
+------------------------------
+When encountering non-ASCII characters in strings, encode them into UTF-8 unicode
+Type: "boolean"
+Default: --config UNICODE=false
+Current: --config UNICODE=false
+
+Throttle Send (SERIAL_THROTTLE_SEND)
+--------------------------------------
+Throttle code when sending to Espruino? If you are experiencing lost characters when sending code from the Code Editor pane, this may help.
+Type: {
+  "0": "Auto",
+  "1": "Always",
+  "2": "Never"
+}
+Default: --config SERIAL_THROTTLE_SEND=0
+Current: --config SERIAL_THROTTLE_SEND=0
+
+Save on Send (SAVE_ON_SEND)
+-----------------------------
+Type: {
+  "0": "To RAM (default) - execute code while uploading. Use 'save()' to save a RAM image to Flash",
+  "1": "Direct to Flash (execute code at boot)",
+  "2": "Direct to Flash (execute code at boot, even after 'reset()') - USE WITH CARE",
+  "3": "To Storage File (see 'File in Storage to send to')"
+}
+Default: --config SAVE_ON_SEND=0
+Current: --config SAVE_ON_SEND=0
+
+Send to File in Storage (SAVE_STORAGE_FILE)
+---------------------------------------------
+Type: "string"
+Default: --config SAVE_STORAGE_FILE=myapp
+Current: --config SAVE_STORAGE_FILE=myapp
+
+Load after saving (LOAD_STORAGE_FILE)
+---------------------------------------
+Type: {
+  "0": "Don't load",
+  "1": "Load default application",
+  "2": "Load the Storage File just written to"
+}
+Default: --config LOAD_STORAGE_FILE=2
+Current: --config LOAD_STORAGE_FILE=2
+
+Set Current Time (SET_TIME_ON_WRITE)
+--------------------------------------
+When sending code, set Espruino's clock to the current time
+Type: "boolean"
+Default: --config SET_TIME_ON_WRITE=true
+Current: --config SET_TIME_ON_WRITE=false
+
+
+ Board
+=======
+
+Settings for the Espruino Board itself
+
+Board JSON URL (BOARD_JSON_URL)
+---------------------------------
+Where to search online for board JSON files - these contain links to up to date firmware as well as detailed information about the board's hardware
+Type: "string"
+Default: --config BOARD_JSON_URL=http://www.espruino.com/json
+Current: --config BOARD_JSON_URL=http://www.espruino.com/json
+
+
+ Minification
+==============
+
+Minification takes your JavaScript code and makes it smaller by removing comments and whitespace. It can make your code execute faster and will save memory, but it will also make it harder to debug.
+Esprima is a minifier built in to the Web IDE, so it can be used without an internet connection. The Closure Compiler is an online service offered by Google. It produces more efficient code, but you need an internet connection to use it.
+
+Minification (MINIFICATION_LEVEL)
+-----------------------------------
+Automatically minify code from the Editor window?
+Type: {
+  "": "No Minification",
+  "ESPRIMA": "Esprima (offline)",
+  "WHITESPACE_ONLY": "Closure (online) - Whitespace Only",
+  "SIMPLE_OPTIMIZATIONS": "Closure (online) - Simple Optimizations",
+  "ADVANCED_OPTIMIZATIONS": "Closure (online) - Advanced Optimizations (not recommended)"
+}
+Default: --config MINIFICATION_LEVEL=
+Current: --config MINIFICATION_LEVEL=
+
+Module Minification (MODULE_MINIFICATION_LEVEL)
+-------------------------------------------------
+Automatically minify modules? Only modules with a .js extension will be minified - if a file with a .min.js extension exists then it will be used instead.
+Type: {
+  "": "No Minification",
+  "ESPRIMA": "Esprima (offline)",
+  "WHITESPACE_ONLY": "Closure (online) - Whitespace Only",
+  "SIMPLE_OPTIMIZATIONS": "Closure (online) - Simple Optimizations",
+  "ADVANCED_OPTIMIZATIONS": "Closure (online) - Advanced Optimizations (not recommended)"
+}
+Default: --config MODULE_MINIFICATION_LEVEL=ESPRIMA
+Current: --config MODULE_MINIFICATION_LEVEL=ESPRIMA
+
+Esprima: Mangle (MINIFICATION_Mangle)
+---------------------------------------
+Shorten variable names
+Type: "boolean"
+Default: --config MINIFICATION_Mangle=true
+Current: --config MINIFICATION_Mangle=true
+
+Pretokenise code before upload (PRETOKENISE)
+----------------------------------------------
+All whitespace and comments are removed and all reserved words are converted to tokens before upload. This means a faster upload, less memory used, and increased performance (+10%) at the expense of code readability.
+Type: {
+  "0": "Never",
+  "1": "Auto (tokenise Strings on 2v20.48 or later)",
+  "2": "Yes (always tokenise everything, regardless of version)"
+}
+Default: --config PRETOKENISE=0
+Current: --config PRETOKENISE=0
+
+

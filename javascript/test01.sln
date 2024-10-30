@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ble-led-toggle", "ble-led-toggle", "{4C15FE19-08B6-4B12-9143-00E5A028DABA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetCentral", "ble-led-toggle\DotNetCentral\DotNetCentral.csproj", "{2B9CD5AA-988B-4602-9C56-8E78D16A8B5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B9CD5AA-988B-4602-9C56-8E78D16A8B5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B9CD5AA-988B-4602-9C56-8E78D16A8B5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B9CD5AA-988B-4602-9C56-8E78D16A8B5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B9CD5AA-988B-4602-9C56-8E78D16A8B5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2B9CD5AA-988B-4602-9C56-8E78D16A8B5A} = {4C15FE19-08B6-4B12-9143-00E5A028DABA}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5A990548-E273-4014-92B7-654799FE14DC}
+	EndGlobalSection
+EndGlobal
