@@ -1,19 +1,18 @@
 #include "ble_characteristic.h"
 
-// Constructor
 BleCharacteristic::BleCharacteristic
 (
     ble_uuid128_t *uuid,
+    std::function<int(std::vector<std::byte>)> onWrite,
     bool read,
     bool write,
-    bool acknowledge_writes,
-    onWrite on_write
+    bool acknowledgeWrites
 ) :
-    uuid(uuid), 
-    read(read), 
-    write(write), 
-    acknowledge_writes(acknowledge_writes), 
-    on_write(on_write)
+    uuid(uuid),
+    onWrite(onWrite),
+    read(read),
+    write(write),
+    acknowledgeWrites(acknowledgeWrites)
 {
     // No impl
 }
