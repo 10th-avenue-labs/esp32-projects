@@ -106,8 +106,10 @@ await 10.TimesAsync(async () => {
     await Task.Delay(500);
     Console.WriteLine($"Reading value back");
     var read = await characteristic.ReadValueAsync(new Dictionary<string, object>());
-    Console.WriteLine($"Read value back: {read}");
+    Console.WriteLine($"Read size: {read.Length}");
+    Console.WriteLine($"Read value: {(int)read[0]}");
     await Task.Delay(500);
+    count++;
 });
 
 return 0;

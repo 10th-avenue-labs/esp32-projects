@@ -4,6 +4,10 @@
 #include "ble_characteristic.h"
 #include <vector>
 
+extern "C" {
+    #include <host/ble_uuid.h>
+}
+
 class BleService {
 public:
     ble_uuid16_t *uuid;                                 // Pointer to service UUID

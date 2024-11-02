@@ -1,19 +1,19 @@
 #ifndef BLE_CHARACTERISTIC_H
 #define BLE_CHARACTERISTIC_H
 
-// External includes
+#include <functional>
+#include <vector>
+
 extern "C"
 {
     #include <host/ble_uuid.h>
 }
 
-#include <functional>
-#include <vector>
-
 class BleCharacteristic {
 public:
     ble_uuid128_t *uuid;                                    // Pointer to UUID
     std::function<int(std::vector<std::byte>)> onWrite;     // Callback for write access
+    std::function<std::vector<std::byte>(void)> onRead;     // Callback for read access
     bool read;                                              // Flag for whether or not to allow read access
     bool write;                                             // Flag for whether or not to allow write access
     bool acknowledgeWrites;                                 // Flag for write acknowledgment
@@ -23,6 +23,7 @@ public:
      * 
      * @param uuid A pointer to the UUID
      * @param onWrite A callback to execute when the characteristic is written to
+     * @param onRead A callback to execute when the characteristic is read
      * @param read Whether or not to allow read access
      * @param write Whether or not to allow write access
      * @param acknowledgeWrites Whether or not to acknowledge writes
@@ -30,6 +31,7 @@ public:
     BleCharacteristic(
         ble_uuid128_t *uuid,
         std::function<int(std::vector<std::byte>)> onWrite,
+        std::function<std::vector<std::byte>(void)> onRead,
         bool read,
         bool write,
         bool acknowledgeWrites

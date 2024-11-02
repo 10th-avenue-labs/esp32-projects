@@ -30,6 +30,7 @@
         "ble_service.h": "c",
         "nimble_port_freertos.h": "c",
         "ble_uuid.h": "c",
-        "freertos.h": "c"
+        "freertos.h": "c",
+        "ble_advertiser.h": "c"
     }
 }
