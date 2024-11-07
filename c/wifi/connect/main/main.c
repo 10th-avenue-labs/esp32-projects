@@ -124,7 +124,7 @@ void app_main(void)
              */
             .threshold.authmode = WIFI_AUTH_OPEN, // This is the weakest authmode, effectively allowing any authmode
             .sae_pwe_h2e = WPA3_SAE_PWE_BOTH, // Enable both Hunt and peck and hash to element
-            .sae_h2e_identifier = "" // Not really sure what this is for, but it's only used for H2@
+            .sae_h2e_identifier = "" // Not really sure what this is for, but it's only used for H2e
         }
     };
 
