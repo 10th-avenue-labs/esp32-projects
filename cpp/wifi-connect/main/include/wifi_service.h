@@ -1,11 +1,14 @@
+#ifndef WIFI_SERVICE_H
+#define WIFI_SERVICE_H
+
 #include <unordered_map>
 #include <string>
 #include <functional>
 #include <cstring>
 #include <vector>
-#include <ranges>
 #include <algorithm>
 #include <atomic>
+#include <condition_variable>
 #include "ap_scan_results.h"
 #include "ap_credential_info.h"
 
@@ -28,8 +31,8 @@ enum ConnectionState {
 
 class WifiService {
 public:
-    static std::function<void(void)> onConnect;
-    static std::function<void(void)> onDisconnect;
+    static std::function<void(void)> onConnect;     // Delegate to call when the WiFi station connects
+    static std::function<void(void)> onDisconnect;  // Delegate to call when the WiFi station disconnects
 
     ////////////////////////////////////////////////////////////////////////////
     // Initialization and Disposal
@@ -91,6 +94,8 @@ public:
     /**
      * @brief Set the connection state.
      * 
+     * Warning: This method has not been thoroughly tested and may not work as expected, particularly in multi-threaded environments.
+     * 
      * @param newState The new connection state.
      */
     static void setConnectionState(ConnectionState newState);
@@ -98,12 +103,18 @@ public:
     /**
      * @brief Wait for the connection state to be one of the specified states.
      * 
+     * Warning: This method has not been thoroughly tested and may not work as expected, particularly in multi-threaded environments.
+     * 
      * @param connectionStates The connection states to wait for.
+     * @param timeoutMs The timeout in milliseconds. If -1, wait indefinitely.
+     * @return true if the connection state is one of the specified states, false if the timeout was reached.
      */
-    static void waitConnectionState(std::vector<ConnectionState> connectionStates);
+    static bool waitConnectionState(const std::vector<ConnectionState>& connectionStates, int timeoutMs = -1);
 
 private:
-    static std::atomic<ConnectionState> connectionState;
+    static std::atomic<ConnectionState> connectionState;    // The current connection state
+    static std::condition_variable stateChanged;            // Condition variable for state change notifications
+    static std::mutex stateMutex;                           // Mutex to protect condition variable
 
     ////////////////////////////////////////////////////////////////////////////
     // Event Handlers
@@ -135,3 +146,5 @@ private:
      */
     static void ipEventHandler(int32_t eventId, void* eventData);
 };
+
+#endif

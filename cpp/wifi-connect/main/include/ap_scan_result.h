@@ -1,3 +1,6 @@
+#ifndef AP_SCAN_RESULT_H
+#define AP_SCAN_RESULT_H
+
 #include <string>
 
 extern "C"{
@@ -12,3 +15,5 @@ public:
     wifi_auth_mode_t authMode;
     uint8_t channel;
 };
+
+#endif

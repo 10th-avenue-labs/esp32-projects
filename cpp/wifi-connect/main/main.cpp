@@ -6,9 +6,7 @@
 
 #include "include/wifi_service.h"
 
-
 static const char *TAG = "wifi station";
-
 
 void onConnect() {
     ESP_LOGI(TAG, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX connected to an access point");

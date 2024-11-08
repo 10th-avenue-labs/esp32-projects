@@ -3,9 +3,11 @@
 static char *TAG = "WIFI_SERVICE";
 
 // Define static members to satisfy the compiler
-std::atomic<ConnectionState> WifiService::connectionState = ConnectionState::NOT_CONNECTED;
 std::function<void(void)> WifiService::onConnect = nullptr;
 std::function<void(void)> WifiService::onDisconnect = nullptr;
+std::atomic<ConnectionState> WifiService::connectionState = ConnectionState::NOT_CONNECTED;
+std::condition_variable WifiService::stateChanged = std::condition_variable();
+std::mutex WifiService::stateMutex = std::mutex();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization and Disposal
@@ -276,21 +278,39 @@ ConnectionState WifiService::getConnectionState()
 
 void WifiService::setConnectionState(ConnectionState newState)
 {
-    ESP_LOGI(TAG, "setting connection state to %d", newState);
-    connectionState.store(newState, std::memory_order_relaxed);
+    {
+        std::lock_guard<std::mutex> lock(stateMutex);
+        connectionState.store(newState, std::memory_order_relaxed);
+    }
+
+    // Notify any waiting threads
+    stateChanged.notify_all();
 }
 
-void WifiService::waitConnectionState(std::vector<ConnectionState> connectionStates)
+bool WifiService::waitConnectionState(const std::vector<ConnectionState> &connectionStates, int timeoutMs)
 {
-    // TODO: Implement a timeout
     // TODO: Implement a way to cancel the wait
-    // TODO: Use non-polling logic. i.e. event groups, tasks, semaphores, etc.
 
-    while (std::find(connectionStates.begin(), connectionStates.end(), WifiService::getConnectionState()) == connectionStates.end())
+    std::unique_lock<std::mutex> lock(stateMutex);
+
+    // Define a lambda to check if current state is in connectionStates
+    auto isDesiredState = [&]()
     {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        return std::find(connectionStates.begin(), connectionStates.end(), getConnectionState()) != connectionStates.end();
+    };
+
+    if (timeoutMs < 0)
+    {
+        // Wait indefinitely until the state matches one of the desired states
+        stateChanged.wait(lock, isDesiredState);
+        return true;
     }
-};
+    else
+    {
+        // Wait with timeout
+        return stateChanged.wait_for(lock, std::chrono::milliseconds(timeoutMs), isDesiredState);
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Event Handlers
