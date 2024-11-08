@@ -3,6 +3,9 @@
 #include <functional>
 #include <cstring>
 #include <vector>
+#include <ranges>
+#include <algorithm>
+#include <atomic>
 #include "ap_scan_results.h"
 #include "ap_credential_info.h"
 
@@ -19,7 +22,8 @@ extern "C"{
 enum ConnectionState {
     NOT_CONNECTED,
     CONNECTING,
-    CONNECTED
+    CONNECTED,
+    DISCONNECTING
 };
 
 class WifiService {
@@ -35,9 +39,13 @@ public:
     // dispose
     // Blocking connect method maybe?
     static ConnectionState getConnectionState();
-    static void waitConnectionState(ConnectionState connectionState);
+    static void setConnectionState(ConnectionState newState);
+    static void waitConnectionState(std::vector<ConnectionState> connectionStates);
+
+    static bool startDisconnect();
+
 private:
-    static ConnectionState connectionState;
+    static std::atomic<ConnectionState> connectionState;
 
     static void genericEventHandler(void* arg, esp_event_base_t eventBase, int32_t eventId, void* eventData);
     static void wifiEventHandler(void* arg, int32_t eventId, void* eventData);

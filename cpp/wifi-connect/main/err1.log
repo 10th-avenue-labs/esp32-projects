@@ -1,0 +1,336 @@
+montana:wifi-connect$ 
+montana:wifi-connect$ 
+montana:wifi-connect$ 
+montana:wifi-connect$ imon
+Checking "python3" ...
+Python 3.12.3
+"python3" has been detected
+Activating ESP-IDF 5.5
+* Checking python version ... 3.12.3
+* Checking python dependencies ... OK
+* Deactivating the current ESP-IDF environment (if any) ... OK
+* Establishing a new ESP-IDF environment ... OK
+* Identifying shell ... bash
+* Detecting outdated tools in system ... Found tools that are not used by active ESP-IDF version.
+For removing old versions of openocd-esp32, cmake, riscv32-esp-elf, ninja, esp-rom-elfs use command 'python /home/montana/esp/esp-idf/tools/idf_tools.py uninstall'
+To free up even more space, remove installation packages of those tools.
+Use option python /home/montana/esp/esp-idf/tools/idf_tools.py uninstall --remove-archives.
+* Shell completion ... Autocompletion code generated
+
+Done! You can now compile ESP-IDF projects.
+Go to the project directory and run:
+
+  idf.py build
+Executing action: monitor
+Serial port /dev/ttyUSB0
+Connecting....
+Detecting chip type... Unsupported detection protocol, switching and trying again...
+Connecting....
+Detecting chip type... ESP32
+Running idf_monitor in directory /home/montana/repositories/esp32-projects/cpp/wifi-connect
+Executing "/home/montana/.espressif/python_env/idf5.5_py3.12_env/bin/python /home/montana/esp/esp-idf/tools/idf_monitor.py -p /dev/ttyUSB0 -b 115200 --toolchain-prefix xtensa-esp32-elf- --target esp32 --revision 0 /home/montana/repositories/esp32-projects/cpp/wifi-connect/build/console-out.elf -m '/home/montana/.espressif/python_env/idf5.5_py3.12_env/bin/python' '/home/montana/esp/esp-idf/tools/idf.py'"...
+--- esp-idf-monitor 1.5.0 on /dev/ttyUSB0 115200
+--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:7192
+load:0x40078000,len:15760
+load:0x40080400,len:4
+--- 0x40080400: _init at ??:?
+
+ho 8 tail 4 room 4
+load:0x40080404,len:3860
+entry 0x4008063c
+I (31) boot: ESP-IDF v5.4-dev-4076-gce6085349f 2nd stage bootloader
+I (31) boot: compile time Nov  6 2024 23:49:17
+I (33) boot: Multicore bootloader
+I (37) boot: chip revision: v3.1
+I (41) boot.esp32: SPI Speed      : 40MHz
+I (45) boot.esp32: SPI Mode       : DIO
+I (50) boot.esp32: SPI Flash Size : 2MB
+I (54) boot: Enabling RNG early entropy source...
+I (60) boot: Partition Table:
+I (63) boot: ## Label            Usage          Type ST Offset   Length
+I (71) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (78) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (86) boot:  2 factory          factory app      00 00 00010000 00100000
+I (93) boot: End of partition table
+I (97) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=21488h (136328) map
+I (152) esp_image: segment 1: paddr=000314b0 vaddr=3ff80000 size=0001ch (    28) load
+I (153) esp_image: segment 2: paddr=000314d4 vaddr=3ffb0000 size=03f60h ( 16224) load
+I (164) esp_image: segment 3: paddr=0003543c vaddr=40080000 size=0abdch ( 43996) load
+I (184) esp_image: segment 4: paddr=00040020 vaddr=400d0020 size=85e98h (548504) map
+I (371) esp_image: segment 5: paddr=000c5ec0 vaddr=4008abdc size=0cb30h ( 52016) load
+I (403) boot: Loaded app from partition at offset 0x10000
+I (403) boot: Disabling RNG early entropy source...
+I (416) cpu_start: Multicore app
+I (424) cpu_start: Pro cpu start user code
+I (424) cpu_start: cpu freq: 160000000 Hz
+I (424) app_init: Application information:
+I (427) app_init: Project name:     console-out
+I (432) app_init: App version:      bba8d207-dirty
+I (438) app_init: Compile time:     Nov  7 2024 15:43:31
+I (444) app_init: ELF file SHA256:  c25b2a668...
+I (449) app_init: ESP-IDF:          v5.4-dev-4076-gce6085349f
+I (455) efuse_init: Min chip rev:     v0.0
+I (460) efuse_init: Max chip rev:     v3.99 
+I (465) efuse_init: Chip rev:         v3.1
+I (470) heap_init: Initializing. RAM available for dynamic allocation:
+I (477) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM
+I (483) heap_init: At 3FFB83C0 len 00027C40 (159 KiB): DRAM
+I (489) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM
+I (496) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM
+I (502) heap_init: At 4009770C len 000088F4 (34 KiB): IRAM
+I (510) spi_flash: detected chip: generic
+I (513) spi_flash: flash io: dio
+W (517) spi_flash: Detected size(8192k) larger than the size in the binary image header(2048k). Using the size in the binary image header.
+I (531) main_task: Started on CPU0
+I (541) main_task: Calling app_main()
+I (541) wifi station: initializing wifi service
+I (541) WIFI_SERVICE: initializing nvs flash
+I (561) WIFI_SERVICE: initializing tcp/ip network interface
+I (571) WIFI_SERVICE: creating default event loop
+I (571) WIFI_SERVICE: creating default wifi station interface
+I (571) WIFI_SERVICE: initializing wifi configuration
+I (591) wifi:wifi driver task: 3ffc056c, prio:23, stack:6656, core=0
+I (601) wifi:wifi firmware version: 434429f30
+I (601) wifi:wifi certification version: v7.0
+I (601) wifi:config NVS flash: enabled
+I (601) wifi:config nano formatting: disabled
+I (601) wifi:Init data frame dynamic rx buffer num: 32
+I (611) wifi:Init static rx mgmt buffer num: 5
+I (611) wifi:Init management short buffer num: 32
+I (621) wifi:Init dynamic tx buffer num: 32
+I (621) wifi:Init static rx buffer size: 1600
+I (631) wifi:Init static rx buffer num: 10
+I (631) wifi:Init dynamic rx buffer num: 32
+I (631) wifi_init: rx ba win: 6
+I (641) wifi_init: accept mbox: 6
+I (641) wifi_init: tcpip mbox: 32
+I (651) wifi_init: udp mbox: 6
+I (651) wifi_init: tcp mbox: 6
+I (651) wifi_init: tcp tx win: 5760
+I (661) wifi_init: tcp rx win: 5760
+I (661) wifi_init: tcp mss: 1440
+I (671) wifi_init: WiFi IRAM OP enabled
+I (671) wifi_init: WiFi RX IRAM OP enabled
+I (671) WIFI_SERVICE: setting wifi mode to station
+I (681) WIFI_SERVICE: registering WIFI event handler
+I (691) WIFI_SERVICE: registering IP event handler
+I (691) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX CONNECT -1
+I (701) WIFI_SERVICE: getting connection state
+I (701) WIFI_SERVICE: setting wifi configuration
+W (711) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (721) WIFI_SERVICE: stopping wifi station
+I (721) WIFI_SERVICE: setting connection state to 1
+I (731) WIFI_SERVICE: starting wifi station
+I (731) phy_init: phy_version 4840,02e0d70,Sep  2 2024,19:39:07
+W (811) phy_init: saving new calibration data because of checksum failure, mode(0)
+I (831) wifi:mode : sta (1c:69:20:88:f3:b4)
+I (831) wifi:enable tsf
+I (831) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 43
+I (831) WIFI_SERVICE: wifiEventHandler called with event_id: 43
+W (841) WIFI_SERVICE: Unhandled WiFi event: 43
+I (851) WIFI_SERVICE: connecting to wifi network
+I (851) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 2
+I (861) WIFI_SERVICE: wifiEventHandler called with event_id: 2
+I (871) WIFI_SERVICE: WiFi station started
+I (871) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX connect success: true
+I (881) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX WAIT -1
+I (881) WIFI_SERVICE: getting connection state
+I (891) wifi:new:<6,0>, old:<1,0>, ap:<255,255>, sta:<6,0>, prof:1, snd_ch_cfg:0x0
+I (901) wifi:state: init -> auth (0xb0)
+I (901) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 43
+I (1631) WIFI_SERVICE: wifiEventHandler called with event_id: 43
+W (1631) WIFI_SERVICE: Unhandled WiFi event: 43
+I (2161) wifi:state: auth -> assoc (0x0)
+I (2161) wifi:state: assoc -> run (0x10)
+I (2181) wifi:connected with denhac, aid = 6, channel 6, BW20, bssid = e0:63:da:2a:d0:ca
+I (2181) wifi:security: WPA3-SAE, phy: bgn, rssi: -64
+I (2191) wifi:pm start, type: 1
+
+I (2191) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us
+I (2201) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 4
+I (2201) WIFI_SERVICE: wifiEventHandler called with event_id: 4
+W (2211) WIFI_SERVICE: Unhandled WiFi event: 4
+I (2241) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (2241) wifi:<ba-add>idx:0 (ifx:0, e0:63:da:2a:d0:ca), tid:6, ssn:0, winSize:64
+I (2631) WIFI_SERVICE: getting connection state
+I (3631) WIFI_SERVICE: getting connection state
+I (3681) esp_netif_handlers: sta ip: 10.11.15.76, mask: 255.255.240.0, gw: 10.11.0.1
+I (3681) WIFI_SERVICE: genericEventHandler called with event_base: IP_EVENT, event_id: 0
+I (3681) WIFI_SERVICE: ipEventHandler called with event_id: 0
+I (3691) WIFI_SERVICE: IP address obtained: 10.11.15.76
+I (3691) WIFI_SERVICE: setting connection state to 2
+I (4631) WIFI_SERVICE: getting connection state
+I (4631) WIFI_SERVICE: getting connection state
+I (4631) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX connection_state: 2
+I (4631) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX DISCONNECT -1
+I (4641) WIFI_SERVICE: getting connection state
+I (4641) WIFI_SERVICE: setting connection state to 3
+I (4651) WIFI_SERVICE: stopping wifi station
+I (4661) wifi:state: run -> init (0x0)
+I (4671) wifi:pm stop, total sleep time: 1679515 us / 2480618 us
+
+I (4671) wifi:<ba-del>idx:0, tid:6
+I (4671) wifi:new:<6,0>, old:<6,0>, ap:<255,255>, sta:<6,0>, prof:1, snd_ch_cfg:0x0
+I (4681) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 5
+I (4681) WIFI_SERVICE: wifiEventHandler called with event_id: 5
+I (4691) WIFI_SERVICE: WiFi station disconnected
+I (4691) WIFI_SERVICE: setting connection state to 0
+I (4701) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 3
+I (4711) WIFI_SERVICE: wifiEventHandler called with event_id: 3
+W (4721) WIFI_SERVICE: Unhandled WiFi event: 3
+I (4731) wifi:flush txq
+I (4731) wifi:stop sw txq
+I (4731) wifi:lmac stop hw txq
+I (4731) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX CONNECT 0
+I (4731) WIFI_SERVICE: getting connection state
+I (4741) WIFI_SERVICE: setting wifi configuration
+W (4751) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (4761) WIFI_SERVICE: stopping wifi station
+I (4761) WIFI_SERVICE: setting connection state to 1
+I (4761) WIFI_SERVICE: starting wifi station
+I (4771) wifi:mode : sta (1c:69:20:88:f3:b4)
+I (4771) wifi:enable tsf
+I (4781) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 43
+I (4781) WIFI_SERVICE: wifiEventHandler called with event_id: 43
+W (4791) WIFI_SERVICE: Unhandled WiFi event: 43
+I (4801) WIFI_SERVICE: connecting to wifi network
+I (4801) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 2
+I (4811) WIFI_SERVICE: wifiEventHandler called with event_id: 2
+I (4821) WIFI_SERVICE: WiFi station started
+I (4821) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX connect success: true
+I (4831) wifi:new:<6,0>, old:<1,0>, ap:<255,255>, sta:<6,0>, prof:1, snd_ch_cfg:0x0
+I (4841) wifi:state: init -> auth (0xb0)
+I (4841) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 43
+I (5561) WIFI_SERVICE: wifiEventHandler called with event_id: 43
+W (5571) WIFI_SERVICE: Unhandled WiFi event: 43
+I (5571) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX WAIT 0
+I (5581) WIFI_SERVICE: getting connection state
+I (6111) wifi:state: auth -> assoc (0x0)
+I (6121) wifi:state: assoc -> run (0x10)
+I (6151) wifi:connected with denhac, aid = 6, channel 6, BW20, bssid = e0:63:da:2a:d0:ca
+I (6151) wifi:security: WPA3-SAE, phy: bgn, rssi: -63
+I (6151) wifi:pm start, type: 1
+
+I (6151) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 4
+I (6161) WIFI_SERVICE: wifiEventHandler called with event_id: 4
+W (6171) WIFI_SERVICE: Unhandled WiFi event: 4
+I (6191) wifi:<ba-add>idx:0 (ifx:0, e0:63:da:2a:d0:ca), tid:6, ssn:1, winSize:64
+I (6231) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (6581) WIFI_SERVICE: getting connection state
+I (7221) esp_netif_handlers: sta ip: 10.11.15.76, mask: 255.255.240.0, gw: 10.11.0.1
+I (7221) WIFI_SERVICE: genericEventHandler called with event_base: IP_EVENT, event_id: 0
+I (7221) WIFI_SERVICE: ipEventHandler called with event_id: 0
+I (7231) WIFI_SERVICE: IP address obtained: 10.11.15.76
+I (7231) WIFI_SERVICE: setting connection state to 2
+I (7581) WIFI_SERVICE: getting connection state
+I (7581) WIFI_SERVICE: getting connection state
+I (7581) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX connection_state: 2
+I (7581) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX DISCONNECT -1
+I (7591) WIFI_SERVICE: getting connection state
+I (7591) WIFI_SERVICE: setting connection state to 3
+I (7601) WIFI_SERVICE: stopping wifi station
+I (7601) wifi:state: run -> init (0x0)
+I (7621) wifi:pm stop, total sleep time: 974345 us / 1465483 us
+
+I (7621) wifi:<ba-del>idx:0, tid:6
+I (7621) wifi:new:<6,0>, old:<6,0>, ap:<255,255>, sta:<6,0>, prof:1, snd_ch_cfg:0x0
+I (7631) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 5
+I (7631) WIFI_SERVICE: wifiEventHandler called with event_id: 5
+I (7641) WIFI_SERVICE: WiFi station disconnected
+I (7641) WIFI_SERVICE: setting connection state to 0
+I (7651) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 3
+I (7661) WIFI_SERVICE: wifiEventHandler called with event_id: 3
+W (7671) WIFI_SERVICE: Unhandled WiFi event: 3
+I (7691) wifi:flush txq
+I (7691) wifi:stop sw txq
+I (7691) wifi:lmac stop hw txq
+I (7691) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX SCAN 1
+I (7691) WIFI_SERVICE: starting wifi station
+I (7701) wifi:mode : sta (1c:69:20:88:f3:b4)
+I (7701) wifi:enable tsf
+I (7701) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 43
+I (7711) WIFI_SERVICE: wifiEventHandler called with event_id: 43
+W (7711) WIFI_SERVICE: Unhandled WiFi event: 43
+I (7721) WIFI_SERVICE: scanning for wifi networks
+I (7721) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 2
+I (7731) WIFI_SERVICE: wifiEventHandler called with event_id: 2
+I (7741) WIFI_SERVICE: WiFi station started
+I (10161) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 1
+I (10161) WIFI_SERVICE: wifiEventHandler called with event_id: 1
+W (10171) WIFI_SERVICE: Unhandled WiFi event: 1
+I (10251) WIFI_SERVICE: number of Access Points found = 26
+I (10251) wifi station: total number of access points found: 26, number of access points populated: 26
+I (10251) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX CONNECT 1
+I (10261) WIFI_SERVICE: getting connection state
+I (10261) WIFI_SERVICE: setting wifi configuration
+W (10271) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (10311) WIFI_SERVICE: stopping wifi station
+I (10311) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 3
+I (10311) WIFI_SERVICE: wifiEventHandler called with event_id: 3
+W (10321) WIFI_SERVICE: Unhandled WiFi event: 3
+I (10331) wifi:flush txq
+I (10331) wifi:stop sw txq
+I (10331) wifi:lmac stop hw txq
+I (10331) WIFI_SERVICE: setting connection state to 1
+I (10341) WIFI_SERVICE: starting wifi station
+I (10351) wifi:mode : sta (1c:69:20:88:f3:b4)
+I (10351) wifi:enable tsf
+I (10351) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 2
+I (10361) WIFI_SERVICE: wifiEventHandler called with event_id: 2
+I (10371) WIFI_SERVICE: WiFi station started
+I (10351) WIFI_SERVICE: connecting to wifi network
+I (10381) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX connect success: true
+I (10381) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX WAIT 1
+I (10391) WIFI_SERVICE: getting connection state
+I (11391) WIFI_SERVICE: getting connection state
+I (12391) WIFI_SERVICE: getting connection state
+I (12791) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 5
+I (12791) WIFI_SERVICE: wifiEventHandler called with event_id: 5
+I (12801) WIFI_SERVICE: WiFi station disconnected
+I (12801) WIFI_SERVICE: setting connection state to 0
+I (13391) WIFI_SERVICE: getting connection state
+I (13391) WIFI_SERVICE: getting connection state
+I (13391) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX connection_state: 0
+I (13391) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX DISCONNECT -1
+I (13401) WIFI_SERVICE: getting connection state
+W (13401) WIFI_SERVICE: cannot disconnect from an access point while not connected
+I (13411) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX SCAN 2
+I (13421) WIFI_SERVICE: starting wifi station
+I (13421) WIFI_SERVICE: scanning for wifi networks
+I (15841) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 1
+I (15841) WIFI_SERVICE: wifiEventHandler called with event_id: 1
+W (15851) WIFI_SERVICE: Unhandled WiFi event: 1
+I (15931) WIFI_SERVICE: number of Access Points found = 25
+I (15931) wifi station: total number of access points found: 25, number of access points populated: 25
+I (15931) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX CONNECT 2
+I (15941) WIFI_SERVICE: getting connection state
+I (15941) WIFI_SERVICE: setting wifi configuration
+W (15951) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (15961) WIFI_SERVICE: stopping wifi station
+I (15961) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 3
+I (15971) WIFI_SERVICE: wifiEventHandler called with event_id: 3
+W (15981) WIFI_SERVICE: Unhandled WiFi event: 3
+I (15981) wifi:flush txq
+I (15981) wifi:stop sw txq
+I (15991) wifi:lmac stop hw txq
+I (15991) WIFI_SERVICE: setting connection state to 1
+I (16001) WIFI_SERVICE: starting wifi station
+I (16001) wifi:mode : sta (1c:69:20:88:f3:b4)
+I (16001) wifi:enable tsf
+I (16011) WIFI_SERVICE: connecting to wifi network
+I (16011) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 2
+I (16021) WIFI_SERVICE: wifiEventHandler called with event_id: 2
+I (16031) WIFI_SERVICE: WiFi station started
+I (16041) wifi station: XXXXXXXXXXXXXXXXXXXXXXXX connect success: true
+I (16041) wifi station: done
+I (18451) WIFI_SERVICE: genericEventHandler called with event_base: WIFI_EVENT, event_id: 5
+I (18451) WIFI_SERVICE: wifiEventHandler called with event_id: 5
+I (18451) WIFI_SERVICE: WiFi station disconnected
+I (18461) WIFI_SERVICE: setting connection state to 0

@@ -8,7 +8,7 @@ constexpr size_t maxSsidLength = sizeof(((wifi_sta_config_t*)0)->ssid) - 1;
 
 
 // Define static members to satisfy the compiler
-ConnectionState WifiService::connectionState = ConnectionState::NOT_CONNECTED;
+std::atomic<ConnectionState> WifiService::connectionState = ConnectionState::NOT_CONNECTED;
 
 static void print_auth_mode(int authmode)
 {
@@ -127,15 +127,23 @@ static void print_cipher_type(int pairwise_cipher, int group_cipher)
     }
 }
 
-ConnectionState WifiService::getConnectionState() {
-    return connectionState;
-};
+void WifiService::setConnectionState(ConnectionState newState) {
+    ESP_LOGI(TAG, "setting connection state to %d", newState);
+    connectionState.store(newState, std::memory_order_relaxed);
+}
 
-void WifiService::waitConnectionState(ConnectionState connectionState) {
+ConnectionState WifiService::getConnectionState() {
+    ESP_LOGI(TAG, "getting connection state");
+    return connectionState.load(std::memory_order_relaxed);
+}
+
+
+void WifiService::waitConnectionState(std::vector<ConnectionState> connectionStates) {
     // TODO: Implement a timeout
     // TODO: Implement a way to cancel the wait
     // TODO: Use non-polling logic. i.e. event groups, tasks, semaphores, etc.
-    while (WifiService::getConnectionState() != connectionState) {
+
+    while (std::find(connectionStates.begin(), connectionStates.end(), WifiService::getConnectionState()) == connectionStates.end()) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 };
@@ -270,6 +278,25 @@ bool WifiService::startConnect(
     std::function<void(void)> onConnect,
     std::function<void(void)> onDisconnect
 ) {
+    // Check the connection state
+    switch (getConnectionState()) {
+        case ConnectionState::NOT_CONNECTED:
+            // valid state
+            break;
+        case ConnectionState::CONNECTING:
+            ESP_LOGE(TAG, "cannot connect to an access point while already connecting");
+            return false;
+        case ConnectionState::CONNECTED:
+            ESP_LOGE(TAG, "cannot connect to an access point while already connected");
+            return false;
+        case ConnectionState::DISCONNECTING:
+            ESP_LOGE(TAG, "cannot connect to an access point while already disconnecting");
+            return false;
+        default:
+            ESP_LOGE(TAG, "unknown connection state");
+            return false;
+    }
+
     // Check SSID length
     constexpr size_t maxSsidLength = sizeof(((wifi_sta_config_t*)0)->ssid) - 1;
     if (apCredentialInfo.ssid.length() > maxSsidLength) {
@@ -321,19 +348,21 @@ bool WifiService::startConnect(
     ESP_ERROR_CHECK(esp_wifi_stop());
 
     // Set the connected state to connecting
-    connectionState = ConnectionState::CONNECTING;
+    setConnectionState(ConnectionState::CONNECTING);
 
     // Start the WiFi station
     ESP_LOGI(TAG, "starting wifi station");
     ESP_ERROR_CHECK(esp_wifi_start());
 
+    // Connect to the WiFi network
+    ESP_LOGI(TAG, "connecting to wifi network");
     esp_err_t response = esp_wifi_connect();
     if (response != ESP_OK) {
         ESP_LOGE(TAG, "failed to connect to WiFi, error code: %d", response);
         return false;
     }
 
-    return false;
+    return true;
 };
 
 void WifiService::genericEventHandler(
@@ -393,7 +422,7 @@ void WifiService::wifiEventHandler(
             ESP_LOGI(TAG, "WiFi station disconnected");
 
             // Set the connection state to not connected
-            connectionState = ConnectionState::NOT_CONNECTED;
+            setConnectionState(ConnectionState::NOT_CONNECTED);
 
             // TODO: Add delegate here
             break;
@@ -416,9 +445,26 @@ void WifiService::ipEventHandler(
             ESP_LOGI(TAG, "IP address obtained: " IPSTR, IP2STR(&event->ip_info.ip));
 
             // Set the connection state to connected
-            connectionState = ConnectionState::CONNECTED;
+            setConnectionState(ConnectionState::CONNECTED);
 
             // TODO: Add delegate here
             break;
     }
 }
+
+bool WifiService::startDisconnect() {
+    // Check the connection state
+    if (getConnectionState() != ConnectionState::CONNECTED) {
+        ESP_LOGW(TAG, "cannot disconnect from an access point while not connected");
+        return false;
+    }
+
+    // Set the connection state to disconnecting
+    setConnectionState(ConnectionState::DISCONNECTING);
+
+    // Stop the wifi station
+    ESP_LOGI(TAG, "stopping wifi station");
+    ESP_ERROR_CHECK(esp_wifi_stop());
+
+    return true;
+};
