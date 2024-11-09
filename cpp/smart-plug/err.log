@@ -1,0 +1,1670 @@
+Executing action: all (aliases: build)
+Running ninja in directory /home/montana/repositories/esp32-projects/cpp/smart-plug/build
+Executing "ninja all"...
+[1/10] Performing build step for 'bootloader'
+[1/1] cd /home/montana/repositories/esp32-projects/cpp/smart-plug/build/bootloader/esp-idf/esptool_py && /home/montana/.espressif/python_env/idf5.5_py3.12_env/bin/python /home/montana/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 /home/montana/repositories/esp32-projects/cpp/smart-plug/build/bootloader/bootloader.bin
+Bootloader binary size 0x6920 bytes. 0x6e0 bytes (6%) free.
+[2/10] No install step for 'bootloader'
+[3/10] Completed 'bootloader'
+[4/10] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/src/ble_advertiser.cpp.obj
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:5:20: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+    5 | static char* TAG = "BLE_ADVERTISER";
+      |                    ^~~~~~~~~~~~~~~~
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp: In static member function 'static int BleAdvertiser::gapEventHandler(ble_gap_event*, void*)':
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:318:98: warning: missing initializer for member 'ble_gap_upd_params::min_ce_len' [-Wmissing-field-initializers]
+  318 |                                                         connectionDescription.supervision_timeout};
+      |                                                                                                  ^
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:318:98: warning: missing initializer for member 'ble_gap_upd_params::max_ce_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp: In static member function 'static void BleAdvertiser::startAdvertising()':
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::uuids16' [-Wmissing-field-initializers]
+  457 |     struct ble_hs_adv_fields advertisingFields = {0};
+      |                                                    ^
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids16' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::uuids16_is_complete' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::uuids32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::uuids32_is_complete' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::uuids128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::uuids128_is_complete' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::name' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::name_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::name_is_complete' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::tx_pwr_lvl' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::tx_pwr_lvl_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::slave_itvl_range' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sm_tk_value' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sm_tk_value_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sm_oob_flag' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sm_oob_flag_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids16' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids16' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid16' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid16_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::public_tgt_addr' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::num_public_tgt_addrs' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::random_tgt_addr' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::num_random_tgt_addrs' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::appearance' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::appearance_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::device_addr' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::device_addr_type' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::device_addr_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::le_role' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::le_role_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid32_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid128_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::uri' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::uri_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::mfg_data' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:457:52: warning: missing initializer for member 'ble_hs_adv_fields::mfg_data_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::uuids16' [-Wmissing-field-initializers]
+  458 |     struct ble_hs_adv_fields responseFields = {0};
+      |                                                 ^
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids16' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::uuids16_is_complete' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::uuids32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::uuids32_is_complete' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::uuids128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::num_uuids128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::uuids128_is_complete' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::name' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::name_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::name_is_complete' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::tx_pwr_lvl' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::tx_pwr_lvl_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::slave_itvl_range' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sm_tk_value' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sm_tk_value_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sm_oob_flag' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sm_oob_flag_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids16' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids16' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid16' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid16_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::public_tgt_addr' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::num_public_tgt_addrs' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::random_tgt_addr' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::num_random_tgt_addrs' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::appearance' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::appearance_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::adv_itvl_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::device_addr' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::device_addr_type' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::device_addr_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sol_uuids32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::sol_num_uuids32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::le_role' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::le_role_is_present' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid32' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid32_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid128' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::svc_data_uuid128_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::uri' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::uri_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::mfg_data' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:458:49: warning: missing initializer for member 'ble_hs_adv_fields::mfg_data_len' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:459:53: warning: missing initializer for member 'ble_gap_adv_params::disc_mode' [-Wmissing-field-initializers]
+  459 |     struct ble_gap_adv_params advertisingParams = {0};
+      |                                                     ^
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:459:53: warning: missing initializer for member 'ble_gap_adv_params::itvl_min' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:459:53: warning: missing initializer for member 'ble_gap_adv_params::itvl_max' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:459:53: warning: missing initializer for member 'ble_gap_adv_params::channel_map' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:459:53: warning: missing initializer for member 'ble_gap_adv_params::filter_policy' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:459:53: warning: missing initializer for member 'ble_gap_adv_params::high_duty_cycle' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp: In static member function 'static ble_gatt_svc_def* BleAdvertiser::createServiceDefinitions(const std::vector<BleService>&)':
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:566:65: warning: missing initializer for member 'ble_gatt_svc_def::uuid' [-Wmissing-field-initializers]
+  566 |     gattServices[servicesLength] = (struct ble_gatt_svc_def){ 0 };
+      |                                                                 ^
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:566:65: warning: missing initializer for member 'ble_gatt_svc_def::includes' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:566:65: warning: missing initializer for member 'ble_gatt_svc_def::characteristics' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp: In static member function 'static ble_gatt_svc_def BleAdvertiser::createServiceDefinition(BleService)':
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:576:5: warning: missing initializer for member 'ble_gatt_svc_def::includes' [-Wmissing-field-initializers]
+  576 |     };
+      |     ^
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp: In static member function 'static ble_gatt_chr_def* BleAdvertiser::createCharacteristicDefinitions(std::vector<BleCharacteristic>)':
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:597:79: warning: missing initializer for member 'ble_gatt_chr_def::access_cb' [-Wmissing-field-initializers]
+  597 |     gattCharacteristics[characteristicsLength] = (struct ble_gatt_chr_def){ 0 };
+      |                                                                               ^
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:597:79: warning: missing initializer for member 'ble_gatt_chr_def::arg' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:597:79: warning: missing initializer for member 'ble_gatt_chr_def::descriptors' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:597:79: warning: missing initializer for member 'ble_gatt_chr_def::flags' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:597:79: warning: missing initializer for member 'ble_gatt_chr_def::min_key_size' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:597:79: warning: missing initializer for member 'ble_gatt_chr_def::val_handle' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:597:79: warning: missing initializer for member 'ble_gatt_chr_def::cpfd' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp: In static member function 'static ble_gatt_chr_def BleAdvertiser::createCharacteristicDefinition(BleCharacteristic)':
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:619:5: warning: missing initializer for member 'ble_gatt_chr_def::arg' [-Wmissing-field-initializers]
+  619 |     };
+      |     ^
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:619:5: warning: missing initializer for member 'ble_gatt_chr_def::descriptors' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:619:5: warning: missing initializer for member 'ble_gatt_chr_def::min_key_size' [-Wmissing-field-initializers]
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/src/ble_advertiser.cpp:619:5: warning: missing initializer for member 'ble_gatt_chr_def::cpfd' [-Wmissing-field-initializers]
+[5/10] Building CXX object esp-idf/main/CMakeFiles/__idf_main.dir/main.cpp.obj
+FAILED: esp-idf/main/CMakeFiles/__idf_main.dir/main.cpp.obj 
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/bin/xtensa-esp32-elf-g++ -DESP_PLATFORM -DIDF_VER=\"v5.4-dev-4076-gce6085349f\" -DMBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\" -DSOC_MMU_PAGE_SIZE=CONFIG_MMU_PAGE_SIZE -DSOC_XTAL_FREQ_MHZ=CONFIG_XTAL_FREQ -DUNITY_INCLUDE_CONFIG_H -D_GLIBCXX_HAVE_POSIX_SEMAPHORE -D_GLIBCXX_USE_POSIX_SEMAPHORE -D_GNU_SOURCE -D_POSIX_READER_WRITER_LOCKS -I/home/montana/repositories/esp32-projects/cpp/smart-plug/build/config -I/home/montana/repositories/esp32-projects/cpp/smart-plug/main/include -I/home/montana/esp/esp-idf/components/newlib/platform_include -I/home/montana/esp/esp-idf/components/freertos/config/include -I/home/montana/esp/esp-idf/components/freertos/config/include/freertos -I/home/montana/esp/esp-idf/components/freertos/config/xtensa/include -I/home/montana/esp/esp-idf/components/freertos/FreeRTOS-Kernel/include -I/home/montana/esp/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/include -I/home/montana/esp/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos -I/home/montana/esp/esp-idf/components/freertos/esp_additions/include -I/home/montana/esp/esp-idf/components/esp_hw_support/include -I/home/montana/esp/esp-idf/components/esp_hw_support/include/soc -I/home/montana/esp/esp-idf/components/esp_hw_support/include/soc/esp32 -I/home/montana/esp/esp-idf/components/esp_hw_support/dma/include -I/home/montana/esp/esp-idf/components/esp_hw_support/ldo/include -I/home/montana/esp/esp-idf/components/esp_hw_support/debug_probe/include -I/home/montana/esp/esp-idf/components/esp_hw_support/port/esp32/. -I/home/montana/esp/esp-idf/components/esp_hw_support/port/esp32/include -I/home/montana/esp/esp-idf/components/heap/include -I/home/montana/esp/esp-idf/components/heap/tlsf -I/home/montana/esp/esp-idf/components/log/include -I/home/montana/esp/esp-idf/components/soc/include -I/home/montana/esp/esp-idf/components/soc/esp32 -I/home/montana/esp/esp-idf/components/soc/esp32/include -I/home/montana/esp/esp-idf/components/soc/esp32/register -I/home/montana/esp/esp-idf/components/hal/platform_port/include -I/home/montana/esp/esp-idf/components/hal/esp32/include -I/home/montana/esp/esp-idf/components/hal/include -I/home/montana/esp/esp-idf/components/esp_rom/include -I/home/montana/esp/esp-idf/components/esp_rom/esp32/include -I/home/montana/esp/esp-idf/components/esp_rom/esp32/include/esp32 -I/home/montana/esp/esp-idf/components/esp_rom/esp32 -I/home/montana/esp/esp-idf/components/esp_common/include -I/home/montana/esp/esp-idf/components/esp_system/include -I/home/montana/esp/esp-idf/components/esp_system/port/soc -I/home/montana/esp/esp-idf/components/esp_system/port/include/private -I/home/montana/esp/esp-idf/components/xtensa/esp32/include -I/home/montana/esp/esp-idf/components/xtensa/include -I/home/montana/esp/esp-idf/components/xtensa/deprecated_include -I/home/montana/esp/esp-idf/components/lwip/include -I/home/montana/esp/esp-idf/components/lwip/include/apps -I/home/montana/esp/esp-idf/components/lwip/include/apps/sntp -I/home/montana/esp/esp-idf/components/lwip/lwip/src/include -I/home/montana/esp/esp-idf/components/lwip/port/include -I/home/montana/esp/esp-idf/components/lwip/port/freertos/include -I/home/montana/esp/esp-idf/components/lwip/port/esp32xx/include -I/home/montana/esp/esp-idf/components/lwip/port/esp32xx/include/arch -I/home/montana/esp/esp-idf/components/lwip/port/esp32xx/include/sys -I/home/montana/esp/esp-idf/components/esp_driver_gpio/include -I/home/montana/esp/esp-idf/components/esp_pm/include -I/home/montana/esp/esp-idf/components/mbedtls/port/include -I/home/montana/esp/esp-idf/components/mbedtls/mbedtls/include -I/home/montana/esp/esp-idf/components/mbedtls/mbedtls/library -I/home/montana/esp/esp-idf/components/mbedtls/esp_crt_bundle/include -I/home/montana/esp/esp-idf/components/mbedtls/mbedtls/3rdparty/everest/include -I/home/montana/esp/esp-idf/components/mbedtls/mbedtls/3rdparty/p256-m -I/home/montana/esp/esp-idf/components/mbedtls/mbedtls/3rdparty/p256-m/p256-m -I/home/montana/esp/esp-idf/components/esp_app_format/include -I/home/montana/esp/esp-idf/components/esp_bootloader_format/include -I/home/montana/esp/esp-idf/components/app_update/include -I/home/montana/esp/esp-idf/components/bootloader_support/include -I/home/montana/esp/esp-idf/components/bootloader_support/bootloader_flash/include -I/home/montana/esp/esp-idf/components/esp_partition/include -I/home/montana/esp/esp-idf/components/efuse/include -I/home/montana/esp/esp-idf/components/efuse/esp32/include -I/home/montana/esp/esp-idf/components/esp_mm/include -I/home/montana/esp/esp-idf/components/spi_flash/include -I/home/montana/esp/esp-idf/components/esp_security/include -I/home/montana/esp/esp-idf/components/pthread/include -I/home/montana/esp/esp-idf/components/esp_timer/include -I/home/montana/esp/esp-idf/components/esp_driver_gptimer/include -I/home/montana/esp/esp-idf/components/esp_ringbuf/include -I/home/montana/esp/esp-idf/components/esp_driver_uart/include -I/home/montana/esp/esp-idf/components/vfs/include -I/home/montana/esp/esp-idf/components/app_trace/include -I/home/montana/esp/esp-idf/components/esp_event/include -I/home/montana/esp/esp-idf/components/nvs_flash/include -I/home/montana/esp/esp-idf/components/esp_driver_pcnt/include -I/home/montana/esp/esp-idf/components/esp_driver_spi/include -I/home/montana/esp/esp-idf/components/esp_driver_mcpwm/include -I/home/montana/esp/esp-idf/components/esp_driver_ana_cmpr/include -I/home/montana/esp/esp-idf/components/esp_driver_i2s/include -I/home/montana/esp/esp-idf/components/sdmmc/include -I/home/montana/esp/esp-idf/components/esp_driver_sdmmc/include -I/home/montana/esp/esp-idf/components/esp_driver_sdspi/include -I/home/montana/esp/esp-idf/components/esp_driver_sdio/include -I/home/montana/esp/esp-idf/components/esp_driver_dac/include -I/home/montana/esp/esp-idf/components/esp_driver_rmt/include -I/home/montana/esp/esp-idf/components/esp_driver_tsens/include -I/home/montana/esp/esp-idf/components/esp_driver_sdm/include -I/home/montana/esp/esp-idf/components/esp_driver_i2c/include -I/home/montana/esp/esp-idf/components/esp_driver_ledc/include -I/home/montana/esp/esp-idf/components/esp_driver_parlio/include -I/home/montana/esp/esp-idf/components/esp_driver_usb_serial_jtag/include -I/home/montana/esp/esp-idf/components/driver/deprecated -I/home/montana/esp/esp-idf/components/driver/i2c/include -I/home/montana/esp/esp-idf/components/driver/touch_sensor/include -I/home/montana/esp/esp-idf/components/driver/twai/include -I/home/montana/esp/esp-idf/components/driver/touch_sensor/esp32/include -I/home/montana/esp/esp-idf/components/esp_phy/include -I/home/montana/esp/esp-idf/components/esp_phy/esp32/include -I/home/montana/esp/esp-idf/components/esp_vfs_console/include -I/home/montana/esp/esp-idf/components/esp_netif/include -I/home/montana/esp/esp-idf/components/wpa_supplicant/include -I/home/montana/esp/esp-idf/components/wpa_supplicant/port/include -I/home/montana/esp/esp-idf/components/wpa_supplicant/esp_supplicant/include -I/home/montana/esp/esp-idf/components/esp_coex/include -I/home/montana/esp/esp-idf/components/esp_wifi/include -I/home/montana/esp/esp-idf/components/esp_wifi/wifi_apps/include -I/home/montana/esp/esp-idf/components/esp_wifi/wifi_apps/nan_app/include -I/home/montana/esp/esp-idf/components/esp_wifi/include/local -I/home/montana/esp/esp-idf/components/bt/include/esp32/include -I/home/montana/esp/esp-idf/components/bt/common/osi/include -I/home/montana/esp/esp-idf/components/bt/common/api/include/api -I/home/montana/esp/esp-idf/components/bt/common/btc/profile/esp/blufi/include -I/home/montana/esp/esp-idf/components/bt/common/btc/profile/esp/include -I/home/montana/esp/esp-idf/components/bt/common/hci_log/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/ans/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/bas/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/dis/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/gap/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/gatt/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/hr/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/htp/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/ias/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/ipss/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/lls/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/prox/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/cts/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/tps/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/hid/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/sps/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/services/cte/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/util/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/store/ram/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/store/config/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/port/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/transport/include -I/home/montana/esp/esp-idf/components/bt/porting/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/npl/freertos/include -I/home/montana/esp/esp-idf/components/bt/host/nimble/esp-hci/include -I/home/montana/esp/esp-idf/components/unity/include -I/home/montana/esp/esp-idf/components/unity/unity/src -I/home/montana/esp/esp-idf/components/cmock/CMock/src -I/home/montana/esp/esp-idf/components/console -I/home/montana/esp/esp-idf/components/http_parser -I/home/montana/esp/esp-idf/components/esp-tls -I/home/montana/esp/esp-idf/components/esp-tls/esp-tls-crypto -I/home/montana/esp/esp-idf/components/esp_adc/include -I/home/montana/esp/esp-idf/components/esp_adc/interface -I/home/montana/esp/esp-idf/components/esp_adc/esp32/include -I/home/montana/esp/esp-idf/components/esp_adc/deprecated/include -I/home/montana/esp/esp-idf/components/esp_driver_isp/include -I/home/montana/esp/esp-idf/components/esp_driver_cam/include -I/home/montana/esp/esp-idf/components/esp_driver_cam/interface -I/home/montana/esp/esp-idf/components/esp_driver_jpeg/include -I/home/montana/esp/esp-idf/components/esp_driver_ppa/include -I/home/montana/esp/esp-idf/components/esp_eth/include -I/home/montana/esp/esp-idf/components/esp_gdbstub/include -I/home/montana/esp/esp-idf/components/esp_hid/include -I/home/montana/esp/esp-idf/components/tcp_transport/include -I/home/montana/esp/esp-idf/components/esp_http_client/include -I/home/montana/esp/esp-idf/components/esp_http_server/include -I/home/montana/esp/esp-idf/components/esp_https_ota/include -I/home/montana/esp/esp-idf/components/esp_https_server/include -I/home/montana/esp/esp-idf/components/esp_psram/include -I/home/montana/esp/esp-idf/components/esp_lcd/include -I/home/montana/esp/esp-idf/components/esp_lcd/interface -I/home/montana/esp/esp-idf/components/protobuf-c/protobuf-c -I/home/montana/esp/esp-idf/components/protocomm/include/common -I/home/montana/esp/esp-idf/components/protocomm/include/security -I/home/montana/esp/esp-idf/components/protocomm/include/transports -I/home/montana/esp/esp-idf/components/protocomm/include/crypto/srp6a -I/home/montana/esp/esp-idf/components/protocomm/proto-c -I/home/montana/esp/esp-idf/components/esp_local_ctrl/include -I/home/montana/esp/esp-idf/components/espcoredump/include -I/home/montana/esp/esp-idf/components/espcoredump/include/port/xtensa -I/home/montana/esp/esp-idf/components/wear_levelling/include -I/home/montana/esp/esp-idf/components/fatfs/diskio -I/home/montana/esp/esp-idf/components/fatfs/src -I/home/montana/esp/esp-idf/components/fatfs/vfs -I/home/montana/esp/esp-idf/components/idf_test/include -I/home/montana/esp/esp-idf/components/idf_test/include/esp32 -I/home/montana/esp/esp-idf/components/ieee802154/include -I/home/montana/esp/esp-idf/components/json/cJSON -I/home/montana/esp/esp-idf/components/mqtt/esp-mqtt/include -I/home/montana/esp/esp-idf/components/nvs_sec_provider/include -I/home/montana/esp/esp-idf/components/perfmon/include -I/home/montana/esp/esp-idf/components/rt/include -I/home/montana/esp/esp-idf/components/spiffs/include -I/home/montana/esp/esp-idf/components/wifi_provisioning/include -mlongcalls -Wno-frame-address  -fno-builtin-memcpy -fno-builtin-memset -fno-builtin-bzero -fno-builtin-stpcpy -fno-builtin-strncpy -fdiagnostics-color=always -ffunction-sections -fdata-sections -Wall -Werror=all -Wno-error=unused-function -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=deprecated-declarations -Wextra -Wno-error=extra -Wno-unused-parameter -Wno-sign-compare -Wno-enum-conversion -gdwarf-4 -ggdb -Og -fno-shrink-wrap -fmacro-prefix-map=/home/montana/repositories/esp32-projects/cpp/smart-plug=. -fmacro-prefix-map=/home/montana/esp/esp-idf=/IDF -fstrict-volatile-bitfields -fno-jump-tables -fno-tree-switch-conversion -std=gnu++2b -fno-exceptions -fno-rtti -fuse-cxa-atexit -MD -MT esp-idf/main/CMakeFiles/__idf_main.dir/main.cpp.obj -MF esp-idf/main/CMakeFiles/__idf_main.dir/main.cpp.obj.d -o esp-idf/main/CMakeFiles/__idf_main.dir/main.cpp.obj -c /home/montana/repositories/esp32-projects/cpp/smart-plug/main/main.cpp
+In file included from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:59,
+                 from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/algorithm:61,
+                 from /home/montana/repositories/esp32-projects/cpp/smart-plug/main/include/wifi_service.h:9,
+                 from /home/montana/repositories/esp32-projects/cpp/smart-plug/main/main.cpp:9:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:408:41: error: macro "max" passed 3 arguments, but takes just 2
+  408 |     max(const _Tp&, const _Tp&, _Compare);
+      |                                         ^
+In file included from /home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/include/nimble/ble.h:26,
+                 from /home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/include/nimble/hci_common.h:30,
+                 from /home/montana/esp/esp-idf/components/bt/host/nimble/nimble/nimble/host/include/host/ble_hs.h:30,
+                 from /home/montana/repositories/esp32-projects/cpp/smart-plug/main/include/ble_advertiser.h:18,
+                 from /home/montana/repositories/esp32-projects/cpp/smart-plug/main/main.cpp:6:
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:421:41: error: macro "min" passed 3 arguments, but takes just 2
+  421 |     min(const _Tp&, const _Tp&, _Compare);
+      |                                         ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:449:30: error: macro "min" requires 2 arguments, but only 1 given
+  449 |     min(initializer_list<_Tp>);
+      |                              ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:459:30: error: macro "max" requires 2 arguments, but only 1 given
+  459 |     max(initializer_list<_Tp>);
+      |                              ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+In file included from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:65:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:57:21: error: macro "min" requires 2 arguments, but only 1 given
+   57 |         { _Gen::min() } -> same_as<invoke_result_t<_Gen&>>;
+      |                     ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:58:21: error: macro "max" requires 2 arguments, but only 1 given
+   58 |         { _Gen::max() } -> same_as<invoke_result_t<_Gen&>>;
+      |                     ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:59:43: error: macro "min" requires 2 arguments, but only 1 given
+   59 |         requires bool_constant<(_Gen::min() < _Gen::max())>::value;
+      |                                           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:59:57: error: macro "max" requires 2 arguments, but only 1 given
+   59 |         requires bool_constant<(_Gen::min() < _Gen::max())>::value;
+      |                                                         ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:188:11: error: macro "min" requires 2 arguments, but only 1 given
+  188 |       min() const
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:195:11: error: macro "max" requires 2 arguments, but only 1 given
+  195 |       max() const
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:295:72: error: macro "min" requires 2 arguments, but only 1 given
+  295 |         constexpr __uctype __urngmin = _UniformRandomBitGenerator::min();
+      |                                                                        ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:296:72: error: macro "max" requires 2 arguments, but only 1 given
+  296 |         constexpr __uctype __urngmax = _UniformRandomBitGenerator::max();
+      |                                                                        ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:390:35: error: macro "min" requires 2 arguments, but only 1 given
+  390 |         static_assert( __urng.min() < __urng.max(),
+      |                                   ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:390:50: error: macro "max" requires 2 arguments, but only 1 given
+  390 |         static_assert( __urng.min() < __urng.max(),
+      |                                                  ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:393:51: error: macro "min" requires 2 arguments, but only 1 given
+  393 |         constexpr __uctype __urngmin = __urng.min();
+      |                                                   ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:394:51: error: macro "max" requires 2 arguments, but only 1 given
+  394 |         constexpr __uctype __urngmax = __urng.max();
+      |                                                   ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:3646:66: error: macro "min" passed 3 arguments, but takes just 2
+ 3646 |       return std::min(std::max(__val, __lo, __comp), __hi, __comp);
+      |                                                                  ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:3719:45: error: macro "max" requires 2 arguments, but only 1 given
+ 3719 |       const __uc_type __urngrange = __g.max() - __g.min();
+      |                                             ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:3719:57: error: macro "min" requires 2 arguments, but only 1 given
+ 3719 |       const __uc_type __urngrange = __g.max() - __g.min();
+      |                                                         ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5685:34: error: macro "min" requires 2 arguments, but only 1 given
+ 5685 |     min(initializer_list<_Tp> __l)
+      |                                  ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5705:34: error: macro "max" requires 2 arguments, but only 1 given
+ 5705 |     max(initializer_list<_Tp> __l)
+      |                                  ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5776:45: error: macro "max" requires 2 arguments, but only 1 given
+ 5776 |       const __uc_type __urngrange = __g.max() - __g.min();
+      |                                             ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5776:57: error: macro "min" requires 2 arguments, but only 1 given
+ 5776 |       const __uc_type __urngrange = __g.max() - __g.min();
+      |                                                         ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+In file included from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:39,
+                 from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/condition_variable:40,
+                 from /home/montana/repositories/esp32-projects/cpp/smart-plug/main/include/wifi_service.h:11:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:317:11: error: macro "min" requires 2 arguments, but only 1 given
+  317 |       min() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:321:11: error: macro "max" requires 2 arguments, but only 1 given
+  321 |       max() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:389:11: error: macro "min" requires 2 arguments, but only 1 given
+  389 |       min() _GLIBCXX_USE_NOEXCEPT { return false; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:392:11: error: macro "max" requires 2 arguments, but only 1 given
+  392 |       max() _GLIBCXX_USE_NOEXCEPT { return true; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:396:38: error: macro "min" requires 2 arguments, but only 1 given
+  396 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:458:11: error: macro "min" requires 2 arguments, but only 1 given
+  458 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min(char); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:461:11: error: macro "max" requires 2 arguments, but only 1 given
+  461 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max(char); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:465:38: error: macro "min" requires 2 arguments, but only 1 given
+  465 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:525:11: error: macro "min" requires 2 arguments, but only 1 given
+  525 |       min() _GLIBCXX_USE_NOEXCEPT { return -__SCHAR_MAX__ - 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:528:11: error: macro "max" requires 2 arguments, but only 1 given
+  528 |       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:532:38: error: macro "min" requires 2 arguments, but only 1 given
+  532 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:595:11: error: macro "min" requires 2 arguments, but only 1 given
+  595 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:598:11: error: macro "max" requires 2 arguments, but only 1 given
+  598 |       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__ * 2U + 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:602:38: error: macro "min" requires 2 arguments, but only 1 given
+  602 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:668:11: error: macro "min" requires 2 arguments, but only 1 given
+  668 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min (wchar_t); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:671:11: error: macro "max" requires 2 arguments, but only 1 given
+  671 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max (wchar_t); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:675:38: error: macro "min" requires 2 arguments, but only 1 given
+  675 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:737:11: error: macro "min" requires 2 arguments, but only 1 given
+  737 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min (char8_t); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:740:11: error: macro "max" requires 2 arguments, but only 1 given
+  740 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max (char8_t); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:743:51: error: macro "min" requires 2 arguments, but only 1 given
+  743 |       lowest() _GLIBCXX_USE_NOEXCEPT { return min(); }
+      |                                                   ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:802:11: error: macro "min" requires 2 arguments, but only 1 given
+  802 |       min() noexcept { return __glibcxx_min (char16_t); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:805:11: error: macro "max" requires 2 arguments, but only 1 given
+  805 |       max() noexcept { return __glibcxx_max (char16_t); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:808:38: error: macro "min" requires 2 arguments, but only 1 given
+  808 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:863:11: error: macro "min" requires 2 arguments, but only 1 given
+  863 |       min() noexcept { return __glibcxx_min (char32_t); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:866:11: error: macro "max" requires 2 arguments, but only 1 given
+  866 |       max() noexcept { return __glibcxx_max (char32_t); }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:869:38: error: macro "min" requires 2 arguments, but only 1 given
+  869 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:925:11: error: macro "min" requires 2 arguments, but only 1 given
+  925 |       min() _GLIBCXX_USE_NOEXCEPT { return -__SHRT_MAX__ - 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:928:11: error: macro "max" requires 2 arguments, but only 1 given
+  928 |       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:932:38: error: macro "min" requires 2 arguments, but only 1 given
+  932 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:992:11: error: macro "min" requires 2 arguments, but only 1 given
+  992 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:995:11: error: macro "max" requires 2 arguments, but only 1 given
+  995 |       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__ * 2U + 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:999:38: error: macro "min" requires 2 arguments, but only 1 given
+  999 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1065:11: error: macro "min" requires 2 arguments, but only 1 given
+ 1065 |       min() _GLIBCXX_USE_NOEXCEPT { return -__INT_MAX__ - 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1068:11: error: macro "max" requires 2 arguments, but only 1 given
+ 1068 |       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1072:38: error: macro "min" requires 2 arguments, but only 1 given
+ 1072 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1132:11: error: macro "min" requires 2 arguments, but only 1 given
+ 1132 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1135:11: error: macro "max" requires 2 arguments, but only 1 given
+ 1135 |       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__ * 2U + 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1139:38: error: macro "min" requires 2 arguments, but only 1 given
+ 1139 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1204:11: error: macro "min" requires 2 arguments, but only 1 given
+ 1204 |       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_MAX__ - 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1207:11: error: macro "max" requires 2 arguments, but only 1 given
+ 1207 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1211:38: error: macro "min" requires 2 arguments, but only 1 given
+ 1211 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1271:11: error: macro "min" requires 2 arguments, but only 1 given
+ 1271 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1274:11: error: macro "max" requires 2 arguments, but only 1 given
+ 1274 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__ * 2UL + 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1278:38: error: macro "min" requires 2 arguments, but only 1 given
+ 1278 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1344:11: error: macro "min" requires 2 arguments, but only 1 given
+ 1344 |       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_LONG_MAX__ - 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1347:11: error: macro "max" requires 2 arguments, but only 1 given
+ 1347 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1351:38: error: macro "min" requires 2 arguments, but only 1 given
+ 1351 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1414:11: error: macro "min" requires 2 arguments, but only 1 given
+ 1414 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1417:11: error: macro "max" requires 2 arguments, but only 1 given
+ 1417 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__ * 2ULL + 1; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1421:38: error: macro "min" requires 2 arguments, but only 1 given
+ 1421 |       lowest() noexcept { return min(); }
+      |                                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1675:11: error: macro "min" requires 2 arguments, but only 1 given
+ 1675 |       min() _GLIBCXX_USE_NOEXCEPT { return __FLT_MIN__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1678:11: error: macro "max" requires 2 arguments, but only 1 given
+ 1678 |       max() _GLIBCXX_USE_NOEXCEPT { return __FLT_MAX__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1750:11: error: macro "min" requires 2 arguments, but only 1 given
+ 1750 |       min() _GLIBCXX_USE_NOEXCEPT { return __DBL_MIN__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1753:11: error: macro "max" requires 2 arguments, but only 1 given
+ 1753 |       max() _GLIBCXX_USE_NOEXCEPT { return __DBL_MAX__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1825:11: error: macro "min" requires 2 arguments, but only 1 given
+ 1825 |       min() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MIN__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1828:11: error: macro "max" requires 2 arguments, but only 1 given
+ 1828 |       max() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MAX__; }
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1989:1: error: macro "min" requires 2 arguments, but only 1 given
+ 1989 | __glibcxx_float_n(32)
+      | ^~~~~~~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1989:1: error: macro "max" requires 2 arguments, but only 1 given
+ 1989 | __glibcxx_float_n(32)
+      | ^~~~~~~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1992:1: error: macro "min" requires 2 arguments, but only 1 given
+ 1992 | __glibcxx_float_n(64)
+      | ^~~~~~~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1992:1: error: macro "max" requires 2 arguments, but only 1 given
+ 1992 | __glibcxx_float_n(64)
+      | ^~~~~~~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:502:13: error: macro "max" requires 2 arguments, but only 1 given
+  502 |         max() noexcept
+      |             ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:503:44: error: macro "max" requires 2 arguments, but only 1 given
+  503 |         { return numeric_limits<_Rep>::max(); }
+      |                                            ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:506:13: error: macro "min" requires 2 arguments, but only 1 given
+  506 |         min() noexcept
+      |             ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:677:13: error: macro "min" requires 2 arguments, but only 1 given
+  677 |         min() noexcept
+      |             ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:678:53: error: macro "min" requires 2 arguments, but only 1 given
+  678 |         { return duration(duration_values<rep>::min()); }
+      |                                                     ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:681:13: error: macro "max" requires 2 arguments, but only 1 given
+  681 |         max() noexcept
+      |             ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:682:53: error: macro "max" requires 2 arguments, but only 1 given
+  682 |         { return duration(duration_values<rep>::max()); }
+      |                                                     ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:993:13: error: macro "min" requires 2 arguments, but only 1 given
+  993 |         min() noexcept
+      |             ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:994:43: error: macro "min" requires 2 arguments, but only 1 given
+  994 |         { return time_point(duration::min()); }
+      |                                           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:997:13: error: macro "max" requires 2 arguments, but only 1 given
+  997 |         max() noexcept
+      |             ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:998:43: error: macro "max" requires 2 arguments, but only 1 given
+  998 |         { return time_point(duration::max()); }
+      |                                           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1232:49: error: macro "min" requires 2 arguments, but only 1 given
+ 1232 |       static_assert(system_clock::duration::min()
+      |                                                 ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1374:37: error: macro "min" requires 2 arguments, but only 1 given
+ 1374 |     operator""min(long double __mins)
+      |                                     ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1380:21: error: macro "min" requires 2 arguments, but only 1 given
+ 1380 |       operator""min()
+      |                     ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:9: note: macro "min" defined here
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |         ^~~
+In file included from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/semaphore_base.h:38,
+                 from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/semaphore:37,
+                 from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/stop_token:42,
+                 from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/condition_variable:49:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/atomic_timed_wait.h:229:76: error: macro "max" requires 2 arguments, but only 1 given
+  229 |                                       __deadline = _Clock::time_point::max(),
+      |                                                                            ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/semaphore:66:11: error: macro "max" requires 2 arguments, but only 1 given
+   66 |       max() noexcept
+      |           ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:9: note: macro "max" defined here
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:403:5: error: expected unqualified-id before 'const'
+  403 |     max(const _Tp&, const _Tp&);
+      |     ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:403:5: error: expected ')' before 'const'
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:20: note: to match this '('
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |                    ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:403:5: error: expected ')' before 'const'
+  403 |     max(const _Tp&, const _Tp&);
+      |     ^~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:19: note: to match this '('
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:408:5: error: 'template<class _Tp, class _Compare> constexpr const _Tp& std::max' conflicts with a previous declaration
+  408 |     max(const _Tp&, const _Tp&, _Compare);
+      |     ^~~
+In file included from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/vector:62,
+                 from /home/montana/repositories/esp32-projects/cpp/smart-plug/main/main.cpp:1:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algobase.h:303:5: note: previous declaration 'namespace std { }::max'
+  303 |     max(const _Tp& __a, const _Tp& __b, _Compare __comp)
+      |     ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:416:5: error: expected unqualified-id before 'const'
+  416 |     min(const _Tp&, const _Tp&);
+      |     ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:416:5: error: expected ')' before 'const'
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:20: note: to match this '('
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                    ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:416:5: error: expected ')' before 'const'
+  416 |     min(const _Tp&, const _Tp&);
+      |     ^~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: note: to match this '('
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:421:5: error: 'template<class _Tp, class _Compare> constexpr const _Tp& std::min' conflicts with a previous declaration
+  421 |     min(const _Tp&, const _Tp&, _Compare);
+      |     ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algobase.h:281:5: note: previous declaration 'namespace std { }::min'
+  281 |     min(const _Tp& __a, const _Tp& __b, _Compare __comp)
+      |     ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:449:5: error: 'template<class _Tp> constexpr const _Tp std::min' conflicts with a previous declaration
+  449 |     min(initializer_list<_Tp>);
+      |     ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algobase.h:281:5: note: previous declaration 'namespace std { }::min'
+  281 |     min(const _Tp& __a, const _Tp& __b, _Compare __comp)
+      |     ^~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:22: error: invalid declarator before ')' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:23: error: expected ')' before '<' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ~   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/algorithmfwd.h:459:5: error: 'template<class _Tp> constexpr const _Tp std::max' conflicts with a previous declaration
+  459 |     max(initializer_list<_Tp>);
+      |     ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algobase.h:303:5: note: previous declaration 'namespace std { }::max'
+  303 |     max(const _Tp& __a, const _Tp& __b, _Compare __comp)
+      |     ^~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:22: error: invalid declarator before ')' token
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |                      ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:23: error: expected ')' before '>' token
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |                   ~   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:188:7: error: expected ';' at end of member declaration
+  188 |       min() const
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:189:7: error: expected unqualified-id before '{' token
+  189 |       { return this->a(); }
+      |       ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:195:7: error: expected ';' at end of member declaration
+  195 |       max() const
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/uniform_int_dist.h:196:7: error: expected unqualified-id before '{' token
+  196 |       { return this->b(); }
+      |       ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h: In function 'void std::__inplace_merge(_BidirectionalIterator, _BidirectionalIterator, _BidirectionalIterator, _Compare)':
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h: In function 'void std::__merge_sort_loop(_RandomAccessIterator1, _RandomAccessIterator1, _RandomAccessIterator2, _Distance, _Compare)':
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h: In function 'constexpr const _Tp& std::clamp(const _Tp&, const _Tp&, const _Tp&)':
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:19: error: expected unqualified-id before '(' token
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |                   ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:19: error: expected unqualified-id before '(' token
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h: At global scope:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5685:5: error: 'template<class _Tp> constexpr const _Tp std::min' conflicts with a previous declaration
+ 5685 |     min(initializer_list<_Tp> __l)
+      |     ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algobase.h:281:5: note: previous declaration 'namespace std { }::min'
+  281 |     min(const _Tp& __a, const _Tp& __b, _Compare __comp)
+      |     ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5687:61: error: expected primary-expression before ';' token
+ 5687 |       __glibcxx_requires_irreflexive(__l.begin(), __l.end());
+      |                                                             ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5687:61: error: expected '}' before ';' token
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5686:5: note: to match this '{'
+ 5686 |     {
+      |     ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5688:7: error: expected unqualified-id before 'return'
+ 5688 |       return *_GLIBCXX_STD_A::__min_element(__l.begin(), __l.end(),
+      |       ^~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5695:5: error: expected ')' before '<' token
+ 5695 |     min(initializer_list<_Tp> __l, _Compare __comp)
+      |     ^~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:20: note: to match this '('
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                    ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5695:5: error: expected ')' before '<' token
+ 5695 |     min(initializer_list<_Tp> __l, _Compare __comp)
+      |     ^~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: note: to match this '('
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5707:61: error: expected primary-expression before ';' token
+ 5707 |       __glibcxx_requires_irreflexive(__l.begin(), __l.end());
+      |                                                             ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5707:61: error: expected '}' before ';' token
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5706:5: note: to match this '{'
+ 5706 |     {
+      |     ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5708:7: error: expected unqualified-id before 'return'
+ 5708 |       return *_GLIBCXX_STD_A::__max_element(__l.begin(), __l.end(),
+      |       ^~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5710:5: error: expected declaration before '}' token
+ 5710 |     }
+      |     ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5715:5: error: expected ')' before '<' token
+ 5715 |     max(initializer_list<_Tp> __l, _Compare __comp)
+      |     ^~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:20: note: to match this '('
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |                    ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5715:5: error: expected ')' before '<' token
+ 5715 |     max(initializer_list<_Tp> __l, _Compare __comp)
+      |     ^~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:38:19: note: to match this '('
+   38 | #define max(a, b) ((a)>(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5728:61: error: 'input_iterator_tag' has not been declared
+ 5728 |     __sample(_InputIterator __first, _InputIterator __last, input_iterator_tag,
+      |                                                             ^~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5729:43: error: 'random_access_iterator_tag' has not been declared
+ 5729 |              _RandomAccessIterator __out, random_access_iterator_tag,
+      |                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h: In function '_RandomAccessIterator __sample(_InputIterator, _InputIterator, int, _RandomAccessIterator, int, _Size, _UniformRandomBitGenerator&&)':
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5732:30: error: 'uniform_int_distribution' does not name a type
+ 5732 |       using __distrib_type = uniform_int_distribution<_Size>;
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5733:37: error: '__distrib_type' has not been declared
+ 5733 |       using __param_type = typename __distrib_type::param_type;
+      |                                     ^~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5734:7: error: '__distrib_type' was not declared in this scope
+ 5734 |       __distrib_type __d{};
+      |       ^~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5744:37: error: '__param_type' was not declared in this scope
+ 5744 |           const auto __k = __d(__g, __param_type{0, __pop_sz});
+      |                                     ^~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h: At global scope:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5756:14: error: 'forward_iterator_tag' has not been declared
+ 5756 |              forward_iterator_tag,
+      |              ^~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h: In function '_OutputIterator __sample(_ForwardIterator, _ForwardIterator, int, _OutputIterator, _Cat, _Size, _UniformRandomBitGenerator&&)':
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5760:30: error: 'uniform_int_distribution' does not name a type
+ 5760 |       using __distrib_type = uniform_int_distribution<_Size>;
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5761:37: error: '__distrib_type' has not been declared
+ 5761 |       using __param_type = typename __distrib_type::param_type;
+      |                                     ^~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5762:22: error: 'make_unsigned_t' does not name a type
+ 5762 |       using _USize = make_unsigned_t<_Size>;
+      |                      ^~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5763:20: error: 'remove_reference_t' does not name a type
+ 5763 |       using _Gen = remove_reference_t<_UniformRandomBitGenerator>;
+      |                    ^~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5764:25: error: 'common_type_t' does not name a type
+ 5764 |       using __uc_type = common_type_t<typename _Gen::result_type, _USize>;
+      |                         ^~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5769:7: error: '__distrib_type' was not declared in this scope
+ 5769 |       __distrib_type __d{};
+      |       ^~~~~~~~~~~~~~
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5776:13: error: '__uc_type' does not name a type
+ 5776 |       const __uc_type __urngrange = __g.max() - __g.min();
+      |             ^~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5777:11: error: '__urngrange' was not declared in this scope
+ 5777 |       if (__urngrange / __uc_type(__unsampled_sz) >= __uc_type(__unsampled_sz))
+      |           ^~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5783:21: error: 'pair' does not name a type
+ 5783 |               const pair<_Size, _Size> __p =
+      |                     ^~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5787:19: error: '__p' was not declared in this scope; did you mean '__n'?
+ 5787 |               if (__p.first < __n)
+      |                   ^~~
+      |                   __n
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5798:19: error: '__p' was not declared in this scope; did you mean '__n'?
+ 5798 |               if (__p.second < __n)
+      |                   ^~~
+      |                   __n
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5811:22: error: '__param_type' was not declared in this scope
+ 5811 |         if (__d(__g, __param_type{0, --__unsampled_sz}) < __n)
+      |                      ^~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h: In function '_SampleIterator sample(_PopulationIterator, _PopulationIterator, _SampleIterator, _Distance, _UniformRandomBitGenerator&&)':
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5835:43: error: 'forward_iterator_tag' was not declared in this scope; did you mean 'std::forward_iterator_tag'?
+ 5835 |           __or_<is_convertible<__pop_cat, forward_iterator_tag>,
+      |                                           ^~~~~~~~~~~~~~~~~~~~
+      |                                           std::forward_iterator_tag
+In file included from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algobase.h:65:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_iterator_base_types.h:99:10: note: 'std::forward_iterator_tag' declared here
+   99 |   struct forward_iterator_tag : public input_iterator_tag { };
+      |          ^~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5835:17: error: 'is_convertible' was not declared in this scope; did you mean 'std::is_convertible'?
+ 5835 |           __or_<is_convertible<__pop_cat, forward_iterator_tag>,
+      |                 ^~~~~~~~~~~~~~
+      |                 std::is_convertible
+In file included from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_pair.h:60,
+                 from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algobase.h:64:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/type_traits:1498:12: note: 'std::is_convertible' declared here
+ 1498 |     struct is_convertible
+      |            ^~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5835:11: error: '__or_' was not declared in this scope; did you mean 'std::__or_'?
+ 5835 |           __or_<is_convertible<__pop_cat, forward_iterator_tag>,
+      |           ^~~~~
+      |           std::__or_
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/type_traits:193:12: note: 'std::__or_' declared here
+  193 |     struct __or_
+      |            ^~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5835:41: error: expected primary-expression before ',' token
+ 5835 |           __or_<is_convertible<__pop_cat, forward_iterator_tag>,
+      |                                         ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5835:64: error: expected primary-expression before ',' token
+ 5835 |           __or_<is_convertible<__pop_cat, forward_iterator_tag>,
+      |                                                                ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5835:64: error: expected ')' before ',' token
+ 5835 |           __or_<is_convertible<__pop_cat, forward_iterator_tag>,
+      |                                                                ^
+      |                                                                )
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5834:20: note: to match this '('
+ 5834 |       static_assert(
+      |                    ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5840:21: error: 'is_integral' was not declared in this scope; did you mean 'std::is_integral'?
+ 5840 |       static_assert(is_integral<_Distance>::value,
+      |                     ^~~~~~~~~~~
+      |                     std::is_integral
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/type_traits:461:12: note: 'std::is_integral' declared here
+  461 |     struct is_integral
+      |            ^~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5840:42: error: expected primary-expression before '>' token
+ 5840 |       static_assert(is_integral<_Distance>::value,
+      |                                          ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5840:45: error: '::value' has not been declared
+ 5840 |       static_assert(is_integral<_Distance>::value,
+      |                                             ^~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5843:16: error: expected nested-name-specifier before 'iterator_traits'
+ 5843 |       typename iterator_traits<_PopulationIterator>::difference_type __d = __n;
+      |                ^~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5843:16: error: expected '(' before 'iterator_traits'
+ 5843 |       typename iterator_traits<_PopulationIterator>::difference_type __d = __n;
+      |                ^~~~~~~~~~~~~~~
+      |                (
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5845:9: error: '__sample' is not a member of 'std'; did you mean '__sample'?
+ 5845 |         __sample(__first, __last, __pop_cat{}, __out, __samp_cat{}, __d,
+      |         ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5755:5: note: '__sample' declared here
+ 5755 |     __sample(_ForwardIterator __first, _ForwardIterator __last,
+      |     ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5845:69: error: '__d' was not declared in this scope; did you mean '__n'?
+ 5845 |         __sample(__first, __last, __pop_cat{}, __out, __samp_cat{}, __d,
+      |                                                                     ^~~
+      |                                                                     __n
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h: At global scope:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5852:1: error: expected declaration before '}' token
+ 5852 | } // namespace std
+      | ^
+In file included from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/algorithm:63:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/ranges_algo.h: In member function '_Out std::ranges::__sample_fn::operator()(_Iter, _Sent, _Out, std::iter_difference_t<_Iter>, _Gen&&) const':
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/ranges_algo.h:1525:15: error: 'sample' is not a member of 'std'; did you mean 'sample'?
+ 1525 |               sample(std::move(__first), std::move(__lasti), std::move(__out),
+      |               ^~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algo.h:5825:5: note: 'sample' declared here
+ 5825 |     sample(_PopulationIterator __first, _PopulationIterator __last,
+      |     ^~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/ranges_algo.h: In member function 'constexpr bool std::ranges::__lexicographical_compare_fn::operator()(_Iter1, _Sent1, _Iter2, _Sent2, _Comp, _Proj1, _Proj2) const':
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits: At global scope:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:317:7: error: 'constexpr' static data member 'min' must have an initializer
+  317 |       min() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:317:7: error: expected ';' at end of member declaration
+  317 |       min() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+      |       ^~~
+      |          ;
+In file included from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/requires_hosted.h:31,
+                 from /home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/vector:60:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:317:13: error: expected unqualified-id before 'noexcept'
+  317 |       min() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:321:7: error: 'constexpr' static data member 'max' must have an initializer
+  321 |       max() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:321:7: error: expected ';' at end of member declaration
+  321 |       max() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:321:13: error: expected unqualified-id before 'noexcept'
+  321 |       max() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:389:7: error: 'constexpr' static data member 'min' must have an initializer
+  389 |       min() _GLIBCXX_USE_NOEXCEPT { return false; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:389:7: error: expected ';' at end of member declaration
+  389 |       min() _GLIBCXX_USE_NOEXCEPT { return false; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:389:13: error: expected unqualified-id before 'noexcept'
+  389 |       min() _GLIBCXX_USE_NOEXCEPT { return false; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:392:7: error: 'constexpr' static data member 'max' must have an initializer
+  392 |       max() _GLIBCXX_USE_NOEXCEPT { return true; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:392:7: error: expected ';' at end of member declaration
+  392 |       max() _GLIBCXX_USE_NOEXCEPT { return true; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:392:13: error: expected unqualified-id before 'noexcept'
+  392 |       max() _GLIBCXX_USE_NOEXCEPT { return true; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:458:7: error: 'constexpr' static data member 'min' must have an initializer
+  458 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min(char); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:458:7: error: expected ';' at end of member declaration
+  458 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min(char); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:458:13: error: expected unqualified-id before 'noexcept'
+  458 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min(char); }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:461:7: error: 'constexpr' static data member 'max' must have an initializer
+  461 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max(char); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:461:7: error: expected ';' at end of member declaration
+  461 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max(char); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:461:13: error: expected unqualified-id before 'noexcept'
+  461 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max(char); }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:525:7: error: 'constexpr' static data member 'min' must have an initializer
+  525 |       min() _GLIBCXX_USE_NOEXCEPT { return -__SCHAR_MAX__ - 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:525:7: error: expected ';' at end of member declaration
+  525 |       min() _GLIBCXX_USE_NOEXCEPT { return -__SCHAR_MAX__ - 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:525:13: error: expected unqualified-id before 'noexcept'
+  525 |       min() _GLIBCXX_USE_NOEXCEPT { return -__SCHAR_MAX__ - 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:528:7: error: 'constexpr' static data member 'max' must have an initializer
+  528 |       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:528:7: error: expected ';' at end of member declaration
+  528 |       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:528:13: error: expected unqualified-id before 'noexcept'
+  528 |       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:595:7: error: 'constexpr' static data member 'min' must have an initializer
+  595 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:595:7: error: expected ';' at end of member declaration
+  595 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:595:13: error: expected unqualified-id before 'noexcept'
+  595 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:598:7: error: 'constexpr' static data member 'max' must have an initializer
+  598 |       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__ * 2U + 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:598:7: error: expected ';' at end of member declaration
+  598 |       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__ * 2U + 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:598:13: error: expected unqualified-id before 'noexcept'
+  598 |       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__ * 2U + 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:668:7: error: 'constexpr' static data member 'min' must have an initializer
+  668 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min (wchar_t); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:668:7: error: expected ';' at end of member declaration
+  668 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min (wchar_t); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:668:13: error: expected unqualified-id before 'noexcept'
+  668 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min (wchar_t); }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:671:7: error: 'constexpr' static data member 'max' must have an initializer
+  671 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max (wchar_t); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:671:7: error: expected ';' at end of member declaration
+  671 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max (wchar_t); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:671:13: error: expected unqualified-id before 'noexcept'
+  671 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max (wchar_t); }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:737:7: error: 'constexpr' static data member 'min' must have an initializer
+  737 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min (char8_t); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:737:7: error: expected ';' at end of member declaration
+  737 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min (char8_t); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:737:13: error: expected unqualified-id before 'noexcept'
+  737 |       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min (char8_t); }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:740:7: error: 'constexpr' static data member 'max' must have an initializer
+  740 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max (char8_t); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:740:7: error: expected ';' at end of member declaration
+  740 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max (char8_t); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:740:13: error: expected unqualified-id before 'noexcept'
+  740 |       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max (char8_t); }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:802:7: error: 'constexpr' static data member 'min' must have an initializer
+  802 |       min() noexcept { return __glibcxx_min (char16_t); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:802:7: error: expected ';' at end of member declaration
+  802 |       min() noexcept { return __glibcxx_min (char16_t); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:802:13: error: expected unqualified-id before 'noexcept'
+  802 |       min() noexcept { return __glibcxx_min (char16_t); }
+      |             ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:805:7: error: 'constexpr' static data member 'max' must have an initializer
+  805 |       max() noexcept { return __glibcxx_max (char16_t); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:805:7: error: expected ';' at end of member declaration
+  805 |       max() noexcept { return __glibcxx_max (char16_t); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:805:13: error: expected unqualified-id before 'noexcept'
+  805 |       max() noexcept { return __glibcxx_max (char16_t); }
+      |             ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:863:7: error: 'constexpr' static data member 'min' must have an initializer
+  863 |       min() noexcept { return __glibcxx_min (char32_t); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:863:7: error: expected ';' at end of member declaration
+  863 |       min() noexcept { return __glibcxx_min (char32_t); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:863:13: error: expected unqualified-id before 'noexcept'
+  863 |       min() noexcept { return __glibcxx_min (char32_t); }
+      |             ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:866:7: error: 'constexpr' static data member 'max' must have an initializer
+  866 |       max() noexcept { return __glibcxx_max (char32_t); }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:866:7: error: expected ';' at end of member declaration
+  866 |       max() noexcept { return __glibcxx_max (char32_t); }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:866:13: error: expected unqualified-id before 'noexcept'
+  866 |       max() noexcept { return __glibcxx_max (char32_t); }
+      |             ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:925:7: error: 'constexpr' static data member 'min' must have an initializer
+  925 |       min() _GLIBCXX_USE_NOEXCEPT { return -__SHRT_MAX__ - 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:925:7: error: expected ';' at end of member declaration
+  925 |       min() _GLIBCXX_USE_NOEXCEPT { return -__SHRT_MAX__ - 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:925:13: error: expected unqualified-id before 'noexcept'
+  925 |       min() _GLIBCXX_USE_NOEXCEPT { return -__SHRT_MAX__ - 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:928:7: error: 'constexpr' static data member 'max' must have an initializer
+  928 |       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:928:7: error: expected ';' at end of member declaration
+  928 |       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:928:13: error: expected unqualified-id before 'noexcept'
+  928 |       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:992:7: error: 'constexpr' static data member 'min' must have an initializer
+  992 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:992:7: error: expected ';' at end of member declaration
+  992 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:992:13: error: expected unqualified-id before 'noexcept'
+  992 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:995:7: error: 'constexpr' static data member 'max' must have an initializer
+  995 |       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__ * 2U + 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:995:7: error: expected ';' at end of member declaration
+  995 |       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__ * 2U + 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:995:13: error: expected unqualified-id before 'noexcept'
+  995 |       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__ * 2U + 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1065:7: error: 'constexpr' static data member 'min' must have an initializer
+ 1065 |       min() _GLIBCXX_USE_NOEXCEPT { return -__INT_MAX__ - 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1065:7: error: expected ';' at end of member declaration
+ 1065 |       min() _GLIBCXX_USE_NOEXCEPT { return -__INT_MAX__ - 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1065:13: error: expected unqualified-id before 'noexcept'
+ 1065 |       min() _GLIBCXX_USE_NOEXCEPT { return -__INT_MAX__ - 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1068:7: error: 'constexpr' static data member 'max' must have an initializer
+ 1068 |       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1068:7: error: expected ';' at end of member declaration
+ 1068 |       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1068:13: error: expected unqualified-id before 'noexcept'
+ 1068 |       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1132:7: error: 'constexpr' static data member 'min' must have an initializer
+ 1132 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1132:7: error: expected ';' at end of member declaration
+ 1132 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1132:13: error: expected unqualified-id before 'noexcept'
+ 1132 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1135:7: error: 'constexpr' static data member 'max' must have an initializer
+ 1135 |       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__ * 2U + 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1135:7: error: expected ';' at end of member declaration
+ 1135 |       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__ * 2U + 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1135:13: error: expected unqualified-id before 'noexcept'
+ 1135 |       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__ * 2U + 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1204:7: error: 'constexpr' static data member 'min' must have an initializer
+ 1204 |       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_MAX__ - 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1204:7: error: expected ';' at end of member declaration
+ 1204 |       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_MAX__ - 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1204:13: error: expected unqualified-id before 'noexcept'
+ 1204 |       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_MAX__ - 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1207:7: error: 'constexpr' static data member 'max' must have an initializer
+ 1207 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1207:7: error: expected ';' at end of member declaration
+ 1207 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1207:13: error: expected unqualified-id before 'noexcept'
+ 1207 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1271:7: error: 'constexpr' static data member 'min' must have an initializer
+ 1271 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1271:7: error: expected ';' at end of member declaration
+ 1271 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1271:13: error: expected unqualified-id before 'noexcept'
+ 1271 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1274:7: error: 'constexpr' static data member 'max' must have an initializer
+ 1274 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__ * 2UL + 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1274:7: error: expected ';' at end of member declaration
+ 1274 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__ * 2UL + 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1274:13: error: expected unqualified-id before 'noexcept'
+ 1274 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__ * 2UL + 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1344:7: error: 'constexpr' static data member 'min' must have an initializer
+ 1344 |       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_LONG_MAX__ - 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1344:7: error: expected ';' at end of member declaration
+ 1344 |       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_LONG_MAX__ - 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1344:13: error: expected unqualified-id before 'noexcept'
+ 1344 |       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_LONG_MAX__ - 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1347:7: error: 'constexpr' static data member 'max' must have an initializer
+ 1347 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1347:7: error: expected ';' at end of member declaration
+ 1347 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1347:13: error: expected unqualified-id before 'noexcept'
+ 1347 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1414:7: error: 'constexpr' static data member 'min' must have an initializer
+ 1414 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1414:7: error: expected ';' at end of member declaration
+ 1414 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1414:13: error: expected unqualified-id before 'noexcept'
+ 1414 |       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1417:7: error: 'constexpr' static data member 'max' must have an initializer
+ 1417 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__ * 2ULL + 1; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1417:7: error: expected ';' at end of member declaration
+ 1417 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__ * 2ULL + 1; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1417:13: error: expected unqualified-id before 'noexcept'
+ 1417 |       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__ * 2ULL + 1; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1675:7: error: 'constexpr' static data member 'min' must have an initializer
+ 1675 |       min() _GLIBCXX_USE_NOEXCEPT { return __FLT_MIN__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1675:7: error: expected ';' at end of member declaration
+ 1675 |       min() _GLIBCXX_USE_NOEXCEPT { return __FLT_MIN__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1675:13: error: expected unqualified-id before 'noexcept'
+ 1675 |       min() _GLIBCXX_USE_NOEXCEPT { return __FLT_MIN__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1678:7: error: 'constexpr' static data member 'max' must have an initializer
+ 1678 |       max() _GLIBCXX_USE_NOEXCEPT { return __FLT_MAX__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1678:7: error: expected ';' at end of member declaration
+ 1678 |       max() _GLIBCXX_USE_NOEXCEPT { return __FLT_MAX__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1678:13: error: expected unqualified-id before 'noexcept'
+ 1678 |       max() _GLIBCXX_USE_NOEXCEPT { return __FLT_MAX__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1750:7: error: 'constexpr' static data member 'min' must have an initializer
+ 1750 |       min() _GLIBCXX_USE_NOEXCEPT { return __DBL_MIN__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1750:7: error: expected ';' at end of member declaration
+ 1750 |       min() _GLIBCXX_USE_NOEXCEPT { return __DBL_MIN__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1750:13: error: expected unqualified-id before 'noexcept'
+ 1750 |       min() _GLIBCXX_USE_NOEXCEPT { return __DBL_MIN__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1753:7: error: 'constexpr' static data member 'max' must have an initializer
+ 1753 |       max() _GLIBCXX_USE_NOEXCEPT { return __DBL_MAX__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1753:7: error: expected ';' at end of member declaration
+ 1753 |       max() _GLIBCXX_USE_NOEXCEPT { return __DBL_MAX__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1753:13: error: expected unqualified-id before 'noexcept'
+ 1753 |       max() _GLIBCXX_USE_NOEXCEPT { return __DBL_MAX__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1825:7: error: 'constexpr' static data member 'min' must have an initializer
+ 1825 |       min() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MIN__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1825:7: error: expected ';' at end of member declaration
+ 1825 |       min() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MIN__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1825:13: error: expected unqualified-id before 'noexcept'
+ 1825 |       min() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MIN__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1828:7: error: 'constexpr' static data member 'max' must have an initializer
+ 1828 |       max() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MAX__; }
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1828:7: error: expected ';' at end of member declaration
+ 1828 |       max() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MAX__; }
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1828:13: error: expected unqualified-id before 'noexcept'
+ 1828 |       max() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MAX__; }
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1989:1: error: 'constexpr' static data member 'min' must have an initializer
+ 1989 | __glibcxx_float_n(32)
+      | ^~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1989:1: error: expected ';' at end of member declaration
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1989:1: error: expected unqualified-id before 'noexcept'
+ 1989 | __glibcxx_float_n(32)
+      | ^~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1989:1: error: 'constexpr' static data member 'max' must have an initializer
+ 1989 | __glibcxx_float_n(32)
+      | ^~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1989:1: error: expected ';' at end of member declaration
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1989:1: error: expected unqualified-id before 'noexcept'
+ 1989 | __glibcxx_float_n(32)
+      | ^~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1992:1: error: 'constexpr' static data member 'min' must have an initializer
+ 1992 | __glibcxx_float_n(64)
+      | ^~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1992:1: error: expected ';' at end of member declaration
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1992:1: error: expected unqualified-id before 'noexcept'
+ 1992 | __glibcxx_float_n(64)
+      | ^~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1992:1: error: 'constexpr' static data member 'max' must have an initializer
+ 1992 | __glibcxx_float_n(64)
+      | ^~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1992:1: error: expected ';' at end of member declaration
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/limits:1992:1: error: expected unqualified-id before 'noexcept'
+ 1992 | __glibcxx_float_n(64)
+      | ^~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:502:9: error: 'constexpr' static data member 'max' must have an initializer
+  502 |         max() noexcept
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:502:9: error: expected ';' at end of member declaration
+  502 |         max() noexcept
+      |         ^~~
+      |            ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:502:15: error: expected unqualified-id before 'noexcept'
+  502 |         max() noexcept
+      |               ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:506:9: error: 'constexpr' static data member 'min' must have an initializer
+  506 |         min() noexcept
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:506:9: error: expected ';' at end of member declaration
+  506 |         min() noexcept
+      |         ^~~
+      |            ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:506:15: error: expected unqualified-id before 'noexcept'
+  506 |         min() noexcept
+      |               ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:677:9: error: 'constexpr' static data member 'min' must have an initializer
+  677 |         min() noexcept
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:677:9: error: expected ';' at end of member declaration
+  677 |         min() noexcept
+      |         ^~~
+      |            ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:677:15: error: expected unqualified-id before 'noexcept'
+  677 |         min() noexcept
+      |               ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:681:9: error: 'constexpr' static data member 'max' must have an initializer
+  681 |         max() noexcept
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:681:9: error: expected ';' at end of member declaration
+  681 |         max() noexcept
+      |         ^~~
+      |            ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:681:15: error: expected unqualified-id before 'noexcept'
+  681 |         max() noexcept
+      |               ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:993:9: error: 'constexpr' static data member 'min' must have an initializer
+  993 |         min() noexcept
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:993:9: error: expected ';' at end of member declaration
+  993 |         min() noexcept
+      |         ^~~
+      |            ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:993:15: error: expected unqualified-id before 'noexcept'
+  993 |         min() noexcept
+      |               ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:997:9: error: 'constexpr' static data member 'max' must have an initializer
+  997 |         max() noexcept
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:997:9: error: expected ';' at end of member declaration
+  997 |         max() noexcept
+      |         ^~~
+      |            ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:997:15: error: expected unqualified-id before 'noexcept'
+  997 |         max() noexcept
+      |               ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1233:21: error: non-constant condition for static assertion
+ 1232 |       static_assert(system_clock::duration::min()
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1233 |                     < system_clock::duration::zero(),
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1233:38:   in 'constexpr' expansion of 'std::chrono::operator<=><long long int, std::ratio<1, 1000000000>, long long int, std::ratio<1, 1000000000> >(std::chrono::duration<long long int, std::ratio<1, 1000000000> >::min, std::chrono::duration<long long int, std::ratio<1, 1000000000> >::zero())'
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:841:16: error: the value of 'std::chrono::duration<long long int, std::ratio<1, 1000000000> >::min' is not usable in a constant expression
+  841 |         return __ct(__lhs).count() <=> __ct(__rhs).count();
+      |                ^~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:677:9: note: 'std::chrono::duration<long long int, std::ratio<1, 1000000000> >::min' was not declared 'constexpr'
+  677 |         min() noexcept
+      |         ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1374:5: error: declaration of 'operator""min' as non-function
+ 1374 |     operator""min(long double __mins)
+      |     ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1375:7: error: expected primary-expression before 'return'
+ 1375 |     { return chrono::duration<long double, ratio<60,1>>{__mins}; }
+      |       ^~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1375:7: error: expected '}' before 'return'
+ 1375 |     { return chrono::duration<long double, ratio<60,1>>{__mins}; }
+      |     ~ ^~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1380:7: error: declaration of 'operator""min' as non-function
+ 1380 |       operator""min()
+      |       ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1381:9: error: expected primary-expression before 'return'
+ 1381 |       { return __check_overflow<chrono::minutes, _Digits...>(); }
+      |         ^~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1381:9: error: expected '}' before 'return'
+ 1381 |       { return __check_overflow<chrono::minutes, _Digits...>(); }
+      |       ~ ^~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1430:3: error: expected declaration before '}' token
+ 1430 |   } // inline namespace literals
+      |   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1434:21: error: 'literals' has not been declared
+ 1434 |     using namespace literals::chrono_literals;
+      |                     ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1434:31: error: 'chrono_literals' is not a namespace-name
+ 1434 |     using namespace literals::chrono_literals;
+      |                               ^~~~~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1443:49: error: 'nanoseconds' in namespace 'chrono' does not name a type
+ 1443 |       using duration                  = chrono::nanoseconds;
+      |                                                 ^~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1444:41: error: 'duration' does not name a type
+ 1444 |       using rep                       = duration::rep;
+      |                                         ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1445:41: error: 'duration' does not name a type
+ 1445 |       using period                    = duration::period;
+      |                                         ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1446:49: error: 'time_point' in namespace 'chrono' does not name a template type
+ 1446 |       using time_point                = chrono::time_point<__file_clock>;
+      |                                                 ^~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1449:14: error: 'time_point' does not name a type; did you mean 'timezone'?
+ 1449 |       static time_point
+      |              ^~~~~~~~~~
+      |              timezone
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1456:17: error: 'file_time' in namespace 'chrono' does not name a template type
+ 1456 |         chrono::file_time<common_type_t<_Dur, chrono::seconds>>
+      |                 ^~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1463:17: error: 'sys_time' in namespace 'chrono' does not name a template type
+ 1463 |         chrono::sys_time<common_type_t<_Dur, chrono::seconds>>
+      |                 ^~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1469:35: error: 'system_clock' in namespace 'chrono' does not name a type
+ 1469 |       using __sys_clock = chrono::system_clock;
+      |                                   ^~~~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1474:32: error: 'seconds' in namespace 'chrono' does not name a type
+ 1474 |       static constexpr chrono::seconds _S_epoch_diff{6437664000};
+      |                                ^~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1480:17: error: 'time_point' in namespace 'chrono' does not name a template type
+ 1480 |         chrono::time_point<__file_clock, common_type_t<_Dur, chrono::seconds>>
+      |                 ^~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1491:17: error: 'time_point' in namespace 'chrono' does not name a template type
+ 1491 |         chrono::time_point<__sys_clock, common_type_t<_Dur, chrono::seconds>>
+      |                 ^~~~~~~~~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/chrono.h:1503:1: error: expected declaration before '}' token
+ 1503 | } // namespace std
+      | ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/streambuf.tcc: In member function 'virtual std::streamsize std::basic_streambuf<_CharT, _Traits>::xsgetn(char_type*, std::streamsize)':
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/streambuf.tcc: In member function 'virtual std::streamsize std::basic_streambuf<_CharT, _Traits>::xsputn(const char_type*, std::streamsize)':
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/locale_facets_nonio.tcc: In member function '_InIter std::__cxx11::time_get<_CharT, _InIter>::_M_extract_name(iter_type, iter_type, int&, const _CharT**, std::size_t, std::ios_base&, std::ios_base::iostate&) const':
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/bits/locale_conv.h: In member function 'bool std::wbuffer_convert<_Codecvt, _Elem, _Tr>::_M_conv_get()':
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/esp/esp-idf/components/bt/host/nimble/nimble/porting/nimble/include/os/os.h:34:19: error: expected unqualified-id before '(' token
+   34 | #define min(a, b) ((a)<(b)?(a):(b))
+      |                   ^
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/semaphore: At global scope:
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/semaphore:66:7: error: 'constexpr' static data member 'max' must have an initializer
+   66 |       max() noexcept
+      |       ^~~
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/semaphore:66:7: error: expected ';' at end of member declaration
+   66 |       max() noexcept
+      |       ^~~
+      |          ;
+/home/montana/.espressif/tools/xtensa-esp-elf/esp-14.2.0_20240906/xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/semaphore:66:13: error: expected unqualified-id before 'noexcept'
+   66 |       max() noexcept
+      |             ^~~~~~~~
+/home/montana/repositories/esp32-projects/cpp/smart-plug/main/main.cpp:23:22: warning: 'led_chr_uuid' defined but not used [-Wunused-variable]
+   23 | static ble_uuid128_t led_chr_uuid =
+      |                      ^~~~~~~~~~~~
+ninja: build stopped: subcommand failed.
