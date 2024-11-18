@@ -12,5 +12,8 @@
     ],
     "idf.port": "/dev/ttyUSB0",
     "idf.pythonBinPath": "/home/montana/.espressif/python_env/idf5.4_py3.12_env/bin/python",
-    "idf.toolsPath": "/home/montana/.espressif"
+    "idf.toolsPath": "/home/montana/.espressif",
+    "files.associations": {
+        "gptimer_types.h": "c"
+    }
 }

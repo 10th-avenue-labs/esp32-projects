@@ -1,5 +1,6 @@
 #include "WifiService.h"
 #include "BleAdvertiser.h"
+#include "include/smart_plug.h"
 
 extern "C" {
     #include <string.h>
@@ -9,26 +10,148 @@ extern "C" {
     #include "esp_log.h"
 }
 
-static const char *TAG = "wifi station";
+static const char *TAG = "smart plug";
+
+// BLE constants
+#define BLE_GAP_APPEARANCE_GENERIC_TAG 0x0200
+#define BLE_GAP_LE_ROLE_PERIPHERAL 0x00
+
+// Automation IO service
+static ble_uuid16_t auto_io_svc_uuid = BLE_UUID16_INIT(0x1815);
+static ble_uuid128_t led_chr_uuid =
+    BLE_UUID128_INIT(0x23, 0xd1, 0xbc, 0xea, 0x5f, 0x78, 0x23, 0x15, 0xde, 0xef,
+                     0x12, 0x12, 0x25, 0x15, 0x00, 0x00);
+
+void bleInit() {
+    // Create the services
+    ESP_LOGI(TAG, "creating BLE Service for Wifi");
+    std::vector<BleService> services = {
+        // Create the wifi service
+        BleService(
+            &auto_io_svc_uuid, // TODO: Update uuid
+            {
+                // Create the SSID characteristic
+                BleCharacteristic(
+                    &led_chr_uuid, // TODO: Update uuid
+                    [](std::vector<std::byte> data) -> int {
+                        // TODO: Implement the write callback
+                        return 0;
+                    },
+                    []() -> std::vector<std::byte> {
+                        // TODO: Implement the read callback
+                        return std::vector<std::byte>();
+                    },
+                    true, // Characteristic can be read
+                    true, // Characteristic can be written
+                    false // Characteristic does not acknowledge writes. We do this because the Dotnet BLE library does not support write acknowledgment
+                ),
+                // Create the password characteristic
+                BleCharacteristic(
+                    &led_chr_uuid, // TODO: Update uuid
+                    [](std::vector<std::byte> data) -> int {
+                        // TODO: Implement the write callback
+                        return 0;
+                    },
+                    []() -> std::vector<std::byte> {
+                        // TODO: Implement the read callback
+                        return std::vector<std::byte>();
+                    },
+                    false, // Characteristic can not be read
+                    true, // Characteristic can be written
+                    false // Characteristic does not acknowledge writes. We do this because the Dotnet BLE library does not support write acknowledgment
+                ),
+                // Create a characteristic for the connection state
+                BleCharacteristic(
+                    &led_chr_uuid, // TODO: Update uuid
+                    [](std::vector<std::byte> data) -> int {
+                        // TODO: Implement the write callback
+                        return 0;
+                    },
+                    []() -> std::vector<std::byte> {
+                        // TODO: Implement the read callback
+                        return std::vector<std::byte>();
+                    },
+                    false, // Characteristic can not be read
+                    true, // Characteristic can be written
+                    false // Characteristic does not acknowledge writes. We do this because the Dotnet BLE library does not support write acknowledgment
+                )
+            }
+        ),
+        // Create the smart plug service
+        BleService(
+            &auto_io_svc_uuid, // TODO: update uuid
+            {
+                // Create the brightness characteristic
+                BleCharacteristic(
+                    &led_chr_uuid, // TODO: Update uuid
+                    [](std::vector<std::byte> data) -> int {
+                        // TODO: Implement the write callback
+                        return 0;
+                    },
+                    []() -> std::vector<std::byte> {
+                        // TODO: Implement the read callback
+                        return std::vector<std::byte>();
+                    },
+                    true, // Characteristic can be read
+                    true, // Characteristic can be written
+                    false // Characteristic does not acknowledge writes. We do this because the Dotnet BLE library does not support write acknowledgment
+                )
+            }
+        )
+    };
+
+    // Initialize the Ble Advertiser
+    ESP_LOGI(TAG, "initializing BLE Advertiser");
+    BleAdvertiser::init("Smart Plug", BLE_GAP_APPEARANCE_GENERIC_TAG, BLE_GAP_LE_ROLE_PERIPHERAL, services);
+
+    // Advertise the Ble Device
+    ESP_LOGI(TAG, "advertising BLE Device");
+    BleAdvertiser::advertise();
+}
+
+static uint8_t maxReconnectAttempts = 5;
+static uint8_t reconnectAttempts = 0;
+void wifiInit() {
+    WifiService::onDisconnect = []() {
+        ESP_LOGI(TAG, "wifi disconnected");
+
+        // Attempt to reconnect
+        if (reconnectAttempts < maxReconnectAttempts) {
+            ESP_LOGI(TAG, "attempting to reconnect");
+            reconnectAttempts++;
+            WifiService::startConnect(
+                {
+                    "denhac",
+                    "denhac rules"
+                }
+            );
+        } else {
+            ESP_LOGI(TAG, "max reconnect attempts reached");
+        }
+    };
+    WifiService::onConnect = []() {
+        ESP_LOGI(TAG, "Wifi connected");
+        reconnectAttempts = 0;
+    };
+    WifiService::init();
+    WifiService::startConnect(
+        {
+            "denhac",
+            "denhac rules"
+        }
+    );
+}
 
 extern "C" void app_main(void)
 {
-    // Initiate the wifi service
-    ESP_LOGI(TAG, "initializing wifi service");
-    WifiService::init();
+    // Initiate the Wifi Service
+    wifiInit();
 
-    // Scan for available access points (this does not need to be done to directly connect to an access point)
-    ApScanResults scanResults = WifiService::scanAvailableAccessPoints(30);
+    // Initiate the Ble Advertiser
+    bleInit();
 
-    // Log the scan results
-    ESP_LOGI(TAG, "total number of access points found: %d, number of access points populated: %d", scanResults.totalAccessPointsFound, scanResults.accessPoints.size());
-    for(int i = 0; i < scanResults.accessPoints.size(); i++) {
-        ESP_LOGI(TAG, "access point number %d", i);
-        ESP_LOGI(TAG, "\tssid: %s", scanResults.accessPoints[i].ssid.c_str());
-        ESP_LOGI(TAG, "\trssi: %d", scanResults.accessPoints[i].rssi);
-        ESP_LOGI(TAG, "\tauth mode: %d", scanResults.accessPoints[i].authMode);
-        ESP_LOGI(TAG, "\tchannel: %d", scanResults.accessPoints[i].channel);
-    }
 
-    ESP_LOGI(TAG, "finished scan");
+
+    // Initiate the smart plug
+    SmartPlug smartPlug = SmartPlug(0,0);
 }
