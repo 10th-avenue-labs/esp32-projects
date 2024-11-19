@@ -1,5 +1,7 @@
 #include "WifiService.h"
 #include "BleAdvertiser.h"
+#include "Timer.h"
+#include "AcDimmer.h"
 #include "include/smart_plug.h"
 
 extern "C" {
@@ -145,13 +147,21 @@ void wifiInit() {
 extern "C" void app_main(void)
 {
     // Initiate the Wifi Service
-    wifiInit();
+    // wifiInit();
 
     // Initiate the Ble Advertiser
-    bleInit();
+    // bleInit();
 
 
 
-    // Initiate the smart plug
-    SmartPlug smartPlug = SmartPlug(0,0);
+    // Initiate the ac dimmer
+    // Config for non-dimmable LED
+    AcDimmer acDimmer(32, 25, 1000, 5000, 1200);
+
+    uint8_t brightness = 255;
+    while(1) {
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+        acDimmer.setBrightness(brightness);
+        brightness--;
+    }
 }

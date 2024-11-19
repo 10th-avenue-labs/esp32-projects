@@ -9,8 +9,8 @@
 #include <driver/gptimer.h>
 
 
-#define ZC_GPIO 25  // Set ZC pin
-#define PSM_GPIO 27  // Set PSM pin
+#define ZC_GPIO 32  // Set ZC pin
+#define PSM_GPIO 25  // Set PSM pin
 
 gptimer_handle_t gptimer = NULL;
 
