@@ -40,7 +40,7 @@ class AcDimmer {
         uint16_t debounceUs;            // The debounce time in microseconds between zero crossing events
         uint16_t offsetLeading;         // The offset in microseconds to lead the zero crossing event
         uint16_t offsetFalling;         // The offset in microseconds to fall the zero crossing event
-        uint8_t brightness;             // The brightness of the dimmer (0-255)
+        uint8_t brightness = 0;         // The brightness of the dimmer (0-255)
         Timer timer;                    // The timer used to control the phase shift modulation pin
 
         /**

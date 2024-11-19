@@ -1,7 +1,7 @@
 ﻿using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
 
-const string TARGET = "Montana's_Beacon";
+const string TARGET = "Smart Plug";
 
 // Get the bluetooth adapters
 IReadOnlyList<Adapter> adapters = await BlueZManager.GetAdaptersAsync();

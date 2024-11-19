@@ -242,6 +242,11 @@ bool WifiService::startConnect(
     if (response != ESP_OK)
     {
         ESP_LOGE(TAG, "failed to connect to WiFi, error code: %d", response);
+
+        // Set the connected state to connecting
+        // TODO: Test this more thoroughly, this may be problematic
+        setConnectionState(ConnectionState::NOT_CONNECTED);
+
         return false;
     }
 
