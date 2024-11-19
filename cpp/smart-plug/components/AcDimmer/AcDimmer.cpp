@@ -1,5 +1,4 @@
 #include "AcDimmer.h"
-#include <sys/time.h>
 
 static const char *TAG = "AC_DIMMER";
 
@@ -31,6 +30,10 @@ AcDimmer::AcDimmer(uint8_t zcPin, uint8_t psmPin, uint16_t debounceUs, uint16_t 
 
 void AcDimmer::setBrightness(uint8_t brightness) {
     this->brightness = brightness;
+}
+
+uint8_t AcDimmer::getBrightness() {
+    return this->brightness;
 }
 
 void AcDimmer::zeroCrossInterruptHandler(void* arg) {
@@ -85,7 +88,6 @@ void AcDimmer::zeroCrossInterruptHandler(void* arg) {
 }
 
 void AcDimmer::busyPulse(uint8_t pin, uint16_t pulseWidthUs) {
-    // ESP_EARLY_LOGI(TAG, "sending busy pulse");
     gpio_set_level((gpio_num_t) pin, 1);
     esp_rom_delay_us(pulseWidthUs);
     gpio_set_level((gpio_num_t) pin, 0);
