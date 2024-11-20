@@ -1,8 +1,4 @@
 build/
 sdkconfig
 sdkconfig.old
-components/*
-!components/WifiService
-!components/BleAdvertiser
-!components/Timer
-!components/AcDimmer
+components/components
