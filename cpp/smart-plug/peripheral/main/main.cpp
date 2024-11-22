@@ -2,6 +2,7 @@
 #include "BleAdvertiser.h"
 #include "Timer.h"
 #include "AcDimmer.h"
+#include "MqttClient.h"
 #include "include/smart_plug.h"
 
 extern "C" {
@@ -179,7 +180,7 @@ void bleInit(AcDimmer* acDimmer, WifiConfig* wifiConfig) {
 
 static uint8_t maxReconnectAttempts = 5;
 static uint8_t reconnectAttempts = 0;
-void wifiInit(WifiConfig* wifiConfig) {
+void wifiInit(WifiConfig* wifiConfig, Mqtt::MqttClient* mqttClient) {
     WifiService::onDisconnect = [wifiConfig]() {
         ESP_LOGI(TAG, "wifi disconnected");
 
@@ -197,9 +198,12 @@ void wifiInit(WifiConfig* wifiConfig) {
             ESP_LOGI(TAG, "max reconnect attempts reached");
         }
     };
-    WifiService::onConnect = []() {
+    WifiService::onConnect = [mqttClient]() {
         ESP_LOGI(TAG, "Wifi connected");
         reconnectAttempts = 0;
+
+        // Attempt to connect the mqtt client
+        mqttClient->connect();
     };
     WifiService::init();
     WifiService::startConnect(
@@ -210,13 +214,44 @@ void wifiInit(WifiConfig* wifiConfig) {
     );
 }
 
-
 static void bleAdvertiserTask(void* args) {
     // Advertise the Ble Device
     ESP_LOGI(TAG, "advertising BLE Device");
     BleAdvertiser::advertise();
 
     vTaskDelete(NULL);
+}
+
+void onConnected(Mqtt::MqttClient* client, AcDimmer* acDimmer) {
+    ESP_LOGI(TAG, "connected to mqtt broker");
+
+    // Subscribe to the smart plug brightness topic
+    client->subscribe(
+        "smart-plug/brightness",
+        [acDimmer](Mqtt::MqttClient* client, int messageId, std::vector<std::byte> data) {
+            // Convert the data to a uint8_t
+            uint8_t brightness = (uint8_t)data[0];
+
+            // Set the brightness
+            ESP_LOGI(TAG, "setting brightness to %d", brightness);
+            acDimmer->setBrightness(brightness);
+        }
+    );
+}
+
+int maxBrokerReconnectAttempts = 5;
+int brokerReconnectAttempts = 0;
+void onDisconnected(Mqtt::MqttClient* client) {
+    ESP_LOGI(TAG, "disconnected from mqtt broker");
+
+    // Attempt to reconnect
+    if (brokerReconnectAttempts < maxBrokerReconnectAttempts) {
+        ESP_LOGI(TAG, "attempting to reconnect to mqtt broker");
+        brokerReconnectAttempts++;
+        client->connect();
+    } else {
+        ESP_LOGI(TAG, "max reconnect attempts reached");
+    }
 }
 
 extern "C" void app_main(void)
@@ -232,12 +267,19 @@ extern "C" void app_main(void)
     // Attempt to read the wifi configuration from NVS
     // Attempt to read the smart plug brightness from NVS
 
+    // Create an MQTT client
+    Mqtt::MqttClient mqttClient("mqtt://10.11.2.96:1883");
 
+    // Set the onConnected delegate
+    mqttClient.onConnected = [&acDimmer](Mqtt::MqttClient* client) {
+        onConnected(client, &acDimmer);
+    };
 
-
+    // Set the onDisconnected delegate
+    mqttClient.onDisconnected = onDisconnected;
 
     // Initiate the Wifi Service
-    wifiInit(&wifiConfig);
+    wifiInit(&wifiConfig, &mqttClient);
 
     // Initiate the Ble Advertiser
     bleInit(&acDimmer, &wifiConfig);

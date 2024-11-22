@@ -4,6 +4,8 @@ using System.Linq.Expressions;
 using System.Text;
 
 const string TARGET = "Smart Plug";
+const string SSID = "denhac";
+const string PASSWORD = "denhac rules";
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Get and print the bluetooth adapter and device information
@@ -136,7 +138,7 @@ await PrintCharacteristicInfo(ssidCharacteristic);
 
 // Write to the SSID characteristic
 Console.WriteLine("Writing to SSID characteristic.");
-await ssidCharacteristic.WriteValueAsync(Encoding.UTF8.GetBytes("denhac"), new Dictionary<string, object>());
+await ssidCharacteristic.WriteValueAsync(Encoding.UTF8.GetBytes(SSID), new Dictionary<string, object>());
 
 // Read the SSID characteristic back
 Console.WriteLine("Reading from SSID characteristic.");
@@ -159,7 +161,7 @@ await PrintCharacteristicInfo(passwordCharacteristic);
 
 // Write to the password characteristic
 Console.WriteLine("Writing to password characteristic.");
-await passwordCharacteristic.WriteValueAsync(Encoding.UTF8.GetBytes("denhac rules"), new Dictionary<string, object>());
+await passwordCharacteristic.WriteValueAsync(Encoding.UTF8.GetBytes(PASSWORD), new Dictionary<string, object>());
 
 // Reading from characteristic not permitted
 

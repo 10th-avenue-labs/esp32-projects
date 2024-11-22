@@ -274,8 +274,6 @@ namespace Mqtt
                 break;
             }
 
-            ESP_LOGI(TAG, "data length: %d", event->data_len);
-
             // Get the event data and convert it to a byte vector
             std::vector<std::byte> data(reinterpret_cast<std::byte *>(event->data),
                                         reinterpret_cast<std::byte *>(event->data) + event->data_len);
