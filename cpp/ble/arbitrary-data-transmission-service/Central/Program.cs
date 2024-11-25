@@ -1,7 +1,18 @@
-﻿using HashtagChris.DotNetBlueZ;
+﻿using System.Text;
+using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
 
 const string TARGET = "Dimmer";
+const string ARBITRARY_DATA_TRANSFER_SERVICE_UUID = "00000000-0000-0000-0000-000000012346";
+const string ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID = "12345670-0000-0000-0000-000000000000";
+const string ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID = "12345679-0000-0000-0000-000000000000";
+
+const int DATA_SIZE = 1024;
+const int MTU_RESERVED_BYTES = 3;
+
+///////////////////////////////////////////////////////////////////////////////
+/// Get and print the bluetooth adapter and device information
+///////////////////////////////////////////////////////////////////////////////
 
 // Get the bluetooth adapters
 IReadOnlyList<Adapter> adapters = await BlueZManager.GetAdaptersAsync();
@@ -20,6 +31,10 @@ foreach(var currentAdapter in adapters) {
 // Select the first adapter
 var adapter = adapters[0];
 Console.WriteLine($"Selecting first adapter '{await adapter.GetAliasAsync()}'.");
+
+///////////////////////////////////////////////////////////////////////////////
+/// Setup the device found handler and search for the target device
+///////////////////////////////////////////////////////////////////////////////
 
 // Setup the device found handler
 Console.WriteLine($"Searching for device '{TARGET}'.");
@@ -58,15 +73,154 @@ await device.WaitForPropertyValueAsync("Connected", value: true, timeout);
 await device.WaitForPropertyValueAsync("ServicesResolved", value: true, timeout);
 Console.WriteLine("Connected to device.");
 
-// Get all the services
-var services = await device.GetServicesAsync();
-Console.WriteLine($"Found {services.Count} services on device.");
-foreach(var service in services) {
-await PrintServiceInfo(service);
+///////////////////////////////////////////////////////////////////////////////
+/// Get arbitrary data transfer service and characteristics
+///////////////////////////////////////////////////////////////////////////////
 
+// Get the Arbitrary Data Transfer Service
+Console.WriteLine($"Searching for Arbitrary Data Transfer Service.");
+var arbitraryDataTransferService = await device.GetServiceAsync(ARBITRARY_DATA_TRANSFER_SERVICE_UUID);
+if (arbitraryDataTransferService == null) {
+    var services = await device.GetServicesAsync();
+    Console.WriteLine($"Could not find dimmer service with ID '{ARBITRARY_DATA_TRANSFER_SERVICE_UUID}'. Instead found the following:");
+    foreach(var found in services) {
+        await PrintServiceInfo(found);
+    }
+    return 0;
 }
 
+await PrintServiceInfo(arbitraryDataTransferService);
+
+// Get the MTU characteristic
+Console.WriteLine($"Searching for MTU characteristic.");
+var mtuCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID);
+if (mtuCharacteristic == null) {
+    var characteristics = await arbitraryDataTransferService.GetCharacteristicsAsync();
+    Console.WriteLine($"Could not find MTU characteristic with ID '{ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID}'. Instead found the following:");
+    foreach(var found in characteristics) {
+        await PrintCharacteristicInfo(found);
+    }
+    return 0;
+}
+await PrintCharacteristicInfo(mtuCharacteristic);
+
+// Read the MTU characteristic
+var mtuBytes = await mtuCharacteristic.ReadValueAsync(new Dictionary<string, object>());
+var mtu = BitConverter.ToUInt16(mtuBytes, 0);
+Console.WriteLine($"MTU: {mtu}");
+
+// Get the transmission characteristic
+Console.WriteLine($"Searching for Transmission characteristic.");
+var transmissionCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID);
+if (transmissionCharacteristic == null) {
+    var characteristics = await arbitraryDataTransferService.GetCharacteristicsAsync();
+    Console.WriteLine($"Could not find Transmission characteristic with ID '{ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID}'. Instead found the following:");
+    foreach(var found in characteristics) {
+        await PrintCharacteristicInfo(found);
+    }
+    return 0;
+}
+await PrintCharacteristicInfo(transmissionCharacteristic);
+
+// Attempt to transfer large data
+// var data = new byte[256];
+var partA = new string ('a', 249);
+var partB = new string ('b', 249);
+var partC = new string ('c', 249);
+var message = $"{partA}{partB}{partC}";
+await TransmittLargeData(transmissionCharacteristic, mtu, [.. Encoding.ASCII.GetBytes(message)]);
+
 return 0;
+
+
+async Task TransmittLargeData(GattCharacteristic transmissionCharacteristic, UInt16 mtu, List<byte> data) {
+    /*
+    Chunk structure:
+        bytes: 1,1: Event type
+        bytes: 2,2: Total chunks (for event type START) or chunk number (for event type DATA)
+        bytes: 3,4: Message ID
+        bytes: 5,n: Message
+    */
+
+    // Calculate the header size
+    var TRANSMISSION_HEADER_SIZE = 4;
+
+    // Calculate the chunk size
+    var chunkSize = mtu - MTU_RESERVED_BYTES - TRANSMISSION_HEADER_SIZE; // 249
+    Console.WriteLine($"Chunk size: {chunkSize}");
+
+    // Get the total bytes that must be transmitted
+    var totalBytes = data.Count;
+    Console.WriteLine($"Total bytes: {totalBytes}");
+
+    // Calculate the number of chunks
+    int totalChunks = (int)Math.Ceiling(((double) totalBytes) / chunkSize);
+    if (totalChunks > 255) {
+        throw new Exception($"Total chunks is greater than 255: {totalChunks}");
+    }
+    Console.WriteLine($"Total chunks: {totalChunks}");
+
+    // Create a message ID
+    Random random = new();
+    UInt16 randomValue = (UInt16)random.Next(0, ushort.MaxValue + 1);
+    Console.WriteLine($"Message ID: {randomValue}");
+
+    // Create the start event header
+    var startEventHeader = new byte[TRANSMISSION_HEADER_SIZE];
+    startEventHeader[0] = 1; // Event type
+    startEventHeader[1] = (byte)totalChunks; // Total chunks
+    byte[] messageBytes = BitConverter.GetBytes(randomValue);
+    Console.WriteLine($"Message ID bytes size: {messageBytes.Length}");
+    messageBytes.CopyTo(startEventHeader, 2); // Message ID
+
+    // Create the start event message
+    byte[] payload = [..startEventHeader, ..getNextChunk(data, chunkSize)];
+
+    // Write the start event message
+    await transmissionCharacteristic.WriteValueAsync(payload, new Dictionary<string, object>());
+
+    // Loop through the data and send the chunks
+    int chunkNumber = 1;
+    while(data.Count > 0) {
+        // Create the data event header
+        var dataEventHeader = new byte[TRANSMISSION_HEADER_SIZE];
+        dataEventHeader[0] = 2; // Event type
+        dataEventHeader[1] = (byte)chunkNumber; // Chunk number
+        messageBytes.CopyTo(dataEventHeader, 2); // Message ID
+
+        // Create the data event message
+        payload = [..dataEventHeader, ..getNextChunk(data, chunkSize)];
+
+        // Write the data event message
+        await transmissionCharacteristic.WriteValueAsync(payload, new Dictionary<string, object>());
+
+        // Increment the chunk number
+        chunkNumber++;
+    }
+}
+
+byte[] getNextChunk(List<byte> data, int chunkSize) {
+    // Check if the data is smaller than the chunk size
+    if (data.Count <= chunkSize) {
+        // Get the last data
+        byte[] lastData = [.. data];
+
+        // Clear the data
+        data.Clear();
+
+        return lastData;
+    }
+
+    // Extract the first `n` elements
+    List<byte> removedSubset = data.GetRange(0, chunkSize);
+
+    // Remove the first `n` elements from the original list
+    data.RemoveRange(0, chunkSize);
+
+    return [.. removedSubset];
+}
+
+
 
 async Task<Device?> HandleDeviceFound(Adapter sender, DeviceFoundEventArgs eventArgs, String target, CancellationTokenSource cancellationTokenSource)
 {

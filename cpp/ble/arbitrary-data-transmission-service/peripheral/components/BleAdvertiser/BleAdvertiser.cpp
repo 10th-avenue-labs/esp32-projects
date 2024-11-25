@@ -12,6 +12,7 @@ bool BleAdvertiser::initiated = false;
 std::map<uint16_t*, BleCharacteristic> BleAdvertiser::characteristicHandlesToCharacteristics = {};
 uint8_t BleAdvertiser::deviceAddress[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 uint8_t BleAdvertiser::deviceAddressType = 0;
+uint16_t BleAdvertiser::mtu = 0;
 
 ////////////////////////////////////////////////////////////////////////////
 // Public functions
@@ -97,6 +98,9 @@ void BleAdvertiser::advertise(void) {
     vTaskDelete(NULL);
 }
 
+uint16_t BleAdvertiser::getMtu(void) {
+    return BleAdvertiser::mtu;
+}
 
 ////////////////////////////////////////////////////////////////////////////
 // Characteristic access handler
@@ -324,9 +328,13 @@ int BleAdvertiser::gapEventHandler(struct ble_gap_event *event, void *arg) {
                         response);
                     return response;
                 }
+
+                // Exchange MTU
+                ble_gattc_exchange_mtu(event->connect.conn_handle, mtuEventHandler, NULL);
             }
             // Connection failed, restart advertising
-            else {
+            else
+            {
                 startAdvertising();
             }
             return response;
@@ -358,6 +366,15 @@ int BleAdvertiser::gapEventHandler(struct ble_gap_event *event, void *arg) {
             return response;
     }
     return response;
+}
+
+int BleAdvertiser::mtuEventHandler(uint16_t conn_handle, const ble_gatt_error *error, uint16_t mtu, void *arg){
+    ESP_LOGI(TAG, "MTU exchanged. MTU set to %d", mtu);
+
+    // Set the MTU
+    BleAdvertiser::mtu = mtu;
+
+    return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////
