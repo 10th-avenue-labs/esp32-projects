@@ -550,6 +550,7 @@ struct ble_gatt_svc_def* BleAdvertiser::createServiceDefinitions(const std::vect
     size_t servicesLength = services.size();
 
     // Allocate memory for the ble_gatt_svc_def array + 1 for the terminator
+    // TODO: This is a memory leak. We should free this memory when we're done with it
     struct ble_gatt_svc_def* gattServices = (struct ble_gatt_svc_def*)malloc((servicesLength + 1) * sizeof(struct ble_gatt_svc_def));
 
     // Check if malloc was successful
@@ -568,10 +569,10 @@ struct ble_gatt_svc_def* BleAdvertiser::createServiceDefinitions(const std::vect
     return gattServices;
 }
 
-struct ble_gatt_svc_def  BleAdvertiser::createServiceDefinition(BleService service) {
+struct ble_gatt_svc_def BleAdvertiser::createServiceDefinition(BleService service) {
     return (struct ble_gatt_svc_def) {
         .type = BLE_GATT_SVC_TYPE_PRIMARY,
-        .uuid = &service.uuid->u,
+        .uuid = &service.getUuidPointer()->u,
         .characteristics = createCharacteristicDefinitions(service.characteristics)
     };
 }
@@ -579,6 +580,11 @@ struct ble_gatt_svc_def  BleAdvertiser::createServiceDefinition(BleService servi
 struct ble_gatt_chr_def* BleAdvertiser::createCharacteristicDefinitions(std::vector<BleCharacteristic> characteristics){
     // Get the number of characteristics
     size_t characteristicsLength = characteristics.size();
+
+    // Check if there are any characteristics
+    if (characteristicsLength == 0) {
+        ESP_LOGW(TAG, "service has no characteristics. This service may not be discoverable by all consumers, eg web bluetooth");
+    }
 
     // Allocate memory for the ble_gatt_chr_def array + 1 for the terminator
     struct ble_gatt_chr_def* gattCharacteristics = (ble_gatt_chr_def*)malloc((characteristicsLength + 1) * sizeof(struct ble_gatt_chr_def));
@@ -612,7 +618,7 @@ struct ble_gatt_chr_def BleAdvertiser::createCharacteristicDefinition(BleCharact
 
     return (struct ble_gatt_chr_def)
     {
-        .uuid = &characteristic.uuid->u,
+        .uuid = &characteristic.getUuidPointer()->u,
         .access_cb = characteristicAccessHandler,
         .flags = flags,
         .val_handle = characteristicHandle,

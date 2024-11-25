@@ -2,7 +2,8 @@
 #define BLE_ADVERTISER_H
 
 #include <string>
-#include "ble_service.h"
+#include "BleService.h"
+#include "BleCharacteristic.h"
 #include <vector>
 #include <map>
 
@@ -21,7 +22,6 @@ extern "C"
     /* Library function declarations */
     void ble_store_config_init(void); // For some reason we need to manually declare this one? Not sure why as it lives in a library
 }
-
 
 class BleAdvertiser {
     /**
