@@ -7,7 +7,6 @@ const string ARBITRARY_DATA_TRANSFER_SERVICE_UUID = "00000000-0000-0000-0000-000
 const string ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID = "12345670-0000-0000-0000-000000000000";
 const string ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID = "12345679-0000-0000-0000-000000000000";
 
-const int DATA_SIZE = 1024;
 const int MTU_RESERVED_BYTES = 3;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -167,7 +166,7 @@ async Task TransmittLargeData(GattCharacteristic transmissionCharacteristic, UIn
 
     // Create the start event header
     var startEventHeader = new byte[TRANSMISSION_HEADER_SIZE];
-    startEventHeader[0] = 1; // Event type
+    startEventHeader[0] = 0; // Event type
     startEventHeader[1] = (byte)totalChunks; // Total chunks
     byte[] messageBytes = BitConverter.GetBytes(randomValue);
     Console.WriteLine($"Message ID bytes size: {messageBytes.Length}");
@@ -184,7 +183,7 @@ async Task TransmittLargeData(GattCharacteristic transmissionCharacteristic, UIn
     while(data.Count > 0) {
         // Create the data event header
         var dataEventHeader = new byte[TRANSMISSION_HEADER_SIZE];
-        dataEventHeader[0] = 2; // Event type
+        dataEventHeader[0] = 1; // Event type
         dataEventHeader[1] = (byte)chunkNumber; // Chunk number
         messageBytes.CopyTo(dataEventHeader, 2); // Message ID
 

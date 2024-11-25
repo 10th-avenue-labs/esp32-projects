@@ -1,6 +1,6 @@
 #include "AdtService.h"
 
-const char* TAG = "ADT_SERVICE";
+static const char* TAG = "ADT_SERVICE";
 
 AdtService::AdtService(
     std::string serviceUuid,
@@ -48,7 +48,7 @@ AdtService::AdtService(
                                     static_cast<uint16_t>(std::to_integer<uint8_t>(data[2]));
 
                 // Log the header information
-                ESP_LOGI(TAG, "event type: %d, chunk number: %d, message ID: %d", eventType, chunkByte, messageId);
+                ESP_LOGI(TAG, "event type: %d, chunk arg: %d, message ID: %d", eventType, chunkByte, messageId);
 
                 switch (eventType) {
                     case TRANSMISSION_START: {
@@ -60,10 +60,10 @@ AdtService::AdtService(
                         std::move(data.begin() + 4, data.end(), std::back_inserter(messageData));
 
                         // Check if this is the only chunk in the message
-                        if (chunkByte > 1) {
+                        if (chunkByte == 1) {
                             // Call the message received delegate
                             this->onMessageReceived(messageData);
-                            return;
+                            return 0;
                         }
 
                         // Store the data until all chunks are received
@@ -73,11 +73,11 @@ AdtService::AdtService(
                     }
                     case TRANSMISSION_DATA: {
                         // Add the data to the message
-                        this->messageInfos[messageId].data.insert(this->messageInfos[messageId].data.end(), data.begin(), data.end());
+                        this->messageInfos[messageId].data.insert(this->messageInfos[messageId].data.end(), data.begin() + 4, data.end());
 
                         // Check if there is more data to receive
-                        if (chunkByte < this->messageInfos[messageId].totalChunks) {
-                            return;
+                        if (chunkByte < this->messageInfos[messageId].totalChunks - 1) {
+                            return 0;
                         }
 
                         // Call the message received delegate
@@ -91,6 +91,9 @@ AdtService::AdtService(
                     default: {
                         // Log the unknown event type
                         ESP_LOGE(TAG, "Unknown event type: %d", eventType);
+
+                        // Clear the message
+                        this->messageInfos.erase(messageId);
                         return -1;
                     }
                 }
