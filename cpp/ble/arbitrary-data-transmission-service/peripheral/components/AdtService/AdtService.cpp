@@ -5,8 +5,12 @@ static const char* TAG = "ADT_SERVICE";
 AdtService::AdtService(
     std::string serviceUuid,
     std::string mtuCharacteristicUuid,
-    std::string transmissionCharacteristicUuid
+    std::string transmissionCharacteristicUuid,
+    std::function<void(std::vector<std::byte>)> onMessageReceived
 ) {
+    // Set the message received delegate
+    this->onMessageReceived = onMessageReceived;
+
     // Create the BLE service
     this->bleService = new BleService(serviceUuid, {
         BleCharacteristic(
@@ -86,6 +90,14 @@ AdtService::AdtService(
                         // Remove the message from the map
                         this->messageInfos.erase(messageId);
 
+                        break;
+                    }
+                    case TRANSMISSION_CANCEL: {
+                        // Log the cancel event
+                        ESP_LOGI(TAG, "message ID %d cancelled", messageId);
+
+                        // Clear the message
+                        this->messageInfos.erase(messageId);
                         break;
                     }
                     default: {
