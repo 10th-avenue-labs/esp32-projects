@@ -2,7 +2,8 @@
 #define BLE_ADVERTISER_H
 
 #include <string>
-#include "ble_service.h"
+#include "BleService.h"
+#include "BleCharacteristic.h"
 #include <vector>
 #include <map>
 
@@ -21,7 +22,6 @@ extern "C"
     /* Library function declarations */
     void ble_store_config_init(void); // For some reason we need to manually declare this one? Not sure why as it lives in a library
 }
-
 
 class BleAdvertiser {
     /**
@@ -60,6 +60,12 @@ public:
      */
     static void advertise(void);
 
+    /**
+     * @brief Get the MTU
+     * 
+     * @return uint16_t The MTU
+     */
+    static uint16_t getMtu(void);
 private:
     // Private constructor to prevent instantiation
     BleAdvertiser() = delete;
@@ -71,6 +77,7 @@ private:
     static std::map<uint16_t*, BleCharacteristic> characteristicHandlesToCharacteristics;
     static uint8_t deviceAddressType;
     static uint8_t deviceAddress[6];
+    static uint16_t mtu;
 
     /**
      * @brief Handle characteristic access events
@@ -136,6 +143,17 @@ private:
      * @return int 0 if successful, error code otherwise
      */
     static int gapEventHandler(struct ble_gap_event*, void*);
+
+    /**
+     * @brief Handle MTU events
+     * 
+     * @param conn_handle The connection handle
+     * @param error The GATT error
+     * @param mtu The MTU
+     * @param arg The argument
+     * @return int 0 if successful, error code otherwise
+     */
+    static int mtuEventHandler(uint16_t conn_handle, const ble_gatt_error *error, uint16_t mtu, void *arg);
 
     ////////////////////////////////////////////////////////////////////////////
     // Nimble stack event callback functions
