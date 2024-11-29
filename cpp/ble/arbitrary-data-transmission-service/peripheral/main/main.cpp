@@ -2,7 +2,8 @@
 #include <string>
 #include "BleAdvertiser.h"
 #include "BleService.h"
-#include "AdtService.h"
+// #include "AdtService.h"
+#include "BleCharacteristic.h"
 
 extern "C"
 {
@@ -21,62 +22,63 @@ static const char *TAG = "adt service";
 
 extern "C" void app_main(void)
 {
-    // // Create a new ADT service
-    // AdtService adtService(
-    //     "00000000-0000-0000-0000-000000012346", // Service UUID
-    //     "12345670-0000-0000-0000-000000000000", // MTU characteristic UUID
-    //     "12345679-0000-0000-0000-000000000000", // Send characteristic UUID (from the perspective of the Central)
-    //     "12345678-0000-0000-0000-000000000000", // Receive characteristic UUID (from the perspective of the Central)
-    //                       [](std::vector<std::byte> data)
-    //                       {
-    //                           ESP_LOGI(TAG, "received message of size %d", data.size());
+    // Create a BLE characteristic
+    std::shared_ptr<BleCharacteristic> characteristic = std::make_shared<BleCharacteristic>(
+        "10000000-1000-0000-0000-000000000000", // UUID
+        [](std::vector<std::byte> data){        // onWrite
+            ESP_LOGI(TAG, "onWrite called with data length %d", data.size());
 
-    //                           // Convert the data to a string
-    //                           std::string str(reinterpret_cast<const char *>(data.data()), data.size());
+            // Convert the data to a string
+            std::string message(reinterpret_cast<const char *>(data.data()), data.size());
 
-    //                           // Print the data
-    //                           ESP_LOGI(TAG, "received data: %s", str.c_str());
-    //                       });
+            // Print the data
+            ESP_LOGI(TAG, "Received: %s", message.c_str());
 
-    // // Send a large message to the Central
-    
+            // Return success
+            return 0;
+        },
+        [](){                                   // onRead
+            ESP_LOGI(TAG, "onRead called");
 
+            // Create a message
+            std::string message = "Hello, World!";
 
-    // // Call init with inline map initialization
-    // BleAdvertiser::init("ADT Test", BLE_GAP_APPEARANCE_GENERIC_TAG, BLE_GAP_LE_ROLE_PERIPHERAL, {*adtService.getBleService()});
+            // Convert the message to a vector of bytes and send the data
+            return std::vector<std::byte>(
+                reinterpret_cast<const std::byte*>(message.data()),
+                reinterpret_cast<const std::byte*>(message.data()) + message.size()
+            );
+        },
+        false                                   // acknowledgeWrites
+    );
 
-    // // Advertise the BLE device
-    // BleAdvertiser::advertise();
+    // Create a BLE service
+    std::shared_ptr<BleService> service = std::make_shared<BleService>(
+        "10000000-0000-0000-0000-000000000000", // UUID
+        std::vector<std::shared_ptr<BleCharacteristic>>{characteristic}
+    );
 
+    // Need to support this functionality (implement copy constructor for characteristics)
+    // BleService service2(
+    //     "00001801-0000-1000-8000-00805f9b34fb", // UUID
+    //     {
+    //         BleCharacteristic(
+    //             "00002a05-0000-1000-8000-00805f9b34fb", // UUID
+    //             nullptr,                                // onWrite
+    //             nullptr,                                // onRead
+    //             false                                   // acknowledgeWrites
+    //         )
+    //     }
+    // );
 
-    // Use Case 1
+    // Initialize the BLE advertiser
+    BleAdvertiser::init(
+        "ADT Service",                          // Name
+        BLE_GAP_APPEARANCE_GENERIC_TAG,         // Appearance
+        BLE_GAP_LE_ROLE_PERIPHERAL,             // Role
+        {service}                               // Services
+    );
 
-    // Create a BLE service and characteristic inline
-    BleAdvertiser::init("ADT Test", BLE_GAP_APPEARANCE_GENERIC_TAG, BLE_GAP_LE_ROLE_PERIPHERAL, {
-        std::make_shared<BleService>("00000000-0000-0000-0000-000000012346", std::vector<std::shared_ptr<BleCharacteristic>>{
-            std::make_shared<BleCharacteristic>(
-                "12345670-0000-0000-0000-000000000000",
-                [](std::vector<std::byte> data)
-                {
-                    ESP_LOGI(TAG, "received message of size %d", data.size());
-
-                    // Convert the data to a string
-                    std::string str(reinterpret_cast<const char *>(data.data()), data.size());
-
-                    // Print the data
-                    ESP_LOGI(TAG, "received data: %s", str.c_str());
-                    return 0;
-                },
-                []() -> std::vector<std::byte>
-                {
-                    return std::vector<std::byte>{};
-                },
-                false,
-                true,
-                true
-            )
-        })
-    });
-
-
+    // Start advertising
+    BleAdvertiser::advertise();
 }

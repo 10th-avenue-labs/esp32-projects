@@ -29,18 +29,20 @@ public:
      * @param uuid The UUID of the characteristic
      * @param onWrite The callback for write access
      * @param onRead The callback for read access
-     * @param read Flag for whether or not to allow read access
-     * @param write Flag for whether or not to allow write access
      * @param acknowledgeWrites Flag for write acknowledgment
      */
     BleCharacteristic(
         std::string uuid,
         std::function<int(std::vector<std::byte>)> onWrite,
         std::function<std::vector<std::byte>(void)> onRead,
-        bool read,
-        bool write,
         bool acknowledgeWrites
     );
+
+    // Copy constructor (from an lvalue)
+    BleCharacteristic(const BleCharacteristic& other) = delete;
+
+    // Move constructor (from an rvalue)
+    BleCharacteristic(BleCharacteristic&& other);
 
     /**
      * @brief Destroy the Ble Characteristic object
@@ -53,7 +55,7 @@ public:
     esp_err_t populateGattCharacteristicDefinition(ble_gatt_chr_def* gattCharacteristicDefinition);
 
 
-    static int BleCharacteristic::characteristicAccessHandler
+    static int characteristicAccessHandler
     (
         uint16_t conn_handle,
         uint16_t attr_handle,

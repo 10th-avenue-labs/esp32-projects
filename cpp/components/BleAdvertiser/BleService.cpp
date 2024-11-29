@@ -1,10 +1,11 @@
 #include "BleService.h"
-#include <host/ble_gatt.h>
 
 const char* TAG = "BLE_SERVICE";
 
-BleService::BleService(std::string uuid, std::vector<BleCharacteristic>&& characteristics)
+BleService::BleService(string uuid, vector<BleCharacteristic>&& characteristics)
 {
+    ESP_LOGW(TAG, "constructor called with movable args");
+
     // Move the characteristics into a shared pointer
     for (auto& characteristic : characteristics) {
         // Convert each Characteristic to a shared_ptr and move it
@@ -23,9 +24,11 @@ BleService::BleService(std::string uuid, std::vector<BleCharacteristic>&& charac
 };
 
 
-BleService::BleService(std::string uuid, std::vector<shared_ptr<BleCharacteristic>> characteristics):
+BleService::BleService(string uuid, vector<shared_ptr<BleCharacteristic>> characteristics):
     characteristics(characteristics)
 {
+    ESP_LOGW(TAG, "constructor called with shared args");
+
     // Populate the UUID structure from the UUID string
     // TODO: We could make this function return a value most likely
     BleCharacteristic::uuidStringToUuid(uuid, this->uuidDefinition);
@@ -38,6 +41,7 @@ BleService::BleService(std::string uuid, std::vector<shared_ptr<BleCharacteristi
 
 BleService::~BleService()
 {
+    ESP_LOGW(TAG, "destructor called");
     free(gattCharacteristicDefinitions);
 }
 
@@ -69,6 +73,8 @@ esp_err_t BleService::createGattCharacteristicDefinitions() {
 
     // Add the terminator { 0 } at the end
     gattCharacteristicDefinitions[characteristicsLength] = (struct ble_gatt_chr_def){ 0 };
+
+    return ESP_OK;
 }
 
 esp_err_t BleService::populateGattServiceDefinition(ble_gatt_svc_def* gattServiceDefinition) {

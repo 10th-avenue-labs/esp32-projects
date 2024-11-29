@@ -3,11 +3,15 @@ using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
 using Tmds.DBus;
 
-const string TARGET = "ADT Test";
+const string TARGET = "ADT Service";
+
 const string ARBITRARY_DATA_TRANSFER_SERVICE_UUID =                     "00000000-0000-0000-0000-000000012346";
 const string ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID =          "12345670-0000-0000-0000-000000000000";
 const string ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID = "12345679-0000-0000-0000-000000000000";
 const string ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID =      "12345678-0000-0000-0000-000000000000";
+
+const string TEST_SERVICE_UUID = "10000000-0000-0000-0000-000000000000";
+const string TEST_CHARACTERISTIC_UUID = "10000000-1000-0000-0000-000000000000";
 
 const int MTU_RESERVED_BYTES = 3;
 
@@ -73,6 +77,49 @@ await device.ConnectAsync();
 await device.WaitForPropertyValueAsync("Connected", value: true, timeout);
 await device.WaitForPropertyValueAsync("ServicesResolved", value: true, timeout);
 Console.WriteLine("Connected to device.");
+
+///////////////////////////////////////////////////////////////////////////////
+/// Get the test service and characteristics
+///////////////////////////////////////////////////////////////////////////////
+
+// Get the test service
+Console.WriteLine($"Searching for test service.");
+var testService = await device.GetServiceAsync(TEST_SERVICE_UUID);
+if (testService == null) {
+    var services = await device.GetServicesAsync();
+    Console.WriteLine($"Could not find test service with ID '{TEST_SERVICE_UUID}'. Instead found the following:");
+    foreach(var found in services) {
+        await PrintServiceInfo(found);
+    }
+    return 0;
+}
+await PrintServiceInfo(testService);
+
+// Get the test characteristic
+Console.WriteLine($"Searching for test characteristic.");
+var testCharacteristic = await testService.GetCharacteristicAsync(TEST_CHARACTERISTIC_UUID);
+if (testCharacteristic == null) {
+    var characteristics = await testService.GetCharacteristicsAsync();
+    Console.WriteLine($"Could not find test characteristic with ID '{TEST_CHARACTERISTIC_UUID}'. Instead found the following:");
+    foreach(var found in characteristics) {
+        await PrintCharacteristicInfo(found);
+    }
+    return 0;
+}
+await PrintCharacteristicInfo(testCharacteristic);
+
+// Read the test characteristic
+var testBytes = await testCharacteristic.ReadValueAsync(new Dictionary<string, object>());
+var testValue = Encoding.ASCII.GetString(testBytes);
+Console.WriteLine($"Test value: {testValue}");
+
+// Write the test characteristic
+var testMessage = "Hello, World From Central!";
+var testMessageBytes = Encoding.ASCII.GetBytes(testMessage);
+await testCharacteristic.WriteValueAsync(testMessageBytes, new Dictionary<string, object>());
+Console.WriteLine($"Wrote test message: {testMessage}");
+
+return 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Get arbitrary data transfer service and characteristics

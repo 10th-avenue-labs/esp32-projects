@@ -55,6 +55,8 @@ public:
         std::vector<std::shared_ptr<BleService>>&& services
     );
 
+    // TODO: Constructor with rvalue args
+
     /**
      * @brief Advertise the BLE device. This function will not return until the BLE stack is stopped
      * 

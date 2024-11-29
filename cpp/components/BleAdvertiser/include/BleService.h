@@ -1,13 +1,14 @@
 #ifndef BLE_SERVICE_H
 #define BLE_SERVICE_H
 
+#include <memory>
 #include "BleCharacteristic.h"
 #include <vector>
 #include <string>
-#include <memory>
 
 extern "C" {
     #include <host/ble_uuid.h>
+    #include <host/ble_gatt.h>
     #include <esp_err.h>
     #include <esp_log.h>
 }
@@ -33,6 +34,12 @@ public:
      * @param characteristics An array of characteristics
      */
     BleService(string uuid, vector<shared_ptr<BleCharacteristic>> characteristics);
+
+    // Copy constructor (from an lvalue)
+    BleService(const BleService& other) = delete;
+
+    // Move constructor (from an rvalue)
+    BleService(BleService&& other) = delete;
 
     /**
      * @brief Destroy the Ble Service object

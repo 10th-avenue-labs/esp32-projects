@@ -6,23 +6,35 @@ BleCharacteristic::BleCharacteristic(
     std::string uuid,
     std::function<int(std::vector<std::byte>)> onWrite,
     std::function<std::vector<std::byte>(void)> onRead,
-    bool read,
-    bool write,
     bool acknowledgeWrites
 ):
-    // TODO: Refactor this such that the read and write flags are implicit by the presence or absence of the callbacks
     onWrite(onWrite),
     onRead(onRead),
-    read(read),
-    write(write),
     acknowledgeWrites(acknowledgeWrites)
 {
+    ESP_LOGW(TAG, "constructor called");
+
+    // Set the read and write flags
+    read = onRead != nullptr;
+    write = onWrite != nullptr;
+
     // Populate the UUID structure from the UUID string
     ESP_ERROR_CHECK(uuidStringToUuid(uuid, this->uuidDefinition));
 };
 
+// // Copy constructor (from an lvalue)
+// BleCharacteristic::BleCharacteristic(const BleCharacteristic& other) {
+//     ESP_LOGW(TAG, "copy constructor called");
+// }
+
+// Move constructor (from an rvalue)
+BleCharacteristic::BleCharacteristic(BleCharacteristic&& other) {
+    ESP_LOGW(TAG, "move constructor called");
+}
+
 BleCharacteristic::~BleCharacteristic()
 {
+    ESP_LOGW(TAG, "destructor called");
     delete characteristicHandle;
 }
 
@@ -30,8 +42,8 @@ esp_err_t BleCharacteristic::populateGattCharacteristicDefinition(ble_gatt_chr_d
     // Populate the flags
     ble_gatt_chr_flags flags = 0;
     flags = flags | (read ? BLE_GATT_CHR_F_READ : 0);
-    ble_gatt_chr_flags acknowledgeWrites = acknowledgeWrites ? BLE_GATT_CHR_F_WRITE : BLE_GATT_CHR_F_WRITE_NO_RSP;
-    flags = write ? (flags | acknowledgeWrites) : flags;
+    ble_gatt_chr_flags acknowledgeWritesFlag = acknowledgeWrites ? BLE_GATT_CHR_F_WRITE : BLE_GATT_CHR_F_WRITE_NO_RSP;
+    flags = write ? (flags | acknowledgeWritesFlag) : flags;
 
     *gattCharacteristicDefinition = (struct ble_gatt_chr_def)
     {
