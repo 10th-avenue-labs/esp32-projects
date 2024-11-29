@@ -9,8 +9,10 @@
 extern "C"
 {
     #include <host/ble_uuid.h>
+    #include <host/ble_gatt.h>
     #include <esp_err.h>
     #include <string.h>
+    #include <host/ble_hs.h>
 }
 
 class BleCharacteristic {
@@ -46,19 +48,21 @@ public:
      */
     ~BleCharacteristic();
 
-    /**
-     * @brief Get the UUID pointer
-     * 
-     * Note: This function exists due to the poor memory management of this BLE library. Almost everything is passed by value, so when copies of variables are made,
-     * this ensures that the UUID pointer still points to the correct memory location. It would be better if we instead had a variable for the actual structure, rather than a pointer,
-     * but then the structure would point to a different memory location when copied and when creating a `ble_gatt_chr_def` in the advertiser, we need a pointer to the UUID.
-     * 
-     * Correct memory management where everything is appropriately passed by reference and ownership is managed more appropriately would eliminate the need to use
-     * a pointer type (ble_uuid_any_t*) here rather than a value type (ble_uuid_any_t*).
-     * 
-     * @return ble_uuid_any_t* The UUID pointer
-     */
-    ble_uuid_any_t* getUuidPointer();
+
+
+    esp_err_t populateGattCharacteristicDefinition(ble_gatt_chr_def* gattCharacteristicDefinition);
+
+
+    static int BleCharacteristic::characteristicAccessHandler
+    (
+        uint16_t conn_handle,
+        uint16_t attr_handle,
+        struct ble_gatt_access_ctxt *ctxt,
+        void *arg
+    );
+
+
+
 
     /**
      * @brief Convert a hex string to a uint8_t. The hex string should be 2 characters long.
@@ -80,8 +84,8 @@ public:
      */
     static esp_err_t uuidStringToUuid(std::string uuid, ble_uuid_any_t& result);
 private:
-    ble_uuid_any_t* uuidPointer = new ble_uuid_any_t;
-    std::string uuid;
+    ble_uuid_any_t uuidDefinition;
+    uint16_t* characteristicHandle = new uint16_t(0);
 };
 
 #endif // BLE_CHARACTERISTIC_H

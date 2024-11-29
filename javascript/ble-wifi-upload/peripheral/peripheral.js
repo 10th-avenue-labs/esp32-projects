@@ -39,7 +39,6 @@ const ledService = {
 // If you absolutely require two or more 128 bit UUIDs then you will have to specify your own raw advertising data packets with NRF.setAdvertising
 
 
-
 NRF.setServices({
     '12345600-1234-5678-1234-56789abcdef0': ledService
 }, { uart: false })

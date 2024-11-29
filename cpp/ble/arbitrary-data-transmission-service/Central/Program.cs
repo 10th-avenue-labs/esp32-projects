@@ -1,11 +1,13 @@
 ﻿using System.Text;
 using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
+using Tmds.DBus;
 
 const string TARGET = "ADT Test";
-const string ARBITRARY_DATA_TRANSFER_SERVICE_UUID = "00000000-0000-0000-0000-000000012346";
-const string ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID = "12345670-0000-0000-0000-000000000000";
+const string ARBITRARY_DATA_TRANSFER_SERVICE_UUID =                     "00000000-0000-0000-0000-000000012346";
+const string ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID =          "12345670-0000-0000-0000-000000000000";
 const string ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID = "12345679-0000-0000-0000-000000000000";
+const string ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID =      "12345678-0000-0000-0000-000000000000";
 
 const int MTU_RESERVED_BYTES = 3;
 
@@ -121,15 +123,44 @@ if (transmissionCharacteristic == null) {
 }
 await PrintCharacteristicInfo(transmissionCharacteristic);
 
-// Attempt to transfer large data
-// var data = new byte[256];
-var partA = new string ('a', 249);
-var partB = new string ('b', 249);
-var partC = new string ('c', 249);
-var message = $"{partA}{partB}{partC}";
-await TransmittLargeData(transmissionCharacteristic, mtu, [.. Encoding.ASCII.GetBytes(message)]);
+// Get the receive characteristic
+Console.WriteLine($"Searching for Receive characteristic.");
+var receiveCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID);
+if (receiveCharacteristic == null) {
+    var characteristics = await arbitraryDataTransferService.GetCharacteristicsAsync();
+    Console.WriteLine($"Could not find Receive characteristic with ID '{ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID}'. Instead found the following:");
+    foreach(var found in characteristics) {
+        await PrintCharacteristicInfo(found);
+    }
+    return 0;
+}
+await PrintCharacteristicInfo(receiveCharacteristic);
 
-return 0;
+///////////////////////////////////////////////////////////////////////////////
+/// Attempt to transfer large data
+///////////////////////////////////////////////////////////////////////////////
+
+// // Attempt to transfer large data
+// // var data = new byte[256];
+// var partA = new string ('a', 249);
+// var partB = new string ('b', 249);
+// var partC = new string ('c', 249);
+// var message = $"{partA}{partB}{partC}";
+// await TransmittLargeData(transmissionCharacteristic, mtu, [.. Encoding.ASCII.GetBytes(message)]);
+
+///////////////////////////////////////////////////////////////////////////////
+/// Attempt to receive large data
+///////////////////////////////////////////////////////////////////////////////
+
+// arbitraryDataTransferService.WatchPropertiesAsync
+
+await receiveCharacteristic.WatchPropertiesAsync((PropertyChanges changes) => {
+    Console.WriteLine("Something changed");
+});
+
+while(true) {
+    await Task.Delay(1000);
+}
 
 
 async Task TransmittLargeData(GattCharacteristic transmissionCharacteristic, UInt16 mtu, List<byte> data) {

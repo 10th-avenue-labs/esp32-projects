@@ -40,12 +40,14 @@ public:
      * @param serviceUuid The UUID of the service
      * @param mtuCharacteristicUuid The UUID of the MTU characteristic
      * @param transmissionCharacteristicUuid The UUID of the transmission characteristic
+     * @param receiveCharacteristicUuid The UUID of the receive characteristic
      * @param onMessageReceived The callback function for when a message is received
      */
     AdtService(
         std::string serviceUuid,
         std::string mtuCharacteristicUuid,
         std::string transmissionCharacteristicUuid,
+        std::string receiveCharacteristicUuid,
         std::function<void(std::vector<std::byte>)> onMessageReceived
     );
 

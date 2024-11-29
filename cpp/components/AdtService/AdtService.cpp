@@ -6,6 +6,7 @@ AdtService::AdtService(
     std::string serviceUuid,
     std::string mtuCharacteristicUuid,
     std::string transmissionCharacteristicUuid,
+    std::string receiveCharacteristicUuid,
     std::function<void(std::vector<std::byte>)> onMessageReceived
 ) {
     // Set the message received delegate
@@ -120,6 +121,14 @@ AdtService::AdtService(
             nullptr,    // No read callback
             false,      // Cannot read
             true,       // Can write
+            false       // No write acknowledgment
+        ),
+        BleCharacteristic(
+            receiveCharacteristicUuid,
+            nullptr,    // No write callback
+            nullptr,    // No read callback
+            true,       // Can read
+            false,      // Cannot write
             false       // No write acknowledgment
         )
     });

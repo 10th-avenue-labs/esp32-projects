@@ -4,14 +4,19 @@
 #include "BleCharacteristic.h"
 #include <vector>
 #include <string>
+#include <memory>
 
 extern "C" {
     #include <host/ble_uuid.h>
+    #include <esp_err.h>
+    #include <esp_log.h>
 }
+
+using namespace std;
 
 class BleService {
 public:
-    std::vector<BleCharacteristic> characteristics;
+    vector<shared_ptr<BleCharacteristic>> characteristics;
 
     /**
      * @brief Construct a new Ble Service object
@@ -19,7 +24,15 @@ public:
      * @param uuid The UUID of the service
      * @param characteristics An array of characteristics
      */
-    BleService(std::string uuid, std::vector<BleCharacteristic> characteristics);
+    BleService(string uuid, vector<BleCharacteristic>&& characteristics);
+
+    /**
+     * @brief Construct a new Ble Service object
+     * 
+     * @param uuid The UUID of the service
+     * @param characteristics An array of characteristics
+     */
+    BleService(string uuid, vector<shared_ptr<BleCharacteristic>> characteristics);
 
     /**
      * @brief Destroy the Ble Service object
@@ -27,15 +40,18 @@ public:
      */
     ~BleService();
 
-    /**
-     * @brief Get the UUID pointer
-     * 
-     * @return ble_uuid_any_t* The UUID pointer
-     */
-    ble_uuid_any_t* getUuidPointer();
+
+    // ble_gatt_svc_def* getGattServiceDefinition();
+
+
+    esp_err_t createGattCharacteristicDefinitions();
+
+    // Populate the gatt service definition into a specified piece of memory
+    esp_err_t populateGattServiceDefinition(ble_gatt_svc_def* gattServiceDefinition);
+
 private:
-    ble_uuid_any_t* uuidPointer = new ble_uuid_any_t;
-    std::string uuid;
+    ble_uuid_any_t uuidDefinition;
+    ble_gatt_chr_def* gattCharacteristicDefinitions;
 };
 
 #endif // BLE_SERVICE_H
