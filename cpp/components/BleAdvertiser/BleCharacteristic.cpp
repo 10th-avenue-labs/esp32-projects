@@ -28,9 +28,35 @@ BleCharacteristic::BleCharacteristic(
     ESP_ERROR_CHECK(uuidStringToUuid(uuid, this->uuidDefinition));
 };
 
+
+// void print16ByteUUID(ble_uuid_any_t uuid) {
+//     for (int i = 0; i < 16; i++) {
+//         printf("%02x", uuid.u128.value[i]);
+//     }
+// }
+
+
 BleCharacteristic::BleCharacteristic(BleCharacteristic&& other) {
     ESP_LOGW(TAG, "move constructor called");
-    // TODO: Implement move constructor
+    this->uuidDefinition = std::move(other.uuidDefinition);
+    this->onWrite = std::move(other.onWrite);
+    this->onRead = std::move(other.onRead);
+    this->onSubscribe = std::move(other.onSubscribe);
+    this->acknowledgeWrites = std::move(other.acknowledgeWrites);
+
+    // // Log both the old and new values in a table-like format
+    // ESP_LOGI(TAG, "old value\tnew value");
+    // ESP_LOGI(TAG, "Uuid: ");
+    // print16ByteUUID(other.uuidDefinition);
+    // printf("\t");
+    // print16ByteUUID(this->uuidDefinition);
+    // printf("\n");
+
+    // // Log whether the functions are set or empty
+    // ESP_LOGI(TAG, "onWrite: %s\t%s\n", other.onWrite ? "set" : "empty", this->onWrite ? "set" : "empty");
+    // ESP_LOGI(TAG, "onRead: %s\t%s\n", other.onRead ? "set" : "empty", this->onRead ? "set" : "empty");
+    // ESP_LOGI(TAG, "onSubscribe: %s\t%s\n", other.onSubscribe ? "set" : "empty", this->onSubscribe ? "set" : "empty");
+    // ESP_LOGI(TAG, "acknowledgeWrites: %d\t%d\n", other.acknowledgeWrites, this->acknowledgeWrites);
 }
 
 BleCharacteristic::~BleCharacteristic()

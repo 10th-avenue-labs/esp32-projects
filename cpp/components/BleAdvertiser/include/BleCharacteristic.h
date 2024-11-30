@@ -19,6 +19,33 @@ extern "C"
 
 using namespace std;
 
+/**
+ * In order to make everything truly as robust and efficient as possible, while also being remarkable easy to use. We might consider a refactor.
+ * 
+ * In the refactor, we would create a shared data class or struct `BleCharacteristicData` that would hold ALL the characteristics data.
+ *  - Some data in the BleCharacteristicData NEEDS to be shared (uuidDefinition, characteristicHandle, and callbacks). This data MUST be shared because on BLE init,
+ *    we reference specific memory locations to init. These same memory location are then used again later in the BLE stack. If we were to move or destroy
+ *    the data after this point, we would have a dangling pointer, thus needing the data to be shared. Right now we "share" the data by preventing this class
+ *    from ever being copied. Right now we allow move, but this can probably lead to bugs in some scenarios. We only allow move right now because we have to
+ *    in order for things to compile with how we're currently using the class. It isn't actually moved at runtime from tests.
+ *  - Other data id the class (flags) doesn't NEED to be shared, but it also doesn't make any sense for the data to be duplicated. This data is all essentially
+ *    either computed or const on initialization. We could share it strictly for memory efficiency and logical design (not giving the user enough rope to get confused).
+ * The BleCharacteristic class would then be a wrapper around the BleCharacteristicData class with smart pointers keeping track of the data. This would make it so that
+ * users of this class could essentially do whatever they want, copy, move, assign, etc without any consequences. Copying the class would simply increment
+ * the shared pointers usage.
+ * 
+ * Pros:
+ *  - The class would be more robust/more understandable/and more permissive in it's use.
+ * Cons:
+ *  - The current implementation forces the user to use shared pointers themselves. This way they know that the class con not be copied or moved.
+ *     - Is this really a good thing? This would make writing helper functions quite difficult. It seems that situations could arise where it would be useful
+ *       to copy the class, like a helper function to perhaps print class information. With the current implementation this would not be possible.
+ * 
+ * In either case, it would be a good idea for BleService and BleDevice to be refactored in the same way with BleAdvertiser taking as many similarities as it can.
+ * 
+ * Conclusion: The refactor would be a good idea, but we're going to table this for now.
+ */
+
 class BleCharacteristic {
 public:
     function<int(vector<byte>)> onWrite;
