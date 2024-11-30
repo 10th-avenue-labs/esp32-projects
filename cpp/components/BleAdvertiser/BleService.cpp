@@ -1,6 +1,6 @@
 #include "BleService.h"
 
-const char* TAG = "BLE_SERVICE";
+static const char* TAG = "BLE_SERVICE";
 
 BleService::BleService(string uuid, vector<BleCharacteristic>&& characteristics)
 {

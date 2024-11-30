@@ -5,7 +5,7 @@ static uint8_t esp_uri[] = {BLE_GAP_URI_PREFIX_HTTPS, '/', '/', 'e', 's', 'p', '
 static char* TAG = "BLE_ADVERTISER";
 
 // Define static members to satisfy the compiler. These will be overwritten by the init function
-std::string BleAdvertiser::deviceName = "esp32_bluetooth";
+string BleAdvertiser::deviceName = "esp32_bluetooth";
 uint16_t BleAdvertiser::deviceAppearance = 0;
 uint8_t BleAdvertiser::deviceRole = 0;
 bool BleAdvertiser::initiated = false;
@@ -13,23 +13,28 @@ uint8_t BleAdvertiser::deviceAddress[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 uint8_t BleAdvertiser::deviceAddressType = 0;
 uint16_t BleAdvertiser::mtu = 0;
 ble_gatt_svc_def* BleAdvertiser::gattServiceDefinitions = nullptr;
-std::vector<std::shared_ptr<BleService>> BleAdvertiser::services = {};
+vector<shared_ptr<BleService>> BleAdvertiser::services = {};
+function<void(shared_ptr<BleDevice> device)> BleAdvertiser::onDeviceConnected = nullptr;
+map<uint16_t, shared_ptr<BleDevice>> BleAdvertiser::connectedDevicesByHandle = {};
+map<uint16_t*, shared_ptr<BleCharacteristic>> BleAdvertiser::characteristicsByHandle = {};
 
 ////////////////////////////////////////////////////////////////////////////
 // Public functions
 ////////////////////////////////////////////////////////////////////////////
 
 bool BleAdvertiser::init(
-    std::string deviceName,
+    string deviceName,
     uint16_t deviceAppearance,
     uint8_t deviceRole,
-    std::vector<std::shared_ptr<BleService>>&& services
+    vector<shared_ptr<BleService>>&& services,
+    function<void(shared_ptr<BleDevice> device)> onDeviceConnected
 ) {
     // Initialize static variables
     BleAdvertiser::deviceName = deviceName;
     BleAdvertiser::deviceAppearance = deviceAppearance;
     BleAdvertiser::deviceRole = deviceRole;
-    BleAdvertiser::services = std::move(services);
+    BleAdvertiser::services = move(services);
+    BleAdvertiser::onDeviceConnected = onDeviceConnected;
 
     // Initialise the non-volatile flash storage (NVS)
     ESP_LOGI(TAG, "initializing nvs flash");
@@ -221,51 +226,63 @@ int BleAdvertiser::gapEventHandler(struct ble_gap_event *event, void *arg) {
     // Handle different GAP events
     switch (event->type) {
         // Connect event
-        case BLE_GAP_EVENT_CONNECT:
+        case BLE_GAP_EVENT_CONNECT: {
             // A new connection was established or a connection attempt failed.
             ESP_LOGI(TAG, "connection %s; status=%d",
                     event->connect.status == 0 ? "established" : "failed",
                     event->connect.status);
 
-            // Connection succeeded
-            if (event->connect.status == 0) {
-                // Check connection handle
-                response = ble_gap_conn_find(event->connect.conn_handle, &connectionDescription);
-                if (response != 0) {
-                    ESP_LOGE(TAG,
-                            "failed to find connection by handle, error code: %d",
-                            response);
-                    return response;
-                }
-
-                // Print connection descriptor
-                printConnectionDescription(&connectionDescription);
-
-                // Try to update connection parameters
-                struct ble_gap_upd_params params = {.itvl_min = connectionDescription.conn_itvl,
-                                                    .itvl_max = connectionDescription.conn_itvl,
-                                                    .latency = 3,
-                                                    .supervision_timeout =
-                                                        connectionDescription.supervision_timeout};
-                response = ble_gap_update_params(event->connect.conn_handle, &params);
-                if (response != 0) {
-                    ESP_LOGE(
-                        TAG,
-                        "failed to update connection parameters, error code: %d",
-                        response);
-                    return response;
-                }
-
-                // Exchange MTU
-                ble_gattc_exchange_mtu(event->connect.conn_handle, mtuEventHandler, NULL);
-            }
-            // Connection failed, restart advertising
-            else
-            {
+            // Check if the connection failed
+            if(event->connect.status != 0) {
                 startAdvertising();
+                return response;
             }
-            return response;
 
+            // Check connection handle
+            response = ble_gap_conn_find(event->connect.conn_handle, &connectionDescription);
+            if (response != 0) {
+                ESP_LOGE(TAG,
+                        "failed to find connection by handle, error code: %d",
+                        response);
+                return response;
+            }
+
+            // Print connection descriptor
+            printConnectionDescription(&connectionDescription);
+
+            // Try to update connection parameters
+            struct ble_gap_upd_params params = {.itvl_min = connectionDescription.conn_itvl,
+                                                .itvl_max = connectionDescription.conn_itvl,
+                                                .latency = 3,
+                                                .supervision_timeout =
+                                                    connectionDescription.supervision_timeout};
+            response = ble_gap_update_params(event->connect.conn_handle, &params);
+            if (response != 0) {
+                ESP_LOGE(
+                    TAG,
+                    "failed to update connection parameters, error code: %d",
+                    response);
+                return response;
+            }
+
+            // Exchange MTU
+            ble_gattc_exchange_mtu(event->connect.conn_handle, mtuEventHandler, NULL);
+
+            // Create a new BleDevice
+            shared_ptr<BleDevice> device = make_shared<BleDevice>(
+                event->connect.conn_handle
+            );
+
+            // Add the device to the list of connected devices
+            connectedDevicesByHandle[event->connect.conn_handle] = device;
+
+            // Call the onDeviceConnected callback
+            if (onDeviceConnected != nullptr) {
+                onDeviceConnected(device);
+            }
+
+            return response;
+        }
         // Disconnect event
         case BLE_GAP_EVENT_DISCONNECT:
             // A connection was terminated, print connection descriptor
@@ -276,6 +293,35 @@ int BleAdvertiser::gapEventHandler(struct ble_gap_event *event, void *arg) {
             startAdvertising();
             return response;
 
+        case BLE_GAP_EVENT_SUBSCRIBE: {
+            // A client has subscribed to notifications or indications
+            ESP_LOGI(TAG, "subscribe event; conn_handle=%d attr_handle=%d",
+                    event->subscribe.conn_handle, event->subscribe.attr_handle);
+
+            // Get the device that subscribed
+            shared_ptr<BleDevice> device = connectedDevicesByHandle[event->subscribe.conn_handle];
+
+            // Find the characteristic subscribed to by it's handle
+            shared_ptr<BleCharacteristic> characteristic = nullptr;
+            for(auto const& [key, val] : characteristicsByHandle) {
+                if (*key == event->subscribe.attr_handle) {
+                    characteristic = val;
+                    break;
+                }
+            }
+
+            if (characteristic == nullptr) {
+                // There are some default characteristics added by the nimble stack that do not exist in this map, but that can be subscribed to
+                return response;
+            }
+
+            // Call the onSubscribe callback
+            if (characteristic.get()->onSubscribe != nullptr) {
+                characteristic.get()->onSubscribe(device);
+            }
+
+            return response;
+        }
         // Connection parameters update event
         case BLE_GAP_EVENT_CONN_UPDATE:
             // The central has updated the connection parameters.
@@ -508,6 +554,19 @@ esp_err_t BleAdvertiser::createGattServiceDefinitions() {
         esp_err_t response = services[index].get()->populateGattServiceDefinition(&gattServiceDefinitions[index]);
 
         // TODO: Handle the error
+    }
+
+    // Index the characteristics by their handles
+    for (size_t index = 0; index < servicesLength; index++) {
+        // Get the characteristics for the service
+        vector<shared_ptr<BleCharacteristic>> characteristics = services[index].get()->characteristics;
+        for (size_t characteristicIndex = 0; characteristicIndex < characteristics.size(); characteristicIndex++) {
+            // Get the characteristic handle
+            uint16_t* characteristicHandle = characteristics[characteristicIndex].get()->getHandle();
+
+            // Index the characteristic by it's handle
+            characteristicsByHandle[characteristicHandle] = characteristics[characteristicIndex];
+        }
     }
 
     // Add the terminator { 0 } at the end

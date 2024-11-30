@@ -3,13 +3,15 @@
 static const char* TAG = "BLE_CHARACTERISTIC";
 
 BleCharacteristic::BleCharacteristic(
-    std::string uuid,
-    std::function<int(std::vector<std::byte>)> onWrite,
-    std::function<std::vector<std::byte>(void)> onRead,
+    string uuid,
+    function<int(vector<byte>)> onWrite,
+    function<vector<byte>(void)> onRead,
+    function<void(shared_ptr<BleDevice>)> onSubscribe,
     bool acknowledgeWrites
 ):
     onWrite(onWrite),
     onRead(onRead),
+    onSubscribe(onSubscribe),
     acknowledgeWrites(acknowledgeWrites)
 {
     ESP_LOGW(TAG, "constructor called");
@@ -38,12 +40,32 @@ BleCharacteristic::~BleCharacteristic()
     delete characteristicHandle;
 }
 
+esp_err_t BleCharacteristic::notify(vector<shared_ptr<BleDevice>> devices, vector<byte> data) {
+
+    os_mbuf* om = os_msys_get_pkthdr(data.size(), 0);
+
+    // Copy the data to the nimble stack
+    int response = os_mbuf_append(om, data.data(), data.size());
+
+    ble_gatts_notify_custom(
+        devices[0]->connectionHandle,
+        *characteristicHandle,
+        om
+    );
+
+    return ESP_OK;
+}
+
+
+
 esp_err_t BleCharacteristic::populateGattCharacteristicDefinition(ble_gatt_chr_def* gattCharacteristicDefinition) {
     // Populate the flags
     ble_gatt_chr_flags flags = 0;
     flags = flags | (read ? BLE_GATT_CHR_F_READ : 0);
     ble_gatt_chr_flags acknowledgeWritesFlag = acknowledgeWrites ? BLE_GATT_CHR_F_WRITE : BLE_GATT_CHR_F_WRITE_NO_RSP;
     flags = write ? (flags | acknowledgeWritesFlag) : flags;
+    // TODO: Add support for notify and indicate. This should be passed in from the constructor
+    flags = flags | BLE_GATT_CHR_F_NOTIFY;
 
     *gattCharacteristicDefinition = (struct ble_gatt_chr_def)
     {
@@ -51,7 +73,7 @@ esp_err_t BleCharacteristic::populateGattCharacteristicDefinition(ble_gatt_chr_d
         .access_cb = characteristicAccessHandler,
         .arg = this,
         .flags = flags,
-        .val_handle = characteristicHandle
+        .val_handle = characteristicHandle,
     };
 
     return ESP_OK;
@@ -96,7 +118,7 @@ int BleCharacteristic::characteristicAccessHandler
             }
 
             // Get the data from the characteristic
-            std::vector<std::byte> data = characteristic->onRead();
+            vector<byte> data = characteristic->onRead();
 
             // Copy the data to the nimble stack
             int response = os_mbuf_append(ctxt->om, data.data(), data.size());
@@ -131,9 +153,9 @@ int BleCharacteristic::characteristicAccessHandler
             }
 
             // Convert the data to a vector of bytes
-            std::vector<std::byte> data = std::vector<std::byte>(
-                (std::byte*) ctxt->om->om_data,
-                (std::byte*) ctxt->om->om_data + ctxt->om->om_len
+            vector<byte> data = vector<byte>(
+                (byte*) ctxt->om->om_data,
+                (byte*) ctxt->om->om_data + ctxt->om->om_len
             );
 
             // Call the write callback
@@ -169,13 +191,13 @@ int BleCharacteristic::characteristicAccessHandler
 
 // These function should be moved to a helper class
 
-esp_err_t BleCharacteristic::hexStringToUint8(const std::string& hexStr, uint8_t& result) {
+esp_err_t BleCharacteristic::hexStringToUint8(const string& hexStr, uint8_t& result) {
     if (hexStr.size() != 2) {
         return ESP_ERR_INVALID_ARG;
     }
 
-    // Convert the string to an integer using std::stoi with base 16
-    int value = std::stoi(hexStr, nullptr, 16);
+    // Convert the string to an integer using stoi with base 16
+    int value = stoi(hexStr, nullptr, 16);
 
     // Ensure the value fits in a uint8_t
     if (value < 0 || value > 255) {
@@ -187,9 +209,9 @@ esp_err_t BleCharacteristic::hexStringToUint8(const std::string& hexStr, uint8_t
     return ESP_OK;
 };
 
-esp_err_t BleCharacteristic::uuidStringToUuid(std::string uuid, ble_uuid_any_t& result) {
+esp_err_t BleCharacteristic::uuidStringToUuid(string uuid, ble_uuid_any_t& result) {
     // Remove all dashes from string
-    uuid.erase(std::remove(uuid.begin(), uuid.end(), '-'), uuid.end());
+    uuid.erase(remove(uuid.begin(), uuid.end(), '-'), uuid.end());
 
     switch (uuid.size()) {
         // 128-bit UUID
@@ -201,7 +223,7 @@ esp_err_t BleCharacteristic::uuidStringToUuid(std::string uuid, ble_uuid_any_t& 
 
                 // uint8_t uuidBytes[16];
                 for (size_t i = 0; i < uuid.size(); i += 2) {
-                    std::string hexString = uuid.substr(i, 2);
+                    string hexString = uuid.substr(i, 2);
 
                     uint8_t val;
                     ESP_ERROR_CHECK(hexStringToUint8(hexString, val));

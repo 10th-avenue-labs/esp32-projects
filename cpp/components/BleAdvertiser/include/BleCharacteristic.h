@@ -1,10 +1,12 @@
 #ifndef BLE_CHARACTERISTIC_H
 #define BLE_CHARACTERISTIC_H
 
+#include <memory>
 #include <functional>
 #include <vector>
 #include <string>
 #include <algorithm>
+#include "BleDevice.h"
 
 extern "C"
 {
@@ -15,10 +17,13 @@ extern "C"
     #include <host/ble_hs.h>
 }
 
+using namespace std;
+
 class BleCharacteristic {
 public:
-    std::function<int(std::vector<std::byte>)> onWrite;
-    std::function<std::vector<std::byte>(void)> onRead;
+    function<int(vector<byte>)> onWrite;
+    function<vector<byte>(void)> onRead;
+    function<void(shared_ptr<BleDevice>)> onSubscribe;
     bool read;
     bool write;
     bool acknowledgeWrites;
@@ -32,9 +37,10 @@ public:
      * @param acknowledgeWrites Flag for write acknowledgment
      */
     BleCharacteristic(
-        std::string uuid,
-        std::function<int(std::vector<std::byte>)> onWrite,
-        std::function<std::vector<std::byte>(void)> onRead,
+        string uuid,
+        function<int(vector<byte>)> onWrite,
+        function<vector<byte>(void)> onRead,
+        function<void(shared_ptr<BleDevice>)> onSubscribe,
         bool acknowledgeWrites
     );
 
@@ -52,6 +58,11 @@ public:
 
 
 
+
+    esp_err_t notify(vector<shared_ptr<BleDevice>> devices, vector<byte> data);
+
+
+
     esp_err_t populateGattCharacteristicDefinition(ble_gatt_chr_def* gattCharacteristicDefinition);
 
 
@@ -63,8 +74,10 @@ public:
         void *arg
     );
 
-
-
+    // TODO: Move to impl
+    uint16_t* getHandle() {
+        return characteristicHandle;
+    }
 
     /**
      * @brief Convert a hex string to a uint8_t. The hex string should be 2 characters long.
@@ -74,7 +87,7 @@ public:
      * @param result The result
      * @return esp_err_t ESP_OK if successful, error code otherwise
      */
-    static esp_err_t hexStringToUint8(const std::string& hexStr, uint8_t& result);
+    static esp_err_t hexStringToUint8(const string& hexStr, uint8_t& result);
 
     /**
      * @brief Convert a UUID string to a ble_uuid_any_t. Currently this only supports 128-bit UUIDs. Something of the form "00000000-0000-0000-0000-000000000000"
@@ -84,7 +97,7 @@ public:
      * @param result The UUID structure to populate
      * @return esp_err_t ESP_OK if successful, error code otherwise
      */
-    static esp_err_t uuidStringToUuid(std::string uuid, ble_uuid_any_t& result);
+    static esp_err_t uuidStringToUuid(string uuid, ble_uuid_any_t& result);
 private:
     ble_uuid_any_t uuidDefinition;
     uint16_t* characteristicHandle = new uint16_t(0);

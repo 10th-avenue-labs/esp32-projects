@@ -4,6 +4,7 @@
 #include <string>
 #include "BleService.h"
 #include "BleCharacteristic.h"
+#include "BleDevice.h"
 #include <vector>
 #include <map>
 
@@ -24,6 +25,8 @@ extern "C"
     void ble_store_config_init(void); // For some reason we need to manually declare this one? Not sure why as it lives in a library
 }
 
+using namespace std;
+
 class BleAdvertiser {
     /**
      * Generally, the way the BLE advertiser works is as follows:
@@ -39,6 +42,8 @@ class BleAdvertiser {
      */
 
 public:
+    static map<uint16_t, shared_ptr<BleDevice>> connectedDevicesByHandle;
+
     /**
      * @brief Initialize the BLE advertiser
      * 
@@ -46,13 +51,15 @@ public:
      * @param deviceAppearance The BLE appearance
      * @param deviceRole The BLE role
      * @param services An array of GATT services
+     * @param onDeviceConnected The callback function to call when a device connects
      * @return true if successful, false otherwise
      */
     static bool init(
-        std::string deviceName,
+        string deviceName,
         uint16_t deviceAppearance,
         uint8_t deviceRole,
-        std::vector<std::shared_ptr<BleService>>&& services
+        vector<shared_ptr<BleService>>&& services,
+        function<void(shared_ptr<BleDevice> device)> onDeviceConnected
     );
 
     // TODO: Constructor with rvalue args
@@ -75,7 +82,7 @@ private:
     // Private constructor to prevent instantiation
     BleAdvertiser() = delete;
 
-    static std::string deviceName;
+    static string deviceName;
     static uint16_t deviceAppearance;
     static uint8_t deviceRole;
     static bool initiated;
@@ -83,7 +90,9 @@ private:
     static uint8_t deviceAddress[6];
     static uint16_t mtu;
     static ble_gatt_svc_def* gattServiceDefinitions;
-    static std::vector<std::shared_ptr<BleService>> services;
+    static vector<shared_ptr<BleService>> services;
+    static function<void(shared_ptr<BleDevice> device)> onDeviceConnected;
+    static map<uint16_t*, shared_ptr<BleCharacteristic>> characteristicsByHandle;
 
     ////////////////////////////////////////////////////////////////////////////
     // BLE helper functions

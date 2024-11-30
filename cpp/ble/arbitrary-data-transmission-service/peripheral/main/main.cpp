@@ -20,8 +20,18 @@ static const char *TAG = "adt service";
 #define BLE_GAP_APPEARANCE_GENERIC_TAG 0x0200
 #define BLE_GAP_LE_ROLE_PERIPHERAL 0x00
 
+static void bleAdvertiserTask(void* args) {
+    // Advertise the Ble Device
+    ESP_LOGI(TAG, "advertising BLE Device");
+    BleAdvertiser::advertise();
+
+    vTaskDelete(NULL);
+}
+
 extern "C" void app_main(void)
 {
+    bool* deviceSubscribed = new bool(false);
+
     // Create a BLE characteristic
     std::shared_ptr<BleCharacteristic> characteristic = std::make_shared<BleCharacteristic>(
         "10000000-1000-0000-0000-000000000000", // UUID
@@ -41,7 +51,7 @@ extern "C" void app_main(void)
             ESP_LOGI(TAG, "onRead called");
 
             // Create a message
-            std::string message = "Hello, World!";
+            std::string message = "Hello, World from peripheral!";
 
             // Convert the message to a vector of bytes and send the data
             return std::vector<std::byte>(
@@ -49,6 +59,10 @@ extern "C" void app_main(void)
                 reinterpret_cast<const std::byte*>(message.data()) + message.size()
             );
         },
+        [deviceSubscribed](shared_ptr<BleDevice> device){
+            ESP_LOGI(TAG, "onSubscribe called");
+            *deviceSubscribed = true;
+        },                                 // onSubscribe
         false                                   // acknowledgeWrites
     );
 
@@ -76,9 +90,39 @@ extern "C" void app_main(void)
         "ADT Service",                          // Name
         BLE_GAP_APPEARANCE_GENERIC_TAG,         // Appearance
         BLE_GAP_LE_ROLE_PERIPHERAL,             // Role
-        {service}                               // Services
+        {service},                              // Services
+        [](shared_ptr<BleDevice> device){                   // onDeviceConnected
+            ESP_LOGI(TAG, "Device connected");
+        }
     );
 
-    // Start advertising
-    BleAdvertiser::advertise();
+    // Create a task for the BLE advertiser
+    xTaskCreate(bleAdvertiserTask, "ble_advertiser", 4096, NULL, 5, NULL);
+
+    while(1) {
+        // Check if the device is connected
+        if (*deviceSubscribed) {
+            // Wait for a time while the connection finishes
+            // vTaskDelay(5000 / portTICK_PERIOD_MS);
+
+            // Create a message to sent to the device
+            std::string message = "Hello, World from main!";
+
+            // Convert the message to a vector of bytes
+            std::vector<std::byte> data(
+                reinterpret_cast<const std::byte*>(message.data()),
+                reinterpret_cast<const std::byte*>(message.data()) + message.size()
+            );
+
+            // Notify the device
+            characteristic->notify({BleAdvertiser::connectedDevicesByHandle.begin()->second}, data);
+
+            *deviceSubscribed = false;
+        }
+
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
 }
+
+
+// Note: Reads will also change a value in the characteristic. A Notify is essentially a read without the central taking the first action
