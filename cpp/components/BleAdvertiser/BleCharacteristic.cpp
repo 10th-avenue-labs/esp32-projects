@@ -2,6 +2,10 @@
 
 static const char* TAG = "BLE_CHARACTERISTIC";
 
+////////////////////////////////////////////////////////////////////////////////
+/// Constructors / Destructors
+////////////////////////////////////////////////////////////////////////////////
+
 BleCharacteristic::BleCharacteristic(
     string uuid,
     function<int(vector<byte>)> onWrite,
@@ -24,14 +28,9 @@ BleCharacteristic::BleCharacteristic(
     ESP_ERROR_CHECK(uuidStringToUuid(uuid, this->uuidDefinition));
 };
 
-// // Copy constructor (from an lvalue)
-// BleCharacteristic::BleCharacteristic(const BleCharacteristic& other) {
-//     ESP_LOGW(TAG, "copy constructor called");
-// }
-
-// Move constructor (from an rvalue)
 BleCharacteristic::BleCharacteristic(BleCharacteristic&& other) {
     ESP_LOGW(TAG, "move constructor called");
+    // TODO: Implement move constructor
 }
 
 BleCharacteristic::~BleCharacteristic()
@@ -40,13 +39,19 @@ BleCharacteristic::~BleCharacteristic()
     delete characteristicHandle;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Public functions
+////////////////////////////////////////////////////////////////////////////////
+
 esp_err_t BleCharacteristic::notify(vector<shared_ptr<BleDevice>> devices, vector<byte> data) {
 
     os_mbuf* om = os_msys_get_pkthdr(data.size(), 0);
+    // TODO: Doc and error handling. the above could throw
 
     // Copy the data to the nimble stack
     int response = os_mbuf_append(om, data.data(), data.size());
 
+    // TODO: Iterate through devices
     ble_gatts_notify_custom(
         devices[0]->connectionHandle,
         *characteristicHandle,
@@ -56,7 +61,9 @@ esp_err_t BleCharacteristic::notify(vector<shared_ptr<BleDevice>> devices, vecto
     return ESP_OK;
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+/// Friend functions
+////////////////////////////////////////////////////////////////////////////////
 
 esp_err_t BleCharacteristic::populateGattCharacteristicDefinition(ble_gatt_chr_def* gattCharacteristicDefinition) {
     // Populate the flags
@@ -79,35 +86,43 @@ esp_err_t BleCharacteristic::populateGattCharacteristicDefinition(ble_gatt_chr_d
     return ESP_OK;
 }
 
+uint16_t* BleCharacteristic::getHandle() {
+    return characteristicHandle;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Private functions
+////////////////////////////////////////////////////////////////////////////////
+
 int BleCharacteristic::characteristicAccessHandler
 (
-    uint16_t conn_handle,
-    uint16_t attr_handle,
-    struct ble_gatt_access_ctxt *ctxt,
+    uint16_t connectionHandle,
+    uint16_t attributeHandle,
+    struct ble_gatt_access_ctxt *gattAccessContext,
     void *arg
 ) {
     // Get the characteristic from the argument
     BleCharacteristic* characteristic = (BleCharacteristic*) arg;
 
     // Handle access events
-    switch (ctxt->op) {
+    switch (gattAccessContext->op) {
         // Read characteristic
         case BLE_GATT_ACCESS_OP_READ_CHR: {
             // Verify the connection handle
-            if (conn_handle != BLE_HS_CONN_HANDLE_NONE) {
+            if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
                 // The characteristic was read by a connected device
                 ESP_LOGI(TAG, "characteristic read; conn_handle=%d attr_handle=%d",
-                        conn_handle, attr_handle);
+                        connectionHandle, attributeHandle);
             } else {
                 // The characteristic was read by the nimble stack
                 ESP_LOGI(TAG,
                         "characteristic read by nimble stack; attr_handle=%d",
-                        attr_handle);
+                        attributeHandle);
             }
 
             // Check if the characteristic handle is the same as the attribute handle
-            if (*characteristic->characteristicHandle != attr_handle) {
-                ESP_LOGE(TAG, "unknown attribute handle: %d", attr_handle);
+            if (*characteristic->characteristicHandle != attributeHandle) {
+                ESP_LOGE(TAG, "unknown attribute handle: %d", attributeHandle);
                 return BLE_ATT_ERR_UNLIKELY;
             }
 
@@ -121,7 +136,7 @@ int BleCharacteristic::characteristicAccessHandler
             vector<byte> data = characteristic->onRead();
 
             // Copy the data to the nimble stack
-            int response = os_mbuf_append(ctxt->om, data.data(), data.size());
+            int response = os_mbuf_append(gattAccessContext->om, data.data(), data.size());
 
             // Return the response
             return response == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
@@ -129,20 +144,20 @@ int BleCharacteristic::characteristicAccessHandler
         // Write characteristic
         case BLE_GATT_ACCESS_OP_WRITE_CHR: {
             // Verify the connection handle
-            if (conn_handle != BLE_HS_CONN_HANDLE_NONE) {
+            if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
                 // The characteristic was written to by a connected device
                 ESP_LOGI(TAG, "characteristic write; conn_handle=%d attr_handle=%d",
-                        conn_handle, attr_handle);
+                        connectionHandle, attributeHandle);
             } else {
                 // The characteristic was written to by the nimble stack
                 ESP_LOGI(TAG,
                         "characteristic write by nimble stack; attr_handle=%d",
-                        attr_handle);
+                        attributeHandle);
             }
 
             // Check if the characteristic handle is the same as the attribute handle
-            if (*characteristic->characteristicHandle != attr_handle) {
-                ESP_LOGE(TAG, "unknown attribute handle: %d", attr_handle);
+            if (*characteristic->characteristicHandle != attributeHandle) {
+                ESP_LOGE(TAG, "unknown attribute handle: %d", attributeHandle);
                 return BLE_ATT_ERR_UNLIKELY;
             }
 
@@ -154,8 +169,8 @@ int BleCharacteristic::characteristicAccessHandler
 
             // Convert the data to a vector of bytes
             vector<byte> data = vector<byte>(
-                (byte*) ctxt->om->om_data,
-                (byte*) ctxt->om->om_data + ctxt->om->om_len
+                (byte*) gattAccessContext->om->om_data,
+                (byte*) gattAccessContext->om->om_data + gattAccessContext->om->om_len
             );
 
             // Call the write callback
@@ -163,17 +178,17 @@ int BleCharacteristic::characteristicAccessHandler
         }
         // Read descriptor
         case BLE_GATT_ACCESS_OP_READ_DSC:
-            ESP_LOGE(TAG, "operation not implemented, opcode: %d", ctxt->op);
+            ESP_LOGE(TAG, "operation not implemented, opcode: %d", gattAccessContext->op);
             return BLE_ATT_ERR_UNLIKELY;
         // Write descriptor
         case BLE_GATT_ACCESS_OP_WRITE_DSC:
-            ESP_LOGE(TAG, "operation not implemented, opcode: %d", ctxt->op);
+            ESP_LOGE(TAG, "operation not implemented, opcode: %d", gattAccessContext->op);
             return BLE_ATT_ERR_UNLIKELY;
         // Unknown event
         default:
             ESP_LOGE(TAG,
                 "unexpected access operation to led characteristic, opcode: %d",
-                ctxt->op);
+                gattAccessContext->op);
             return BLE_ATT_ERR_UNLIKELY;
     }
 

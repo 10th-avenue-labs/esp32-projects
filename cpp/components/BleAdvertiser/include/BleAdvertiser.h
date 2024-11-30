@@ -70,6 +70,10 @@ public:
      */
     static void advertise(void);
 
+    /**
+     * @brief Shutdown the BLE advertiser
+     * 
+     */
     static void shutdown(void);
 
     /**
@@ -145,7 +149,7 @@ private:
      * @param arg The argument
      * @return int 0 if successful, error code otherwise
      */
-    static int gapEventHandler(struct ble_gap_event*, void*);
+    static int gapEventHandler(struct ble_gap_event* event, void* arg);
 
     /**
      * @brief Handle MTU events
@@ -209,6 +213,11 @@ private:
     // Service definition builder
     ////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * @brief Create GATT service definitions. This will populate the static gattServiceDefinitions variable
+     * 
+     * @return esp_err_t ESP_OK if successful, error code otherwise
+     */
     static esp_err_t createGattServiceDefinitions();
 };
 

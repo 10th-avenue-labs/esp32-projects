@@ -108,6 +108,7 @@ if (testCharacteristic == null) {
 }
 await PrintCharacteristicInfo(testCharacteristic);
 
+// Reading the characteristic will also affect it's value and cause an event to be emitted
 testCharacteristic.Value += async (GattCharacteristic sender, GattCharacteristicValueEventArgs eventArgs) => {
     Console.WriteLine("Value changed");
     var value = eventArgs.Value;
@@ -115,18 +116,16 @@ testCharacteristic.Value += async (GattCharacteristic sender, GattCharacteristic
     Console.WriteLine($"Value: {stringValue}");
 };
 
-// Console.WriteLine("Reading and writing test characteristic.");
-await Task.Delay(1000);
 // Read the test characteristic
 var testBytes = await testCharacteristic.ReadValueAsync(new Dictionary<string, object>());
 var testValue = Encoding.ASCII.GetString(testBytes);
 Console.WriteLine($"Test value: {testValue}");
 
-// // Write the test characteristic
-// var testMessage = "Hello, World From Central!";
-// var testMessageBytes = Encoding.ASCII.GetBytes(testMessage);
-// await testCharacteristic.WriteValueAsync(testMessageBytes, new Dictionary<string, object>());
-// Console.WriteLine($"Wrote test message: {testMessage}");
+// Write the test characteristic
+var testMessage = "Hello, World From Central!";
+var testMessageBytes = Encoding.ASCII.GetBytes(testMessage);
+await testCharacteristic.WriteValueAsync(testMessageBytes, new Dictionary<string, object>());
+Console.WriteLine($"Wrote test message: {testMessage}");
 
 while(true) {
     await Task.Delay(1000);

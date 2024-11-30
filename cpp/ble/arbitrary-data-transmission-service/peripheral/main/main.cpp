@@ -72,19 +72,6 @@ extern "C" void app_main(void)
         std::vector<std::shared_ptr<BleCharacteristic>>{characteristic}
     );
 
-    // Need to support this functionality (implement copy constructor for characteristics)
-    // BleService service2(
-    //     "00001801-0000-1000-8000-00805f9b34fb", // UUID
-    //     {
-    //         BleCharacteristic(
-    //             "00002a05-0000-1000-8000-00805f9b34fb", // UUID
-    //             nullptr,                                // onWrite
-    //             nullptr,                                // onRead
-    //             false                                   // acknowledgeWrites
-    //         )
-    //     }
-    // );
-
     // Initialize the BLE advertiser
     BleAdvertiser::init(
         "ADT Service",                          // Name
@@ -103,7 +90,7 @@ extern "C" void app_main(void)
         // Check if the device is connected
         if (*deviceSubscribed) {
             // Wait for a time while the connection finishes
-            // vTaskDelay(5000 / portTICK_PERIOD_MS);
+            vTaskDelay(5000 / portTICK_PERIOD_MS);
 
             // Create a message to sent to the device
             std::string message = "Hello, World from main!";

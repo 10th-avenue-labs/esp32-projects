@@ -11,8 +11,12 @@ class BleDevice {
 public:
     uint16_t connectionHandle;
 
+    /**
+     * @brief Construct a new Ble Device object
+     * 
+     * @param connectionHandle The connection handle of the device
+     */
     BleDevice(uint16_t connectionHandle);
-private:
 };
 
 #endif // BLE_DEVICE_H

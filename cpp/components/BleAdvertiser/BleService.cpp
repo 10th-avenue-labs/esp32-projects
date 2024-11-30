@@ -2,6 +2,10 @@
 
 static const char* TAG = "BLE_SERVICE";
 
+////////////////////////////////////////////////////////////////////////////////
+/// Constructors / Destructors
+////////////////////////////////////////////////////////////////////////////////
+
 BleService::BleService(string uuid, vector<BleCharacteristic>&& characteristics)
 {
     ESP_LOGW(TAG, "constructor called with movable args");
@@ -23,7 +27,6 @@ BleService::BleService(string uuid, vector<BleCharacteristic>&& characteristics)
     // TODO: Handle the error
 };
 
-
 BleService::BleService(string uuid, vector<shared_ptr<BleCharacteristic>> characteristics):
     characteristics(characteristics)
 {
@@ -38,12 +41,30 @@ BleService::BleService(string uuid, vector<shared_ptr<BleCharacteristic>> charac
     // TODO: Handle the error
 };
 
-
 BleService::~BleService()
 {
     ESP_LOGW(TAG, "destructor called");
     free(gattCharacteristicDefinitions);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Friend functions
+////////////////////////////////////////////////////////////////////////////////
+
+esp_err_t BleService::populateGattServiceDefinition(ble_gatt_svc_def* gattServiceDefinition) {
+    // Create the GATT service definition
+    *gattServiceDefinition = (struct ble_gatt_svc_def) {
+        .type = BLE_GATT_SVC_TYPE_PRIMARY,
+        .uuid = &this->uuidDefinition.u,
+        .characteristics = gattCharacteristicDefinitions
+    };
+
+    return ESP_OK;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Private Methods
+////////////////////////////////////////////////////////////////////////////////
 
 esp_err_t BleService::createGattCharacteristicDefinitions() {
     // Get the number of characteristics
@@ -73,17 +94,6 @@ esp_err_t BleService::createGattCharacteristicDefinitions() {
 
     // Add the terminator { 0 } at the end
     gattCharacteristicDefinitions[characteristicsLength] = (struct ble_gatt_chr_def){ 0 };
-
-    return ESP_OK;
-}
-
-esp_err_t BleService::populateGattServiceDefinition(ble_gatt_svc_def* gattServiceDefinition) {
-    // Create the GATT service definition
-    *gattServiceDefinition = (struct ble_gatt_svc_def) {
-        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-        .uuid = &this->uuidDefinition.u,
-        .characteristics = gattCharacteristicDefinitions
-    };
 
     return ESP_OK;
 }

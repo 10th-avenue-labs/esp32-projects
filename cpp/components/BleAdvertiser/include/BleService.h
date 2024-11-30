@@ -19,11 +19,15 @@ class BleService {
 public:
     vector<shared_ptr<BleCharacteristic>> characteristics;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Constructors / Destructors
+    ////////////////////////////////////////////////////////////////////////////
+
     /**
      * @brief Construct a new Ble Service object
      * 
      * @param uuid The UUID of the service
-     * @param characteristics An array of characteristics
+     * @param characteristics An array of rvalue characteristics
      */
     BleService(string uuid, vector<BleCharacteristic>&& characteristics);
 
@@ -31,14 +35,22 @@ public:
      * @brief Construct a new Ble Service object
      * 
      * @param uuid The UUID of the service
-     * @param characteristics An array of characteristics
+     * @param characteristics An array of shared pointer characteristics
      */
     BleService(string uuid, vector<shared_ptr<BleCharacteristic>> characteristics);
 
-    // Copy constructor (from an lvalue)
+    /**
+     * @brief Disallow copy constructor (from an lvalue)
+     * 
+     * @param other The other object
+     */
     BleService(const BleService& other) = delete;
 
-    // Move constructor (from an rvalue)
+    /**
+     * @brief Disallow move constructor (from an rvalue)
+     * 
+     * @param other The other object
+     */
     BleService(BleService&& other) = delete;
 
     /**
@@ -47,18 +59,27 @@ public:
      */
     ~BleService();
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Friend functions
+    ////////////////////////////////////////////////////////////////////////////
 
-    // ble_gatt_svc_def* getGattServiceDefinition();
-
-
-    esp_err_t createGattCharacteristicDefinitions();
-
-    // Populate the gatt service definition into a specified piece of memory
+    /**
+     * @brief Populate the GATT service definition
+     * 
+     * @param gattServiceDefinition The memory location of the GATT service definition
+     * @return esp_err_t ESP_OK if successful, error code otherwise
+     */
     esp_err_t populateGattServiceDefinition(ble_gatt_svc_def* gattServiceDefinition);
-
 private:
     ble_uuid_any_t uuidDefinition;
     ble_gatt_chr_def* gattCharacteristicDefinitions;
+
+    /**
+     * @brief Create the GATT service definition
+     * 
+     * @return esp_err_t ESP_OK if successful, error code otherwise
+     */
+    esp_err_t createGattCharacteristicDefinitions();
 };
 
 #endif // BLE_SERVICE_H

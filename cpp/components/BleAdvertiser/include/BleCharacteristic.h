@@ -28,6 +28,10 @@ public:
     bool write;
     bool acknowledgeWrites;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Constructors / Destructors
+    ////////////////////////////////////////////////////////////////////////////
+
     /**
      * @brief Construct a new Ble Characteristic object
      * 
@@ -44,10 +48,18 @@ public:
         bool acknowledgeWrites
     );
 
-    // Copy constructor (from an lvalue)
+    /**
+     * @brief Disallow copy constructor (from an lvalue)
+     * 
+     * @param other The other object
+     */
     BleCharacteristic(const BleCharacteristic& other) = delete;
 
-    // Move constructor (from an rvalue)
+    /**
+     * @brief Move constructor (from an rvalue)
+     * 
+     * @param other The other object
+     */
     BleCharacteristic(BleCharacteristic&& other);
 
     /**
@@ -56,28 +68,37 @@ public:
      */
     ~BleCharacteristic();
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Public functions
+    ////////////////////////////////////////////////////////////////////////////
 
-
-
+    /**
+     * @brief Notify devices of a change in the characteristic
+     * 
+     * @param devices The devices to notify
+     * @param data The data to send
+     * @return esp_err_t ESP_OK if successful, error code otherwise
+     */
     esp_err_t notify(vector<shared_ptr<BleDevice>> devices, vector<byte> data);
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Friend functions
+    ////////////////////////////////////////////////////////////////////////////
 
-
+    /**
+     * @brief Populate the GATT characteristic definition
+     * 
+     * @param gattCharacteristicDefinition The memory location of the GATT characteristic definition
+     * @return esp_err_t ESP_OK if successful, error code otherwise
+     */
     esp_err_t populateGattCharacteristicDefinition(ble_gatt_chr_def* gattCharacteristicDefinition);
 
-
-    static int characteristicAccessHandler
-    (
-        uint16_t conn_handle,
-        uint16_t attr_handle,
-        struct ble_gatt_access_ctxt *ctxt,
-        void *arg
-    );
-
-    // TODO: Move to impl
-    uint16_t* getHandle() {
-        return characteristicHandle;
-    }
+    /**
+     * @brief Get the handle of the characteristic
+     * 
+     * @return uint16_t* The handle
+     */
+    uint16_t* getHandle();
 
     /**
      * @brief Convert a hex string to a uint8_t. The hex string should be 2 characters long.
@@ -101,6 +122,23 @@ public:
 private:
     ble_uuid_any_t uuidDefinition;
     uint16_t* characteristicHandle = new uint16_t(0);
+
+    /**
+     * @brief Handle characteristic access events
+     * 
+     * @param connectionHandle The connection handle of the device associated with the event
+     * @param attributeHandle The attribute handle of the characteristic associated with the event
+     * @param gattAccessContext The GATT access context
+     * @param arg User-specified arguments, in this case a reference to the characteristic
+     * @return int 0 if successful, error code otherwise
+     */
+    static int characteristicAccessHandler
+    (
+        uint16_t connectionHandle,
+        uint16_t attributeHandle,
+        struct ble_gatt_access_ctxt *gattAccessContext,
+        void *arg
+    );
 };
 
 #endif // BLE_CHARACTERISTIC_H

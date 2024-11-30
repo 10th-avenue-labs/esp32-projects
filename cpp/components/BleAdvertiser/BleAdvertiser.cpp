@@ -76,8 +76,7 @@ bool BleAdvertiser::init(
     }
 
     // Create the GATT services
-    esp_err_t err = createGattServiceDefinitions();
-    // TODO: Handle the error
+    ESP_ERROR_CHECK(createGattServiceDefinitions());
 
     // Initialize the Generic ATTribute Profile (GATT) server <- I know, it's a bad acronym
     response = gattSvcInit(gattServiceDefinitions);
@@ -105,7 +104,6 @@ void BleAdvertiser::advertise(void) {
     // Clean up at exit
     vTaskDelete(NULL);
 }
-
 
 void BleAdvertiser::shutdown(void) {
     // Log the shutdown
@@ -288,6 +286,11 @@ int BleAdvertiser::gapEventHandler(struct ble_gap_event *event, void *arg) {
             // A connection was terminated, print connection descriptor
             ESP_LOGI(TAG, "disconnected from peer; reason=%d",
                     event->disconnect.reason);
+
+            // Remove the device from the list of connected devices
+            connectedDevicesByHandle.erase(event->disconnect.conn.conn_handle);
+
+            // TODO: Could add an onDisconnect callback here
 
             // Restart advertising
             startAdvertising();
@@ -551,9 +554,7 @@ esp_err_t BleAdvertiser::createGattServiceDefinitions() {
     // Create each service
     for (size_t index = 0; index < servicesLength; index++) {
         // Populate the characteristic definition
-        esp_err_t response = services[index].get()->populateGattServiceDefinition(&gattServiceDefinitions[index]);
-
-        // TODO: Handle the error
+        ESP_ERROR_CHECK(services[index].get()->populateGattServiceDefinition(&gattServiceDefinitions[index]));
     }
 
     // Index the characteristics by their handles
