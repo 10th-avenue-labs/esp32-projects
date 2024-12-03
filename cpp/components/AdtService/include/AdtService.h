@@ -2,6 +2,7 @@
 #define ADT_SERVICE_H
 
 #include <string>
+#include <memory>
 #include <BleService.h>
 #include <BleAdvertiser.h>
 #include <vector>
@@ -10,6 +11,8 @@
 extern "C" {
     #include <esp_log.h>
 }
+
+using namespace std;
 
 /**
  * @brief Enum for the different types of ADT service events
@@ -28,7 +31,7 @@ enum AdtServiceEventType {
 class MessageInformation {
 public:
     uint8_t totalChunks;
-    std::vector<std::byte> data;
+    vector<byte> data;
 };
 
 class AdtService
@@ -40,31 +43,54 @@ public:
      * @param serviceUuid The UUID of the service
      * @param mtuCharacteristicUuid The UUID of the MTU characteristic
      * @param transmissionCharacteristicUuid The UUID of the transmission characteristic
+     * @param receiveCharacteristicUuid The UUID of the receive characteristic
      * @param onMessageReceived The callback function for when a message is received
      */
     AdtService(
-        std::string serviceUuid,
-        std::string mtuCharacteristicUuid,
-        std::string transmissionCharacteristicUuid,
-        std::function<void(std::vector<std::byte>)> onMessageReceived
+        string serviceUuid,
+        string mtuCharacteristicUuid,
+        string transmissionCharacteristicUuid,
+        string receiveCharacteristicUuid,
+        function<void(vector<byte>)> onMessageReceived
     );
 
     /**
-     * @brief Destroy the Adt (Arbitrary Data Transfer) Service object
+     * @brief Send a message to a list of devices
      * 
+     * @param devices The devices to send the message to
+     * @param data The data to send
+     * @return esp_err_t ESP_OK if successful, ESP_FAIL otherwise
      */
-    ~AdtService();
+    esp_err_t sendMessage(vector<shared_ptr<BleDevice>> devices, vector<byte> data);
 
     /**
      * @brief Get the BLE service describing the ADT service.
      * 
      * @return BleService* A pointer to the BLE service
      */
-    BleService *getBleService(void);
+    shared_ptr<BleService> getBleService(void);
 private:
-    BleService *bleService;
-    std::map<uint16_t, MessageInformation> messageInfos;
-    std::function<void(std::vector<std::byte>)> onMessageReceived;
+    shared_ptr<BleService> bleService;
+    map<uint16_t, MessageInformation> messageInfos;
+    function<void(vector<byte>)> onMessageReceived;
+    shared_ptr<BleCharacteristic> receiveCharacteristic;
+
+    /**
+     * @brief Get the next chunk of data
+     * 
+     * @param data The data to get the chunk from
+     * @param chunkSize The size of the chunk
+     * @return vector<byte> The next chunk of data
+     */
+    static vector<byte> getNextChunk(vector<byte>& data, int chunkSize);
+
+    /**
+     * @brief Custom ceil function
+     * 
+     * @param num The number to ceil
+     * @return double The ceiled number
+     */
+    static double custom_ceil(double num);
 };
 
 #endif // ADT_SERVICE_H

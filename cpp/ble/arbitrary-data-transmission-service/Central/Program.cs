@@ -1,11 +1,14 @@
 ﻿using System.Text;
 using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
+using Tmds.DBus;
 
-const string TARGET = "ADT Test";
-const string ARBITRARY_DATA_TRANSFER_SERVICE_UUID = "00000000-0000-0000-0000-000000012346";
-const string ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID = "12345670-0000-0000-0000-000000000000";
+const string TARGET = "ADT Service";
+
+const string ARBITRARY_DATA_TRANSFER_SERVICE_UUID =                     "00000000-0000-0000-0000-000000012346";
+const string ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID =          "12345670-0000-0000-0000-000000000000";
 const string ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID = "12345679-0000-0000-0000-000000000000";
+const string ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID =      "12345678-0000-0000-0000-000000000000";
 
 const int MTU_RESERVED_BYTES = 3;
 
@@ -121,18 +124,103 @@ if (transmissionCharacteristic == null) {
 }
 await PrintCharacteristicInfo(transmissionCharacteristic);
 
+// Get the receive characteristic
+Console.WriteLine($"Searching for Receive characteristic.");
+var receiveCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID);
+if (receiveCharacteristic == null) {
+    var characteristics = await arbitraryDataTransferService.GetCharacteristicsAsync();
+    Console.WriteLine($"Could not find Receive characteristic with ID '{ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID}'. Instead found the following:");
+    foreach(var found in characteristics) {
+        await PrintCharacteristicInfo(found);
+    }
+    return 0;
+}
+await PrintCharacteristicInfo(receiveCharacteristic);
+
+// Subscribe to the receive characteristic
+// Reading the characteristic will also affect it's value and cause an event to be emitted (due to the peripheral changing the value)
+// Using a unique characteristic specifically for notifications mitigates this
+Dictionary<UInt16, MessageInformation> messageInfos = [];
+receiveCharacteristic.Value += async (GattCharacteristic sender, GattCharacteristicValueEventArgs eventArgs) => {
+    Console.WriteLine("Value changed");
+
+    // Get the chunk
+    var chunk = eventArgs.Value;
+
+    // Get the event type as an integer
+    var eventType = (int) chunk[0];
+
+    // Get the chunkByte. This is the total number of chunks for start events and the chunk number for data events
+    var chunkByte = chunk[1];
+
+    // Get the message ID
+    var messageId = BitConverter.ToUInt16(chunk[2..4]);
+
+    // Log the header information
+    Console.WriteLine($"Event type: {eventType}, Chunk byte: {chunkByte}, Message ID: {messageId}");
+
+    switch(eventType) {
+        case 0: {
+            // Create a list to store the data
+            var data = new List<byte>();
+
+            // Move the data to the message
+            data.AddRange(chunk[4..]);
+
+            // Check if this is the only chunk in the message
+            if (chunkByte == 1) {
+                // Call the on message received delegate
+                await MessageReceived(data);
+                break;
+            }
+
+            // Store the data until all chunks are received
+            messageInfos[messageId] = new MessageInformation {
+                TotalChunks = chunkByte,
+                Data = data
+            };
+
+            break;
+        }
+        case 1: {
+            // Add the data to the message
+            messageInfos[messageId].Data.AddRange(chunk[4..]);
+
+            // Check if there is more data to receive
+            if (chunkByte < messageInfos[messageId].TotalChunks - 1) {
+                return;
+            }
+
+            // Call the on message received delegate
+            await MessageReceived(messageInfos[messageId].Data);
+
+            // Remove the message from the dictionary
+            messageInfos.Remove(messageId);
+
+            break;
+        }
+        default:
+            throw new Exception($"Unknown event type: {eventType}");
+    }
+};
+await receiveCharacteristic.StartNotifyAsync();
+
+///////////////////////////////////////////////////////////////////////////////
+/// Attempt to transfer large data
+///////////////////////////////////////////////////////////////////////////////
+
 // Attempt to transfer large data
-// var data = new byte[256];
 var partA = new string ('a', 249);
 var partB = new string ('b', 249);
 var partC = new string ('c', 249);
 var message = $"{partA}{partB}{partC}";
-await TransmittLargeData(transmissionCharacteristic, mtu, [.. Encoding.ASCII.GetBytes(message)]);
+await TransmitLargeData(transmissionCharacteristic, mtu, [.. Encoding.ASCII.GetBytes(message)]);
 
-return 0;
+while(true) {
+    await Task.Delay(1000);
+}
 
-
-async Task TransmittLargeData(GattCharacteristic transmissionCharacteristic, UInt16 mtu, List<byte> data) {
+async Task TransmitLargeData(GattCharacteristic transmissionCharacteristic, UInt16 mtu, List<byte> data) {
     /*
     Chunk structure:
         bytes: 1,1: Event type
@@ -302,4 +390,14 @@ async Task PrintCharacteristicInfo(IGattCharacteristic1 characteristic)
     Console.WriteLine($"      NotifyAcquired: {characteristicInfo.NotifyAcquired}");
     Console.WriteLine($"      Flags: {string.Join(", ", characteristicInfo.Flags)}");
     Console.WriteLine($"      Value: {BitConverter.ToString(characteristicInfo.Value)}");
+}
+
+async Task MessageReceived(List<byte> data) {
+    Console.WriteLine($"Received message of length: {data.Count}");
+    Console.WriteLine($"Message: {Encoding.ASCII.GetString(data.ToArray())}");
+}
+
+class MessageInformation {
+    public UInt16 TotalChunks { get; set; }
+    public List<byte> Data { get; set; } = [];
 }

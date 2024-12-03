@@ -4,6 +4,7 @@
 #include <string>
 #include "BleService.h"
 #include "BleCharacteristic.h"
+#include "BleDevice.h"
 #include <vector>
 #include <map>
 
@@ -18,10 +19,13 @@ extern "C"
     #include <services/gatt/ble_svc_gatt.h>
     #include <host/ble_hs.h>
     #include <host/util/util.h>
+    #include "nimble/ble.h"
 
     /* Library function declarations */
     void ble_store_config_init(void); // For some reason we need to manually declare this one? Not sure why as it lives in a library
 }
+
+using namespace std;
 
 class BleAdvertiser {
     /**
@@ -38,6 +42,8 @@ class BleAdvertiser {
      */
 
 public:
+    static map<uint16_t, shared_ptr<BleDevice>> connectedDevicesByHandle;
+
     /**
      * @brief Initialize the BLE advertiser
      * 
@@ -45,20 +51,30 @@ public:
      * @param deviceAppearance The BLE appearance
      * @param deviceRole The BLE role
      * @param services An array of GATT services
+     * @param onDeviceConnected The callback function to call when a device connects
      * @return true if successful, false otherwise
      */
     static bool init(
-        std::string deviceName,
+        string deviceName,
         uint16_t deviceAppearance,
         uint8_t deviceRole,
-        std::vector<BleService> services
+        vector<shared_ptr<BleService>>&& services,
+        function<void(shared_ptr<BleDevice> device)> onDeviceConnected
     );
+
+    // TODO: Constructor with rvalue args
 
     /**
      * @brief Advertise the BLE device. This function will not return until the BLE stack is stopped
      * 
      */
     static void advertise(void);
+
+    /**
+     * @brief Shutdown the BLE advertiser
+     * 
+     */
+    static void shutdown(void);
 
     /**
      * @brief Get the MTU
@@ -70,26 +86,17 @@ private:
     // Private constructor to prevent instantiation
     BleAdvertiser() = delete;
 
-    static std::string deviceName;
+    static string deviceName;
     static uint16_t deviceAppearance;
     static uint8_t deviceRole;
     static bool initiated;
-    static std::map<uint16_t*, BleCharacteristic> characteristicHandlesToCharacteristics;
     static uint8_t deviceAddressType;
     static uint8_t deviceAddress[6];
     static uint16_t mtu;
-
-    /**
-     * @brief Handle characteristic access events
-     * 
-     * @param conn_handle The connection handle
-     * @param attr_handle The attribute handle
-     * @param ctxt The GATT access context
-     * @param arg The argument
-     * 
-     * @return int 0 if successful, error code otherwise
-     */
-    static int characteristicAccessHandler(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg);
+    static ble_gatt_svc_def* gattServiceDefinitions;
+    static vector<shared_ptr<BleService>> services;
+    static function<void(shared_ptr<BleDevice> device)> onDeviceConnected;
+    static map<uint16_t*, shared_ptr<BleCharacteristic>> characteristicsByHandle;
 
     ////////////////////////////////////////////////////////////////////////////
     // BLE helper functions
@@ -142,7 +149,7 @@ private:
      * @param arg The argument
      * @return int 0 if successful, error code otherwise
      */
-    static int gapEventHandler(struct ble_gap_event*, void*);
+    static int gapEventHandler(struct ble_gap_event* event, void* arg);
 
     /**
      * @brief Handle MTU events
@@ -203,40 +210,15 @@ private:
     static void startAdvertising(void);
 
     ////////////////////////////////////////////////////////////////////////////
-    // Service and characteristic definition builders
+    // Service definition builder
     ////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Create an array of GATT service definitions
+     * @brief Create GATT service definitions. This will populate the static gattServiceDefinitions variable
      * 
-     * @param services An array of GATT services
-     * @return ble_gatt_svc_def* A pointer to the GATT service definitions
+     * @return esp_err_t ESP_OK if successful, error code otherwise
      */
-    static struct ble_gatt_svc_def* createServiceDefinitions(const std::vector<BleService>&);
-
-    /**
-     * @brief Create a GATT service definition
-     * 
-     * @param service A GATT service
-     * @return ble_gatt_svc_def A GATT service definition
-     */
-    static struct ble_gatt_svc_def createServiceDefinition(BleService);
-
-    /**
-     * @brief Create an array of GATT characteristic definitions
-     * 
-     * @param characteristics An array of GATT characteristics
-     * @return ble_gatt_chr_def* A pointer to the GATT characteristic definitions
-     */
-    static struct ble_gatt_chr_def* createCharacteristicDefinitions(std::vector<BleCharacteristic>);
-
-    /**
-     * @brief Create a GATT characteristic definition
-     * 
-     * @param characteristic A GATT characteristic
-     * @return ble_gatt_chr_def A GATT characteristic definition
-     */
-    static struct ble_gatt_chr_def createCharacteristicDefinition(BleCharacteristic characteristic);
+    static esp_err_t createGattServiceDefinitions();
 };
 
 #endif // BLE_ADVERTISER_HPP

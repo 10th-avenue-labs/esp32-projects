@@ -1,7 +1,11 @@
 ﻿using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
 
-const string TARGET = "Smart Plug";
+const string TARGET = "ADT Service";
+
+///////////////////////////////////////////////////////////////////////////////
+/// Get and print the bluetooth adapter and device information
+///////////////////////////////////////////////////////////////////////////////
 
 // Get the bluetooth adapters
 IReadOnlyList<Adapter> adapters = await BlueZManager.GetAdaptersAsync();
@@ -20,6 +24,10 @@ foreach(var currentAdapter in adapters) {
 // Select the first adapter
 var adapter = adapters[0];
 Console.WriteLine($"Selecting first adapter '{await adapter.GetAliasAsync()}'.");
+
+///////////////////////////////////////////////////////////////////////////////
+/// Setup the device found handler and search for the target device
+///////////////////////////////////////////////////////////////////////////////
 
 // Setup the device found handler
 Console.WriteLine($"Searching for device '{TARGET}'.");
@@ -58,12 +66,15 @@ await device.WaitForPropertyValueAsync("Connected", value: true, timeout);
 await device.WaitForPropertyValueAsync("ServicesResolved", value: true, timeout);
 Console.WriteLine("Connected to device.");
 
+///////////////////////////////////////////////////////////////////////////////
+/// Get all the services and print the information
+///////////////////////////////////////////////////////////////////////////////
+
 // Get all the services
 var services = await device.GetServicesAsync();
 Console.WriteLine($"Found {services.Count} services on device.");
 foreach(var service in services) {
-await PrintServiceInfo(service);
-
+    await PrintServiceInfo(service);
 }
 
 return 0;
