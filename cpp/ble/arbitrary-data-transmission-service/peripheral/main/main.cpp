@@ -2,7 +2,7 @@
 #include <string>
 #include "BleAdvertiser.h"
 #include "BleService.h"
-// #include "AdtService.h"
+#include "AdtService.h"
 #include "BleCharacteristic.h"
 
 extern "C"
@@ -32,44 +32,22 @@ extern "C" void app_main(void)
 {
     bool* deviceSubscribed = new bool(false);
 
-    // Create a BLE characteristic
-    std::shared_ptr<BleCharacteristic> characteristic = std::make_shared<BleCharacteristic>(
-        "10000000-1000-0000-0000-000000000000", // UUID
-        [](std::vector<std::byte> data){        // onWrite
-            ESP_LOGI(TAG, "onWrite called with data length %d", data.size());
+    AdtService adtService(
+        "00000000-0000-0000-0000-000000012346",             // Service UUID
+        "12345670-0000-0000-0000-000000000000",             // MTU Characteristic UUID
+        "12345679-0000-0000-0000-000000000000",             // Transmission Characteristic UUID
+        "12345678-0000-0000-0000-000000000000",             // Receive Characteristic UUID
+        [](std::vector<std::byte> data) {                   // onMessageReceived
+            ESP_LOGI(TAG, "message received of size %d", data.size());
 
             // Convert the data to a string
-            std::string message(reinterpret_cast<const char *>(data.data()), data.size());
-
-            // Print the data
-            ESP_LOGI(TAG, "Received: %s", message.c_str());
-
-            // Return success
-            return 0;
-        },
-        [](){                                   // onRead
-            ESP_LOGI(TAG, "onRead called");
-
-            // Create a message
-            std::string message = "Hello, World from peripheral!";
-
-            // Convert the message to a vector of bytes and send the data
-            return std::vector<std::byte>(
-                reinterpret_cast<const std::byte*>(message.data()),
-                reinterpret_cast<const std::byte*>(message.data()) + message.size()
+            std::string message(
+                reinterpret_cast<const char*>(data.data()),
+                reinterpret_cast<const char*>(data.data()) + data.size()
             );
-        },
-        [deviceSubscribed](shared_ptr<BleDevice> device){
-            ESP_LOGI(TAG, "onSubscribe called");
-            *deviceSubscribed = true;
-        },                                 // onSubscribe
-        false                                   // acknowledgeWrites
-    );
 
-    // Create a BLE service
-    std::shared_ptr<BleService> service = std::make_shared<BleService>(
-        "10000000-0000-0000-0000-000000000000", // UUID
-        std::vector<std::shared_ptr<BleCharacteristic>>{characteristic}
+            ESP_LOGI(TAG, "message: %s", message.c_str());
+        }
     );
 
     // Initialize the BLE advertiser
@@ -77,9 +55,10 @@ extern "C" void app_main(void)
         "ADT Service",                          // Name
         BLE_GAP_APPEARANCE_GENERIC_TAG,         // Appearance
         BLE_GAP_LE_ROLE_PERIPHERAL,             // Role
-        {service},                              // Services
-        [](shared_ptr<BleDevice> device){                   // onDeviceConnected
+        {adtService.getBleService()},           // Services
+        [deviceSubscribed](shared_ptr<BleDevice> device){       // onDeviceConnected
             ESP_LOGI(TAG, "Device connected");
+            *deviceSubscribed = true;
         }
     );
 
@@ -90,10 +69,13 @@ extern "C" void app_main(void)
         // Check if the device is connected
         if (*deviceSubscribed) {
             // Wait for a time while the connection finishes
-            vTaskDelay(5000 / portTICK_PERIOD_MS);
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
 
             // Create a message to sent to the device
-            std::string message = "Hello, World from main!";
+            std::string partD = std::string(249, 'd');
+            std::string partE = std::string(249, 'e');
+            std::string partF = std::string(249, 'f');
+            std::string message = partD + partE + partF;
 
             // Convert the message to a vector of bytes
             std::vector<std::byte> data(
@@ -101,8 +83,7 @@ extern "C" void app_main(void)
                 reinterpret_cast<const std::byte*>(message.data()) + message.size()
             );
 
-            // Notify the device
-            characteristic->notify({BleAdvertiser::connectedDevicesByHandle.begin()->second}, data);
+            adtService.sendMessage({BleAdvertiser::connectedDevicesByHandle.begin()->second}, data);
 
             *deviceSubscribed = false;
         }
@@ -110,6 +91,5 @@ extern "C" void app_main(void)
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
-
 
 // Note: Reads will also change a value in the characteristic. A Notify is essentially a read without the central taking the first action

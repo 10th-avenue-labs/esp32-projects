@@ -70,19 +70,26 @@ BleCharacteristic::~BleCharacteristic()
 ////////////////////////////////////////////////////////////////////////////////
 
 esp_err_t BleCharacteristic::notify(vector<shared_ptr<BleDevice>> devices, vector<byte> data) {
-
+    // Create a new mbuf
     os_mbuf* om = os_msys_get_pkthdr(data.size(), 0);
-    // TODO: Doc and error handling. the above could throw
+    if (om == nullptr) {
+        return ESP_ERR_NO_MEM;
+    }
 
     // Copy the data to the nimble stack
     int response = os_mbuf_append(om, data.data(), data.size());
+    if (response != 0) {
+        return ESP_FAIL;
+    }
 
-    // TODO: Iterate through devices
-    ble_gatts_notify_custom(
-        devices[0]->connectionHandle,
-        *characteristicHandle,
-        om
-    );
+    // Iterate through devices, sending a notification to each
+    for(auto device : devices) {
+        ble_gatts_notify_custom(
+            device->connectionHandle,
+            *characteristicHandle,
+            om
+        );
+    }
 
     return ESP_OK;
 }

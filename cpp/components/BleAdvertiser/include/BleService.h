@@ -47,11 +47,11 @@ public:
     BleService(const BleService& other) = delete;
 
     /**
-     * @brief Disallow move constructor (from an rvalue)
+     * @brief Move constructor (from an rvalue)
      * 
      * @param other The other object
      */
-    BleService(BleService&& other) = delete;
+    BleService(BleService&& other);
 
     /**
      * @brief Destroy the Ble Service object

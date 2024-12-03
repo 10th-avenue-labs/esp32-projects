@@ -23,8 +23,7 @@ BleService::BleService(string uuid, vector<BleCharacteristic>&& characteristics)
     BleCharacteristic::uuidStringToUuid(uuid, this->uuidDefinition);
 
     // Create an array of characteristic definitions
-    esp_err_t err = createGattCharacteristicDefinitions();
-    // TODO: Handle the error
+    ESP_ERROR_CHECK(createGattCharacteristicDefinitions());
 };
 
 BleService::BleService(string uuid, vector<shared_ptr<BleCharacteristic>> characteristics):
@@ -37,9 +36,23 @@ BleService::BleService(string uuid, vector<shared_ptr<BleCharacteristic>> charac
     BleCharacteristic::uuidStringToUuid(uuid, this->uuidDefinition);
 
     // Create an array of characteristic definitions
-    esp_err_t err = createGattCharacteristicDefinitions();
-    // TODO: Handle the error
+    ESP_ERROR_CHECK(createGattCharacteristicDefinitions());
 };
+
+BleService::BleService(BleService&& other)
+{
+    ESP_LOGW(TAG, "move constructor called");
+
+    // Move the UUID definition
+    this->uuidDefinition = move(other.uuidDefinition);
+
+    // Move the characteristics
+    this->characteristics = move(other.characteristics);
+
+    // Move the characteristic definitions
+    this->gattCharacteristicDefinitions = other.gattCharacteristicDefinitions;
+    other.gattCharacteristicDefinitions = nullptr;
+}
 
 BleService::~BleService()
 {
@@ -89,7 +102,10 @@ esp_err_t BleService::createGattCharacteristicDefinitions() {
         // Populate the characteristic definition
         esp_err_t response = characteristics[index].get()->populateGattCharacteristicDefinition(&gattCharacteristicDefinitions[index]);
 
-        // TODO: Handle the error
+        // Check if there was an error
+        if (response != ESP_OK) {
+            return response;
+        }
     }
 
     // Add the terminator { 0 } at the end
