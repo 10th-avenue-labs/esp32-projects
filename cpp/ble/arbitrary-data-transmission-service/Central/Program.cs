@@ -138,9 +138,8 @@ if (receiveCharacteristic == null) {
 await PrintCharacteristicInfo(receiveCharacteristic);
 
 // Subscribe to the receive characteristic
-
-// Reading the characteristic will also affect it's value and cause an event to be emitted
-
+// Reading the characteristic will also affect it's value and cause an event to be emitted (due to the peripheral changing the value)
+// Using a unique characteristic specifically for notifications mitigates this
 Dictionary<UInt16, MessageInformation> messageInfos = [];
 receiveCharacteristic.Value += async (GattCharacteristic sender, GattCharacteristicValueEventArgs eventArgs) => {
     Console.WriteLine("Value changed");
@@ -204,13 +203,7 @@ receiveCharacteristic.Value += async (GattCharacteristic sender, GattCharacteris
             throw new Exception($"Unknown event type: {eventType}");
     }
 };
-
 await receiveCharacteristic.StartNotifyAsync();
-
-while(true) {
-    await Task.Delay(1000);
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Attempt to transfer large data
@@ -223,22 +216,9 @@ var partC = new string ('c', 249);
 var message = $"{partA}{partB}{partC}";
 await TransmitLargeData(transmissionCharacteristic, mtu, [.. Encoding.ASCII.GetBytes(message)]);
 
-return 0;
-
-///////////////////////////////////////////////////////////////////////////////
-/// Attempt to receive large data
-///////////////////////////////////////////////////////////////////////////////
-
-// arbitraryDataTransferService.WatchPropertiesAsync
-
-await receiveCharacteristic.WatchPropertiesAsync((PropertyChanges changes) => {
-    Console.WriteLine("Something changed");
-});
-
 while(true) {
     await Task.Delay(1000);
 }
-
 
 async Task TransmitLargeData(GattCharacteristic transmissionCharacteristic, UInt16 mtu, List<byte> data) {
     /*

@@ -30,14 +30,14 @@ static void bleAdvertiserTask(void* args) {
 
 extern "C" void app_main(void)
 {
-    bool* deviceSubscribed = new bool(false);
+    bool* sendTransfer = new bool(false);
 
     AdtService adtService(
         "00000000-0000-0000-0000-000000012346",             // Service UUID
         "12345670-0000-0000-0000-000000000000",             // MTU Characteristic UUID
         "12345679-0000-0000-0000-000000000000",             // Transmission Characteristic UUID
         "12345678-0000-0000-0000-000000000000",             // Receive Characteristic UUID
-        [](std::vector<std::byte> data) {                   // onMessageReceived
+        [sendTransfer](std::vector<std::byte> data) {                   // onMessageReceived
             ESP_LOGI(TAG, "message received of size %d", data.size());
 
             // Convert the data to a string
@@ -46,7 +46,11 @@ extern "C" void app_main(void)
                 reinterpret_cast<const char*>(data.data()) + data.size()
             );
 
+            // Log the message
             ESP_LOGI(TAG, "message: %s", message.c_str());
+
+            // Set the transfer flag
+            *sendTransfer = true;
         }
     );
 
@@ -56,9 +60,8 @@ extern "C" void app_main(void)
         BLE_GAP_APPEARANCE_GENERIC_TAG,         // Appearance
         BLE_GAP_LE_ROLE_PERIPHERAL,             // Role
         {adtService.getBleService()},           // Services
-        [deviceSubscribed](shared_ptr<BleDevice> device){       // onDeviceConnected
+        [](shared_ptr<BleDevice> device){       // onDeviceConnected
             ESP_LOGI(TAG, "Device connected");
-            *deviceSubscribed = true;
         }
     );
 
@@ -67,7 +70,7 @@ extern "C" void app_main(void)
 
     while(1) {
         // Check if the device is connected
-        if (*deviceSubscribed) {
+        if (*sendTransfer) {
             // Wait for a time while the connection finishes
             vTaskDelay(3000 / portTICK_PERIOD_MS);
 
@@ -85,7 +88,7 @@ extern "C" void app_main(void)
 
             adtService.sendMessage({BleAdvertiser::connectedDevicesByHandle.begin()->second}, data);
 
-            *deviceSubscribed = false;
+            *sendTransfer = false;
         }
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
