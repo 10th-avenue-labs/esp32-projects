@@ -8,8 +8,6 @@ static const char* TAG = "BLE_SERVICE";
 
 BleService::BleService(string uuid, vector<BleCharacteristic>&& characteristics)
 {
-    ESP_LOGW(TAG, "constructor called with movable args");
-
     // Move the characteristics into a shared pointer
     for (auto& characteristic : characteristics) {
         // Convert each Characteristic to a shared_ptr and move it
@@ -29,8 +27,6 @@ BleService::BleService(string uuid, vector<BleCharacteristic>&& characteristics)
 BleService::BleService(string uuid, vector<shared_ptr<BleCharacteristic>> characteristics):
     characteristics(characteristics)
 {
-    ESP_LOGW(TAG, "constructor called with shared args");
-
     // Populate the UUID structure from the UUID string
     // TODO: We could make this function return a value most likely
     BleCharacteristic::uuidStringToUuid(uuid, this->uuidDefinition);
@@ -41,8 +37,6 @@ BleService::BleService(string uuid, vector<shared_ptr<BleCharacteristic>> charac
 
 BleService::BleService(BleService&& other)
 {
-    ESP_LOGW(TAG, "move constructor called");
-
     // Move the UUID definition
     this->uuidDefinition = move(other.uuidDefinition);
 
@@ -56,7 +50,6 @@ BleService::BleService(BleService&& other)
 
 BleService::~BleService()
 {
-    ESP_LOGW(TAG, "destructor called");
     free(gattCharacteristicDefinitions);
 }
 
