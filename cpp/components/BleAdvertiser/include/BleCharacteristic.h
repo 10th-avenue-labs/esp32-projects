@@ -19,6 +19,9 @@ extern "C"
 
 using namespace std;
 
+class BleService;
+class BleAdvertiser;
+
 /**
  * In order to make everything truly as robust and efficient as possible, while also being remarkable easy to use. We might consider a refactor.
  * 
@@ -107,6 +110,11 @@ public:
      * @return esp_err_t ESP_OK if successful, error code otherwise
      */
     esp_err_t notify(vector<shared_ptr<BleDevice>> devices, vector<byte> data);
+private:
+    ble_uuid_any_t uuidDefinition;
+    uint16_t* characteristicHandle = new uint16_t(0);
+    friend class BleService;
+    friend class BleAdvertiser;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Friend functions
@@ -146,9 +154,10 @@ public:
      * @return esp_err_t ESP_OK if successful, error code otherwise
      */
     static esp_err_t uuidStringToUuid(string uuid, ble_uuid_any_t& result);
-private:
-    ble_uuid_any_t uuidDefinition;
-    uint16_t* characteristicHandle = new uint16_t(0);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Private functions
+    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * @brief Handle characteristic access events

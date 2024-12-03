@@ -228,16 +228,9 @@ int BleCharacteristic::characteristicAccessHandler
     // Control shouldn't reach here
 }
 
-
-
-
-
-
-
-
-
-
-// These function should be moved to a helper class
+////////////////////////////////////////////////////////////////////////////////
+/// Helper functions (TODO: These should be moved to a utility class)
+////////////////////////////////////////////////////////////////////////////////
 
 esp_err_t BleCharacteristic::hexStringToUint8(const string& hexStr, uint8_t& result) {
     if (hexStr.size() != 2) {
