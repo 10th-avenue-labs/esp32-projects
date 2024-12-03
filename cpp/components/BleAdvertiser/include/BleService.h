@@ -15,6 +15,8 @@ extern "C" {
 
 using namespace std;
 
+class BleAdvertiser;
+
 class BleService {
 public:
     vector<shared_ptr<BleCharacteristic>> characteristics;
@@ -58,6 +60,10 @@ public:
      * 
      */
     ~BleService();
+private:
+    friend class BleAdvertiser;
+    ble_uuid_any_t uuidDefinition;
+    ble_gatt_chr_def* gattCharacteristicDefinitions;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Friend functions
@@ -70,9 +76,10 @@ public:
      * @return esp_err_t ESP_OK if successful, error code otherwise
      */
     esp_err_t populateGattServiceDefinition(ble_gatt_svc_def* gattServiceDefinition);
-private:
-    ble_uuid_any_t uuidDefinition;
-    ble_gatt_chr_def* gattCharacteristicDefinitions;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Private functions
+    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * @brief Create the GATT service definition
