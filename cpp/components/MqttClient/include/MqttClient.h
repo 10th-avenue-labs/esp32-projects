@@ -59,6 +59,17 @@ namespace Mqtt
         void disconnect();
 
         ///////////////////////////////////////////////////////////////////////
+        /// Update the broker URI
+        ///////////////////////////////////////////////////////////////////////
+
+        /**
+         * @brief Set the broker URI. This will disconnect the client if it is already connected. However, it will not reconnect.
+         * 
+         * @param brokerUri The URI of the broker to connect to
+         */
+        void setBrokerUri(std::string brokerUri);
+
+        ///////////////////////////////////////////////////////////////////////
         /// Get or wait for a connection state
         ///////////////////////////////////////////////////////////////////////
 

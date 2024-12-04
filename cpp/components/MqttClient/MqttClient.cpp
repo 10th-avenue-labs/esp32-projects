@@ -47,9 +47,15 @@ namespace Mqtt
 
     void MqttClient::connect()
     {
+        // TODO: Consider if we should return an esp_err_t from this function
         // Start the mqtt client
         ESP_LOGI(TAG, "starting mqtt client");
-        ESP_ERROR_CHECK(esp_mqtt_client_start(client)); // This will immediately cause a MQTT_EVENT_BEFORE_CONNECT event to be dispatched
+        esp_err_t error = esp_mqtt_client_start(client); // This will immediately cause a MQTT_EVENT_BEFORE_CONNECT event to be dispatched
+        if (error != ESP_OK)
+        {
+            ESP_LOGW(TAG, "failed to start mqtt client, error code: %s", esp_err_to_name(error));
+            return;
+        }
 
         // Set the connection state to connecting
         setConnectionState(ConnectionState::CONNECTING);
@@ -74,6 +80,15 @@ namespace Mqtt
         /**
          * Note: This will not trigger a MQTT_EVENT_DISCONNECTED event.
          */
+    }
+
+    void MqttClient::setBrokerUri(std::string brokerUri)
+    {
+        // Disconnect the client
+        disconnect();
+
+        // Set the new broker URI
+        esp_mqtt_client_set_uri(client, brokerUri.c_str());
     }
 
     ///////////////////////////////////////////////////////////////////////////

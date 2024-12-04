@@ -26,8 +26,15 @@
 static const char *TAG = "SMART_PLUG";
 
 void attemptConnectToWifi(shared_ptr<WifiConfig> wifiConfig);
-void onWifiConnected(shared_ptr<int> connectionAttempt);
+void onWifiConnected(shared_ptr<Mqtt::MqttClient> client, shared_ptr<int> connectionAttempt);
 void onWifiDisconnected(shared_ptr<WifiConfig> wifiConfig, shared_ptr<int> connectionAttempt);
+
+void attemptConnectToMqtt(shared_ptr<Mqtt::MqttClient> client);
+void onMqttConnected(Mqtt::MqttClient* client, shared_ptr<int> connectionAttempt);
+void onMqttDisconnected(Mqtt::MqttClient* client, shared_ptr<int> connectionAttempt);
+
+void createMqttClient(shared_ptr<MqttConfig> mqttConfig, shared_ptr<Mqtt::MqttClient>& mqttClient, shared_ptr<int> mqttConnectionAttempt);
+void updateMqttClient(shared_ptr<MqttConfig> mqttConfig, shared_ptr<Mqtt::MqttClient> mqttClient, shared_ptr<int> mqttConnectionAttempt);
 
 extern "C" void app_main(void)
 {
@@ -60,9 +67,8 @@ extern "C" void app_main(void)
                 // TODO: Remove wifi config in prod
                 make_shared<WifiConfig>(
                     "denhac",
-                    "denhac rule"
+                    "denhac rules"
                 ),
-                // nullptr,
                 // Config for MQTT
                 make_shared<MqttConfig>(
                     "mqtt://10.11.2.96:1883"
@@ -116,21 +122,28 @@ extern "C" void app_main(void)
         }
     );
 
+    // Create an MQTT client
+    shared_ptr<int> mqttConnectionAttempt = make_shared<int>(0);
+    shared_ptr<Mqtt::MqttClient> mqttClient;
+    
+    // Check if the MQTT configuration is present
+    if (config.get()->mqttConfig != nullptr) {
+        createMqttClient(config.get()->mqttConfig, mqttClient, mqttConnectionAttempt);
+    } else {
+        ESP_LOGI(TAG, "no mqtt configuration found, skipping mqtt connection");
+    }
+
     // Initialize the wifi service
     ESP_LOGI(TAG, "initializing wifi service");
     WifiService::init();
-    shared_ptr<int> connectionAttempt(0);
+    shared_ptr<int> wifiConnectionAttempt = make_shared<int>(0);
     shared_ptr<WifiConfig> wifiConfig = config.get()->wifiConfig;
-    WifiService::onConnect = [connectionAttempt]() {
-        onWifiConnected(connectionAttempt);
+    WifiService::onConnect = [mqttClient, wifiConnectionAttempt]() {
+        onWifiConnected(mqttClient, wifiConnectionAttempt);
     };
-    WifiService::onDisconnect = [wifiConfig, connectionAttempt]() {
-        onWifiDisconnected(wifiConfig, connectionAttempt);
+    WifiService::onDisconnect = [wifiConfig, wifiConnectionAttempt]() {
+        onWifiDisconnected(wifiConfig, wifiConnectionAttempt);
     };
-
-    // Create an MQTT client
-    ESP_LOGI(TAG, "creating mqtt client");
-    Mqtt::MqttClient mqttClient("mqtt://10.11.2.96:1883");
 
     // Try and connect to wifi if a wifi configuration is present
     if(config.get()->wifiConfig != nullptr) {
@@ -140,36 +153,136 @@ extern "C" void app_main(void)
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// WiFi Connection Handlers
+////////////////////////////////////////////////////////////////////////////////
+
 void attemptConnectToWifi(shared_ptr<WifiConfig> wifiConfig) {
-    ESP_LOGW(TAG, "connecting to wifi");
+    ESP_LOGI(TAG, "connecting to wifi");
     WifiService::startConnect({
         wifiConfig->ssid,
         wifiConfig->password,
     });
 }
 
-void onWifiConnected(shared_ptr<int> connectionAttempt) {
+void onWifiConnected(shared_ptr<Mqtt::MqttClient> client, shared_ptr<int> connectionAttempt) {
     ESP_LOGI(TAG, "wifi connected");
+
+    // Reset the connection attempt counter
     *connectionAttempt = 0;
+
+    // Attempt to connect to MQTT
+    attemptConnectToMqtt(client);
 }
 
 void onWifiDisconnected(shared_ptr<WifiConfig> wifiConfig, shared_ptr<int> connectionAttempt) {
     // Calculate the amount of time to wait before attempting to reconnect
-    ESP_LOGW(TAG, "wifi disconnected on connection attempt %d", *connectionAttempt);
     int waitSeconds = pow(2, *connectionAttempt);
 
     // Wait for the specified duration
-    ESP_LOGW(TAG, "wifi disconnected, waiting %d seconds before reconnecting", waitSeconds);
+    ESP_LOGW(TAG, "wifi disconnected on connection attempt %d, waiting %d seconds before reconnecting", *connectionAttempt, waitSeconds);
     vTaskDelay(pdMS_TO_TICKS(waitSeconds * 1000));
 
     // Attempt to reconnect to wifi
     attemptConnectToWifi(wifiConfig);
 
-    // Increase the connection attempt count if the waitSeconds is less than 1800 (30 minutes)
+    // If the wait seconds is already larger than 1800 (30 minutes), do not increase further.
     if (waitSeconds > 1800) {
         return;
     }
 
     (*connectionAttempt)++;
-    ESP_LOGW(TAG, "increasing connection attempt to %d", *connectionAttempt);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// Create or update the MqttClient
+////////////////////////////////////////////////////////////////////////////////
+
+void createMqttClient(shared_ptr<MqttConfig> mqttConfig, shared_ptr<Mqtt::MqttClient>& mqttClient, shared_ptr<int> mqttConnectionAttempt) {
+    ESP_LOGI(TAG, "creating mqtt client");
+
+    // Create the mqtt client
+    mqttClient = make_shared<Mqtt::MqttClient>(
+        mqttConfig->brokerAddress
+    );
+    mqttClient->onConnected = [mqttConnectionAttempt](Mqtt::MqttClient* client){onMqttConnected(client, mqttConnectionAttempt);};
+    mqttClient->onDisconnected = [mqttConnectionAttempt](Mqtt::MqttClient* client){onMqttDisconnected(client, mqttConnectionAttempt);};
+}
+
+void updateMqttClient(shared_ptr<MqttConfig> mqttConfig, shared_ptr<Mqtt::MqttClient> mqttClient, shared_ptr<int> mqttConnectionAttempt) {
+    // Check if an MQTT client is present
+    if (mqttClient == nullptr) {
+        createMqttClient(mqttConfig, mqttClient, mqttConnectionAttempt);
+    } else {
+        ESP_LOGI(TAG, "updating mqtt client");
+        mqttClient->setBrokerUri(mqttConfig->brokerAddress);
+    }
+
+    // Attempt to connect to MQTT
+    attemptConnectToMqtt(mqttClient);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// MQTT Connection Handlers
+////////////////////////////////////////////////////////////////////////////////
+
+void attemptConnectToMqtt(shared_ptr<Mqtt::MqttClient> client) {
+    // Check if the MQTT client is present
+    if (client == nullptr) {
+        ESP_LOGW(TAG, "no mqtt client found, skipping mqtt connection");
+        return;
+    }
+
+    ESP_LOGI(TAG, "connecting to mqtt");
+    // NOTE: We must ensure that we're connected to wifi before trying to connect the MQTT client
+    // Trying to connect when not connected to wifi will result in an unrecoverable error
+    // We can do nothing to handle this error that the device will reboot
+    client->connect();
+}
+
+void onMqttConnected(Mqtt::MqttClient* client, shared_ptr<int> connectionAttempt) {
+    ESP_LOGI(TAG, "mqtt connected");
+    *connectionAttempt = 0;
+}
+
+void onMqttDisconnected(Mqtt::MqttClient* client, shared_ptr<int> connectionAttempt) {
+    // Check if wifi is connected
+    if (WifiService::getConnectionState() != ConnectionState::CONNECTED) {
+        ESP_LOGW(TAG, "wifi is not connected, skipping mqtt reconnection");
+        *connectionAttempt = 0;
+        return;
+    }
+
+    // Calculate the amount of time to wait before attempting to reconnect
+    int waitSeconds = pow(2, *connectionAttempt);
+
+    // Wait for the specified duration
+    ESP_LOGW(TAG, "mqtt disconnected on connection attempt %d, waiting %d seconds before reconnecting", *connectionAttempt, waitSeconds);
+    vTaskDelay(pdMS_TO_TICKS(waitSeconds * 1000));
+
+    // Attempt to reconnect to mqtt
+    client->connect();
+
+    // If the wait seconds is already larger than 1800 (30 minutes), do not increase further.
+    if (waitSeconds > 1800) {
+        return;
+    }
+
+    (*connectionAttempt)++;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Adt message handler
+////////////////////////////////////////////////////////////////////////////////
+
+void adtMessageHandler(vector<byte> message) {
+    // Convert the data to a string
+    string messageString(
+        reinterpret_cast<const char*>(message.data()),
+        reinterpret_cast<const char*>(message.data()) + message.size()
+    );
+
+    // Deserialize the message
+    
 }
