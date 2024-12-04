@@ -3,11 +3,9 @@
 
 #include <functional>
 
-extern "C" {
-    #include <inttypes.h>
-    #include <driver/gptimer.h>
-    #include <esp_log.h>
-}
+#include <inttypes.h>
+#include <driver/gptimer.h>
+#include <esp_log.h>
 
 class Timer {
     public:

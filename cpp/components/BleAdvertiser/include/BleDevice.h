@@ -1,9 +1,7 @@
 #ifndef BLE_DEVICE_H
 #define BLE_DEVICE_H
 
-extern "C" {
-    #include <cstdint>
-}
+#include <cstdint>
 
 using namespace std;
 

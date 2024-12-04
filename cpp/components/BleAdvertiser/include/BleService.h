@@ -6,12 +6,10 @@
 #include <vector>
 #include <string>
 
-extern "C" {
-    #include <host/ble_uuid.h>
-    #include <host/ble_gatt.h>
-    #include <esp_err.h>
-    #include <esp_log.h>
-}
+#include <host/ble_uuid.h>
+#include <host/ble_gatt.h>
+#include <esp_err.h>
+#include <esp_log.h>
 
 using namespace std;
 

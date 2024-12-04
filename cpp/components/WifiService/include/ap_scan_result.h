@@ -3,10 +3,8 @@
 
 #include <string>
 
-extern "C"{
-    #include <cstdint>
-    #include <esp_wifi_types_generic.h>
-}
+#include <cstdint>
+#include <esp_wifi_types_generic.h>
 
 class ApScanResult {
 public:

@@ -8,9 +8,7 @@
 #include <vector>
 #include <functional>
 
-extern "C" {
-    #include <esp_log.h>
-}
+#include <esp_log.h>
 
 using namespace std;
 

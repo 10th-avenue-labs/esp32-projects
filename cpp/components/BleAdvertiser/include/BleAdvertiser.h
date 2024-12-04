@@ -8,19 +8,18 @@
 #include <vector>
 #include <map>
 
-extern "C"
-{
-    #include <esp_log.h>
-    #include <esp_err.h>
-    #include <nvs_flash.h>
-    #include <nimble/nimble_port.h>
-    #include <services/gap/ble_svc_gap.h>
-    #include <host/ble_gatt.h>
-    #include <services/gatt/ble_svc_gatt.h>
-    #include <host/ble_hs.h>
-    #include <host/util/util.h>
-    #include "nimble/ble.h"
+#include <esp_log.h>
+#include <esp_err.h>
+#include <nvs_flash.h>
+#include <nimble/nimble_port.h>
+#include <services/gap/ble_svc_gap.h>
+#include <host/ble_gatt.h>
+#include <services/gatt/ble_svc_gatt.h>
+#include <host/ble_hs.h>
+#include <host/util/util.h>
+#include "nimble/ble.h"
 
+extern "C" {
     /* Library function declarations */
     void ble_store_config_init(void); // For some reason we need to manually declare this one? Not sure why as it lives in a library
 }

@@ -12,15 +12,13 @@
 #include "ap_scan_results.h"
 #include "ap_credential_info.h"
 
-extern "C"{
-    #include <esp_log.h>
-    #include <esp_err.h>
-    #include <nvs_flash.h>
-    #include <esp_netif.h>
-    #include <esp_wifi_default.h>
-    #include <esp_event.h>
-    #include <esp_wifi.h>
-}
+#include <esp_log.h>
+#include <esp_err.h>
+#include <nvs_flash.h>
+#include <esp_netif.h>
+#include <esp_wifi_default.h>
+#include <esp_event.h>
+#include <esp_wifi.h>
 
 enum ConnectionState {
     NOT_CONNECTED,

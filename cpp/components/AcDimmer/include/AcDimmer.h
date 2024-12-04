@@ -1,11 +1,9 @@
 #include "Timer.h"
 
-extern "C" {
-    #include "driver/gpio.h"
-    #include <esp_log.h>
-    #include <cstdint>
-    #include <sys/time.h>
-}
+#include "driver/gpio.h"
+#include <esp_log.h>
+#include <cstdint>
+#include <sys/time.h>
 
 class AcDimmer {
     public:
@@ -17,8 +15,9 @@ class AcDimmer {
          * @param debounceUs The debounce time in microseconds between zero crossing events
          * @param offsetLeading The offset in microseconds to lead the zero crossing event
          * @param offsetFalling The offset in microseconds to fall the zero crossing event
+         * @param brightness The brightness of the dimmer (0-255)
          */
-        AcDimmer(uint8_t zcPin, uint8_t psmPin, uint16_t debounceUs, uint16_t offsetLeading, uint16_t offsetFalling);
+        AcDimmer(uint8_t zcPin, uint8_t psmPin, uint16_t debounceUs, uint16_t offsetLeading, uint16_t offsetFalling, uint8_t brightness = 0);
 
         /**
          * @brief Set the brightness of the dimmer
@@ -34,13 +33,13 @@ class AcDimmer {
          */
         uint8_t getBrightness();
     private:
-        uint8_t psmPin;                 // The phase shift modulation pin
         uint8_t zcPin;                  // The zero crossing pin
-        uint64_t lastInterruptTime = 0; // The time sense the last interrupt measured in microseconds
+        uint8_t psmPin;                 // The phase shift modulation pin
         uint16_t debounceUs;            // The debounce time in microseconds between zero crossing events
         uint16_t offsetLeading;         // The offset in microseconds to lead the zero crossing event
         uint16_t offsetFalling;         // The offset in microseconds to fall the zero crossing event
         uint8_t brightness = 0;         // The brightness of the dimmer (0-255)
+        uint64_t lastInterruptTime = 0; // The time sense the last interrupt measured in microseconds
         Timer timer;                    // The timer used to control the phase shift modulation pin
 
         /**

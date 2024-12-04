@@ -8,11 +8,8 @@
 #include <map>
 #include <functional>
 
-extern "C"
-{
 #include <mqtt_client.h>
 #include <esp_log.h>
-}
 
 namespace Mqtt
 {

@@ -2,13 +2,14 @@
 
 static const char *TAG = "AC_DIMMER";
 
-AcDimmer::AcDimmer(uint8_t zcPin, uint8_t psmPin, uint16_t debounceUs, uint16_t offsetLeading, uint16_t offsetFalling) {
-    this->zcPin = zcPin;
-    this->psmPin = psmPin;
-    this->debounceUs = debounceUs;
-    this->offsetLeading = offsetLeading;
-    this->offsetFalling = offsetFalling;
-
+AcDimmer::AcDimmer(uint8_t zcPin, uint8_t psmPin, uint16_t debounceUs, uint16_t offsetLeading, uint16_t offsetFalling, uint8_t brightness):
+    zcPin(zcPin),
+    psmPin(psmPin),
+    debounceUs(debounceUs),
+    offsetLeading(offsetLeading),
+    offsetFalling(offsetFalling),
+    brightness(brightness)
+{
     // Initialize the GPIO pins
     ESP_LOGI(TAG, "initializing GPIO pins");
     gpio_set_direction((gpio_num_t) psmPin, GPIO_MODE_OUTPUT);

@@ -8,14 +8,11 @@
 #include <algorithm>
 #include "BleDevice.h"
 
-extern "C"
-{
-    #include <host/ble_uuid.h>
-    #include <host/ble_gatt.h>
-    #include <esp_err.h>
-    #include <string.h>
-    #include <host/ble_hs.h>
-}
+#include <host/ble_uuid.h>
+#include <host/ble_gatt.h>
+#include <esp_err.h>
+#include <string.h>
+#include <host/ble_hs.h>
 
 using namespace std;
 
