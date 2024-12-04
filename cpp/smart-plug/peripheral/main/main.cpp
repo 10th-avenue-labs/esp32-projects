@@ -194,7 +194,6 @@ void onWifiDisconnected(shared_ptr<WifiConfig> wifiConfig, shared_ptr<int> conne
     (*connectionAttempt)++;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// Create or update the MqttClient
 ////////////////////////////////////////////////////////////////////////////////
@@ -284,5 +283,5 @@ void adtMessageHandler(vector<byte> message) {
     );
 
     // Deserialize the message
-    
+
 }
