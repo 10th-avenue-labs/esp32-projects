@@ -26,3 +26,11 @@ Set the setting:
 ## Include a component in another repo
 
 TODO: It's certainly possible, but probably just copy and paste for now
+
+## Creating a new component here
+
+These steps haven't been tested
+
+1. Copy an existing component
+2. Modify the CMakeLists.txt
+3. Change the filenames accordingly
