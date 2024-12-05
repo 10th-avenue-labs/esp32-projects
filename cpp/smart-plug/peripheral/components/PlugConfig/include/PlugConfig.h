@@ -26,7 +26,6 @@ class PlugConfig {
 
         unique_ptr<cJSON, void (*)(cJSON *item)> serialize();
         static PlugConfig deserialize(const string& serialized);
-
 };
 
 #endif // PLUG_CONFIG_H

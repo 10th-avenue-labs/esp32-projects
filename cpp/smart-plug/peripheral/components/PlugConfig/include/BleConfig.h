@@ -10,9 +10,8 @@ class BleConfig {
     public:
         string deviceName;
 
-    unique_ptr<cJSON, void (*)(cJSON *item)> serialize();
-    static BleConfig deserialize(const string& serialized);
-
+        unique_ptr<cJSON, void (*)(cJSON *item)> serialize();
+        static BleConfig deserialize(const string& serialized);
 };
 
 #endif // BLE_CONFIG_H

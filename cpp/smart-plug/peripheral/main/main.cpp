@@ -12,6 +12,12 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include <PlugMessage.h>
+#include <typeinfo>
+#include <SetAcDimmerConfig.h>
+#include <SetWifiConfig.h>
+#include <SetMqttConfig.h>
+#include <SetBleConfig.h>
 
 // BLE constants
 #define BLE_GAP_APPEARANCE_GENERIC_TAG 0x0200
@@ -38,6 +44,78 @@ void updateMqttClient(shared_ptr<MqttConfig> mqttConfig, shared_ptr<Mqtt::MqttCl
 
 extern "C" void app_main(void)
 {
+    // Register the Plug message deserializers
+    PlugMessage::registerDeserializer("SetAcDimmerConfig", SetAcDimmerConfig::deserialize);
+    PlugMessage::registerDeserializer("SetWifiConfig", SetWifiConfig::deserialize);
+    PlugMessage::registerDeserializer("SetMqttConfig", SetMqttConfig::deserialize);
+    PlugMessage::registerDeserializer("SetBleConfig", SetBleConfig::deserialize);
+
+    // Create a message
+    string setAcDimmerMessage = "{\"type\":\"SetAcDimmerConfig\",\"data\":{\"brightness\":50}}";
+
+    // Deserialize the message
+    PlugMessage deserializedAcDimmerMessage = PlugMessage::deserialize(setAcDimmerMessage);
+
+    // Cast the message to a SetAcDimmerConfig
+    SetAcDimmerConfig* setAcDimmerConfig = dynamic_cast<SetAcDimmerConfig*>(deserializedAcDimmerMessage.message.get());
+
+    // Check if the cast was successful
+    if (setAcDimmerConfig != nullptr) {
+        ESP_LOGI(TAG, "brightness: %d", setAcDimmerConfig->brightness);
+    } else {
+        ESP_LOGE(TAG, "failed to cast message to SetAcDimmerConfig");
+    }
+
+    // Create a message
+    string setWifiMessage = "{\"type\":\"SetWifiConfig\",\"data\":{\"ssid\":\"denhac\",\"password\":\"denhac rules\"}}";
+
+    // Deserialize the message
+    PlugMessage deserializedWifiMessage = PlugMessage::deserialize(setWifiMessage);
+
+    // Cast the message to a SetWifiConfig
+    SetWifiConfig* setWifiConfig = dynamic_cast<SetWifiConfig*>(deserializedWifiMessage.message.get());
+
+    // Check if the cast was successful 
+    if (setWifiConfig != nullptr) {
+        ESP_LOGI(TAG, "ssid: %s, password: %s", setWifiConfig->ssid.c_str(), setWifiConfig->password.c_str());
+    } else {
+        ESP_LOGE(TAG, "failed to cast message to SetWifiConfig");
+    }
+
+    // Create a message
+    string setMqttMessage = "{\"type\":\"SetMqttConfig\",\"data\":{\"brokerAddress\":\"addy\"}}";
+
+    // Deserialize the message
+    PlugMessage deserializedMqttMessage = PlugMessage::deserialize(setMqttMessage);
+
+    // Cast the message to a SetMqttConfig
+    SetMqttConfig* setMqttConfig = dynamic_cast<SetMqttConfig*>(deserializedMqttMessage.message.get());
+
+    // Check if the cast was successful
+    if (setMqttConfig != nullptr) {
+        ESP_LOGI(TAG, "brokerAddress: %s", setMqttConfig->brokerAddress.c_str());
+    } else {
+        ESP_LOGE(TAG, "failed to cast message to SetMqttConfig");
+    }
+
+    // Create a message
+    string setBleMessage = "{\"type\":\"SetBleConfig\",\"data\":{\"deviceName\":\"name\"}}";
+
+    // Deserialize the message
+    PlugMessage deserializedBleMessage = PlugMessage::deserialize(setBleMessage);
+
+    // Cast the message to a SetBleConfig
+    SetBleConfig* setBleConfig = dynamic_cast<SetBleConfig*>(deserializedBleMessage.message.get());
+
+    // Check if the cast was successful
+    if (setBleConfig != nullptr) {
+        ESP_LOGI(TAG, "deviceName: %s", setBleConfig->deviceName.c_str());
+    } else {
+        ESP_LOGE(TAG, "failed to cast message to SetBleConfig");
+    }
+
+    return;
+
     // Read the current configuration from NVS
     auto [error, config] = PlugConfig::readPlugConfig("namespace", "key");
     if (error != ESP_OK) {
@@ -283,5 +361,14 @@ void adtMessageHandler(vector<byte> message) {
     );
 
     // Deserialize the message
+    PlugMessage plugMessage = PlugMessage::deserialize(messageString);
 
+}
+
+void setAcDimmerConfigHandler(PlugMessage message) {
+    // // Deserialize the message
+    // SetAcDimmerConfig config = SetAcDimmerConfig::deserialize(message.message);
+
+    // // Set the ac dimmer configuration
+    // acDimmer.setConfig(config);
 }

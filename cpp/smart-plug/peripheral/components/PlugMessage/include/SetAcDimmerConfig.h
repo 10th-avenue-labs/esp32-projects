@@ -3,12 +3,17 @@
 
 #include <string>
 #include <cstdint>
+#include <cJSON.h>
+#include <memory>
+#include "IPlugMessageData.h"
 
 using namespace std;
 
-class SetAcDimmerConfig {
+class SetAcDimmerConfig : public IPlugMessageData {
     public:
         uint8_t brightness;
+
+        static unique_ptr<IPlugMessageData> deserialize(const string& serialized);
 };
 
 #endif // SET_AC_DIMMER_CONFIG_H

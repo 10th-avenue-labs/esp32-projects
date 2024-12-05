@@ -15,9 +15,8 @@ class AcDimmerConfig {
         int offsetFalling;
         int brightness;
 
-    unique_ptr<cJSON, void (*)(cJSON *item)> serialize();
-    static AcDimmerConfig deserialize(const string& serialized);
-
+        unique_ptr<cJSON, void (*)(cJSON *item)> serialize();
+        static AcDimmerConfig deserialize(const string& serialized);
 };
 
 #endif // AC_DIMMER_CONFIG_H

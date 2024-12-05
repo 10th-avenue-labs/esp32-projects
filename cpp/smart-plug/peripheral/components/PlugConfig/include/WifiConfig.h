@@ -11,9 +11,8 @@ class WifiConfig {
         string ssid;
         string password;
 
-    unique_ptr<cJSON, void (*)(cJSON *item)> serialize();
-    static WifiConfig deserialize(const string& serialized);
-
+        unique_ptr<cJSON, void (*)(cJSON *item)> serialize();
+        static WifiConfig deserialize(const string& serialized);
 };
 
 #endif // WIFI_CONFIG_H
