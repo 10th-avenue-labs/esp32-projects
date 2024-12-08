@@ -23,11 +23,6 @@ public:
         return Result(true, val);
     }
 
-    // Static method for creating a success without a value
-    static Result createSuccess() {
-        return Result(true);
-    }
-
     // Static method for creating a failure with an error message
     static Result createFailure(const std::string& err) {
         return Result(false, std::nullopt, err);
@@ -93,6 +88,13 @@ public:
     }
 };
 
+class MyObj {
+public:
+    int value;
+
+    MyObj(int val) : value(val) {}
+};
+
 // Example usage of the Result class
 int main() {
     // Success without a value
@@ -102,6 +104,11 @@ int main() {
     // Success with a value
     Result<int> successWithValue = Result<int>::createSuccess(42);
     std::cout << "Success with value: " << successWithValue.isSuccess() << ", Value: " << successWithValue.getValue() << std::endl;
+
+    // Success with an object value
+    MyObj obj(100);
+    Result<MyObj> successWithObject = Result<MyObj>::createSuccess(obj);
+    std::cout << "Success with object value: " << successWithObject.isSuccess() << ", Value: " << successWithObject.getValue().value << std::endl;
 
     // Failure
     Result failure = Result<>::createFailure("An error occurred");
