@@ -105,6 +105,20 @@ void BleAdvertiser::advertise(void) {
     vTaskDelete(NULL);
 }
 
+bool BleAdvertiser::setName(string name) {
+    deviceName = name;
+
+    // Set the gap device name
+    int response = ble_svc_gap_device_name_set(deviceName.c_str());
+    if (response != 0) {
+        ESP_LOGE(TAG , "failed to set device name to %s, error code: %d",
+                 deviceName.c_str(), response);
+        return false;
+    }
+
+    return true;
+}
+
 void BleAdvertiser::shutdown(void) {
     // Log the shutdown
     ESP_LOGI(TAG, "shutting down");

@@ -70,6 +70,14 @@ public:
     static void advertise(void);
 
     /**
+     * @brief Set the name of the BLE device
+     * 
+     * @param name The name of the device
+     * @return true if successful, false otherwise
+     */
+    static bool setName(string name);
+
+    /**
      * @brief Shutdown the BLE advertiser
      * 
      */
