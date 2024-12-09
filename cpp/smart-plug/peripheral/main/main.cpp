@@ -1,5 +1,7 @@
 #include <cmath>
 #include "WifiService.h"
+#include "cereal/cereal.hpp"
+#include "cereal/archives/json.hpp"
 #include "BleAdvertiser.h"
 #include "Timer.h"
 #include "AcDimmer.h"
@@ -72,9 +74,63 @@ shared_ptr<PlugConfig> config;
 unique_ptr<AdtService> adtService;
 unique_ptr<AcDimmer> acDimmer;
 
+class MyClass {
+public:
+    MyClass(int a, double b) : a(a), b(b) {}
+
+    template <class Archive>
+    void serialize(Archive& archive) {
+        archive(a, b); // Serialize member variables a and b
+    }
+
+    void print() const {
+        std::cout << "a: " << a << ", b: " << b << std::endl;
+    }
+
+private:
+    int a;
+    double b;
+};
+
 extern "C" void app_main(void)
 {
     // reset();
+
+    MyClass obj(42, 3.14);
+    
+    // Serialize to a stringstream
+    std::stringstream ss;
+    {
+        cereal::JSONOutputArchive archive(ss);
+        archive(obj); // Serialize obj
+    }
+
+    std::string serializedData = ss.str();
+    std::cout << "Serialized data: " << serializedData << std::endl;
+
+
+/*
+Serialized data: {
+    "value0": {
+        "value0": 42,
+        "value1": 3.14
+    }
+}
+*/
+
+    // // Deserialize from stringstream
+    // MyClass deserializedObj;
+    // {
+    //     cereal::JSONInputArchive archive(ss);
+    //     archive(deserializedObj); // Deserialize into deserializedObj
+    // }
+
+    // deserializedObj.print();
+
+
+
+
+    return;
 
     // Register the Plug message deserializers
     PlugMessage::registerDeserializer("SetAcDimmerConfig", SetAcDimmerConfig::deserialize);
