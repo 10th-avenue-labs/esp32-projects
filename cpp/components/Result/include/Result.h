@@ -86,7 +86,7 @@ class Result: ISerializable {
             // Check if a value is present
             if (!value.has_value()) {
                 cJSON_AddItemToObject(root.get(), "value", cJSON_CreateNull());
-                return cJSON_Print(root.get());
+                return cJSON_PrintUnformatted(root.get());
             }
 
             // Check if the value is a boolean
@@ -114,7 +114,7 @@ class Result: ISerializable {
                 ESP_LOGW(RESULT_TAG, "attempted to serialize a non-serializable type %s", typeid(T).name());
             }
 
-            return cJSON_Print(root.get());
+            return cJSON_PrintUnformatted(root.get());
         }
     private:
 
