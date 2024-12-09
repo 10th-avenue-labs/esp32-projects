@@ -6,6 +6,8 @@
 #include "MqttClient.h"
 #include "AdtService.h"
 #include "PlugConfig.h"
+#include "Result.h"
+#include "ISerializable.h"
 
 #include <string.h>
 #include <inttypes.h>
@@ -19,6 +21,10 @@
 #include <SetMqttConfig.h>
 #include <SetBleConfig.h>
 
+// Define the namespace and key for the plug configuration
+#define PLUG_CONFIG_NAMESPACE "storage"
+#define PLUG_CONFIG_KEY "config"
+
 // BLE constants
 #define BLE_GAP_APPEARANCE_GENERIC_TAG 0x0200
 #define BLE_GAP_LE_ROLE_PERIPHERAL 0x00
@@ -31,139 +37,103 @@
 
 static const char *TAG = "SMART_PLUG";
 
+// Initialization helpers
+Result<shared_ptr<PlugConfig>> getConfigOrDefault();
+
+// Wifi connection handlers
 void attemptConnectToWifi(shared_ptr<WifiConfig> wifiConfig);
 void onWifiConnected(shared_ptr<Mqtt::MqttClient> client, shared_ptr<int> connectionAttempt);
 void onWifiDisconnected(shared_ptr<WifiConfig> wifiConfig, shared_ptr<int> connectionAttempt);
 
+// MQTT connection handlers
 void attemptConnectToMqtt(shared_ptr<Mqtt::MqttClient> client);
 void onMqttConnected(Mqtt::MqttClient* client, shared_ptr<int> connectionAttempt);
 void onMqttDisconnected(Mqtt::MqttClient* client, shared_ptr<int> connectionAttempt);
 
+// Create of update the MQTT client
 void createMqttClient(shared_ptr<MqttConfig> mqttConfig, shared_ptr<Mqtt::MqttClient>& mqttClient, shared_ptr<int> mqttConnectionAttempt);
 void updateMqttClient(shared_ptr<MqttConfig> mqttConfig, shared_ptr<Mqtt::MqttClient> mqttClient, shared_ptr<int> mqttConnectionAttempt);
 
+// ADT message handler
+void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleDevice> device);
+
+// Message handlers
+Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessageData> message);
+void setAcDimmerConfigHandler(unique_ptr<IPlugMessageData> message);
+void setWifiConfigHandler(unique_ptr<IPlugMessageData> message);
+void setMqttConfigHandler(unique_ptr<IPlugMessageData> message);
+
+// Meta functions
+esp_err_t reset();
+
+// Shared resources
+shared_ptr<PlugConfig> config;
+unique_ptr<AcDimmer> acDimmer;
+
 extern "C" void app_main(void)
 {
+    // reset();
+
+
+
+    // Create a success result
+    Result<void> successResult = Result<void>::createSuccess();
+    ESP_LOGI(TAG, "success result: %s", successResult.serialize().c_str());
+
+    // Create a failure result
+    Result<void> failureResult = Result<void>::createFailure("this is an error message");
+    ESP_LOGI(TAG, "failure result: %s", failureResult.serialize().c_str());
+
+    // Create a success result with an int value
+    Result<int> successIntResult = Result<int>::createSuccess(42);
+    ESP_LOGI(TAG, "success int result: %s", successIntResult.serialize().c_str());
+
+    // Create a failure result with an int value
+    Result<int> failureIntResult = Result<int>::createFailure("this is an error message");
+    ESP_LOGI(TAG, "failure int result: %s", failureIntResult.serialize().c_str());
+    
+    // Create a success result with a string value
+    Result<string> successStringResult = Result<string>::createSuccess("this is a string");
+    ESP_LOGI(TAG, "success string result: %s", successStringResult.serialize().c_str());
+
+    // Create a success result with a bool value
+    Result<bool> successBoolResult = Result<bool>::createSuccess(true);
+    ESP_LOGI(TAG, "success bool result: %s", successBoolResult.serialize().c_str());
+
+    // Create a success result with an array value
+    Result<vector<int>> successArrayResult = Result<vector<int>>::createSuccess({1, 2, 3, 4, 5});
+    ESP_LOGI(TAG, "success array result: %s", successArrayResult.serialize().c_str());
+
+    // Create a success result with a nested serializable object value
+    Result<PlugConfig> successNestedResult = Result<PlugConfig>::createSuccess(*config.get());
+    ESP_LOGI(TAG, "success nested result: %s", successNestedResult.serialize().c_str());
+
+    return;
+
+
+
+
+
     // Register the Plug message deserializers
     PlugMessage::registerDeserializer("SetAcDimmerConfig", SetAcDimmerConfig::deserialize);
     PlugMessage::registerDeserializer("SetWifiConfig", SetWifiConfig::deserialize);
     PlugMessage::registerDeserializer("SetMqttConfig", SetMqttConfig::deserialize);
     PlugMessage::registerDeserializer("SetBleConfig", SetBleConfig::deserialize);
 
-    // Create a message
-    string setAcDimmerMessage = "{\"type\":\"SetAcDimmerConfig\",\"data\":{\"brightness\":50}}";
-
-    // Deserialize the message
-    PlugMessage deserializedAcDimmerMessage = PlugMessage::deserialize(setAcDimmerMessage);
-
-    // Cast the message to a SetAcDimmerConfig
-    SetAcDimmerConfig* setAcDimmerConfig = dynamic_cast<SetAcDimmerConfig*>(deserializedAcDimmerMessage.message.get());
-
-    // Check if the cast was successful
-    if (setAcDimmerConfig != nullptr) {
-        ESP_LOGI(TAG, "brightness: %d", setAcDimmerConfig->brightness);
-    } else {
-        ESP_LOGE(TAG, "failed to cast message to SetAcDimmerConfig");
-    }
-
-    // Create a message
-    string setWifiMessage = "{\"type\":\"SetWifiConfig\",\"data\":{\"ssid\":\"denhac\",\"password\":\"denhac rules\"}}";
-
-    // Deserialize the message
-    PlugMessage deserializedWifiMessage = PlugMessage::deserialize(setWifiMessage);
-
-    // Cast the message to a SetWifiConfig
-    SetWifiConfig* setWifiConfig = dynamic_cast<SetWifiConfig*>(deserializedWifiMessage.message.get());
-
-    // Check if the cast was successful 
-    if (setWifiConfig != nullptr) {
-        ESP_LOGI(TAG, "ssid: %s, password: %s", setWifiConfig->ssid.c_str(), setWifiConfig->password.c_str());
-    } else {
-        ESP_LOGE(TAG, "failed to cast message to SetWifiConfig");
-    }
-
-    // Create a message
-    string setMqttMessage = "{\"type\":\"SetMqttConfig\",\"data\":{\"brokerAddress\":\"addy\"}}";
-
-    // Deserialize the message
-    PlugMessage deserializedMqttMessage = PlugMessage::deserialize(setMqttMessage);
-
-    // Cast the message to a SetMqttConfig
-    SetMqttConfig* setMqttConfig = dynamic_cast<SetMqttConfig*>(deserializedMqttMessage.message.get());
-
-    // Check if the cast was successful
-    if (setMqttConfig != nullptr) {
-        ESP_LOGI(TAG, "brokerAddress: %s", setMqttConfig->brokerAddress.c_str());
-    } else {
-        ESP_LOGE(TAG, "failed to cast message to SetMqttConfig");
-    }
-
-    // Create a message
-    string setBleMessage = "{\"type\":\"SetBleConfig\",\"data\":{\"deviceName\":\"name\"}}";
-
-    // Deserialize the message
-    PlugMessage deserializedBleMessage = PlugMessage::deserialize(setBleMessage);
-
-    // Cast the message to a SetBleConfig
-    SetBleConfig* setBleConfig = dynamic_cast<SetBleConfig*>(deserializedBleMessage.message.get());
-
-    // Check if the cast was successful
-    if (setBleConfig != nullptr) {
-        ESP_LOGI(TAG, "deviceName: %s", setBleConfig->deviceName.c_str());
-    } else {
-        ESP_LOGE(TAG, "failed to cast message to SetBleConfig");
-    }
-
-    return;
-
-    // Read the current configuration from NVS
-    auto [error, config] = PlugConfig::readPlugConfig("namespace", "key");
-    if (error != ESP_OK) {
-        // TODO: We should go to some error state
-        ESP_LOGE(TAG, "failed to read plug configuration, error code: %s", esp_err_to_name(error));
+    // Get config or default
+    Result<shared_ptr<PlugConfig>> plugConfigResult = getConfigOrDefault();
+    if (!plugConfigResult.success) {
+        ESP_LOGE(TAG, "failed to get plug config, error: %s", plugConfigResult.getError().c_str());
         return;
     }
+    config = move(plugConfigResult.getValue());
 
-    // Create a default plug configuration if one doesn't already exist
-    if (config == nullptr) {
-        ESP_LOGI(TAG, "no plug configuration found, creating a default one");
-        config = make_unique<PlugConfig>(
-            PlugConfig {
-                // Config for BLE
-                make_shared<BleConfig>(
-                    "Smart Plug"
-                ),
-                // Config for non-dimmable LED
-                make_shared<AcDimmerConfig>(
-                    32,
-                    25,
-                    1000,
-                    5000,
-                    1200,
-                    0
-                ),
-                // TODO: Remove wifi config in prod
-                make_shared<WifiConfig>(
-                    "denhac",
-                    "denhac rules"
-                ),
-                // Config for MQTT
-                make_shared<MqttConfig>(
-                    "mqtt://10.11.2.96:1883"
-                )
-            }
-        );
-    }
-
-    // // Serialize and deserialize the plug configuration (for testing and debugging purposes)
-    // ESP_LOGI(TAG, "plug configuration: %s", cJSON_Print(config->serialize().get()));
-    // string serialized = cJSON_Print(config->serialize().get());
-    // PlugConfig deserialized = PlugConfig::deserialize(serialized);
-    // ESP_LOGI(TAG, "deserialized plug configuration: %s", cJSON_Print(deserialized.serialize().get()));
+    // Log the configuration
+    ESP_LOGI(TAG, "bleConfig: %s", cJSON_Print(config->serialize().get()));
 
     // Initiate the ac dimmer
     ESP_LOGI(TAG, "initializing ac dimmer");
-    AcDimmer acDimmer(
+    acDimmer = make_unique<AcDimmer>(
         config.get()->acDimmerConfig->zcPin,
         config.get()->acDimmerConfig->psmPin,
         config.get()->acDimmerConfig->debounceUs,
@@ -179,10 +149,7 @@ extern "C" void app_main(void)
         ADT_SERVICE_MTU_CHARACTERISTIC_UUID,
         ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID,
         ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID,
-        [&acDimmer](vector<byte> message) {
-            // TODO: Implement the message handler
-            ESP_LOGI(TAG, "received message of length %d", message.size());
-        }
+        adtMessageHandler
     );
 
     // Initialize the BLE advertiser
@@ -194,10 +161,7 @@ extern "C" void app_main(void)
         {
             adtService.getBleService()
         },
-        [&adtService](shared_ptr<BleDevice> device) {
-            // TODO: Implement the device connection handler
-            ESP_LOGI(TAG, "device connected");
-        }
+        nullptr // No device connected handler needed
     );
 
     // Create an MQTT client
@@ -229,7 +193,59 @@ extern "C" void app_main(void)
     } else {
         ESP_LOGI(TAG, "no wifi configuration found, skipping wifi connection");
     }
+
+    // Begin advertising
+    ESP_LOGI(TAG, "beginning advertising");
+    BleAdvertiser::advertise();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Initialization helpers
+////////////////////////////////////////////////////////////////////////////////
+
+Result<shared_ptr<PlugConfig>> getConfigOrDefault() {
+    // Read the plug configuration from NVS if it exists
+    Result<shared_ptr<PlugConfig>> plugConfigResult = PlugConfig::readPlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY);
+    if (!plugConfigResult.isSuccess()) {
+        return plugConfigResult;
+    }
+
+    // Check if a configuration was found
+    if (plugConfigResult.getValue() != nullptr) {
+        ESP_LOGI(TAG, "found plug configuration");
+        return plugConfigResult;
+    }
+
+    // Create a default plug configuration if one doesn't already exist
+    // TODO: Consider defining the default function somewhere else
+    ESP_LOGI(TAG, "no plug configuration found, creating a default one");
+    config = make_unique<PlugConfig>(
+        PlugConfig {
+            // Config for BLE
+            make_shared<BleConfig>(
+                "Smart Plug"
+            ),
+            // Config for non-dimmable LED
+            make_shared<AcDimmerConfig>(
+                32,
+                25,
+                1000,
+                5000,
+                1200,
+                0
+            ),
+            // Config for WiFi
+            nullptr,
+            // Config for MQTT
+            make_shared<MqttConfig>(
+                "mqtt://10.11.2.96:1883"
+            )
+        }
+    );
+
+    return Result<shared_ptr<PlugConfig>>::createSuccess(move(config));
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// WiFi Connection Handlers
@@ -353,7 +369,7 @@ void onMqttDisconnected(Mqtt::MqttClient* client, shared_ptr<int> connectionAtte
 /// Adt message handler
 ////////////////////////////////////////////////////////////////////////////////
 
-void adtMessageHandler(vector<byte> message) {
+void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleDevice> device) {
     // Convert the data to a string
     string messageString(
         reinterpret_cast<const char*>(message.data()),
@@ -363,12 +379,115 @@ void adtMessageHandler(vector<byte> message) {
     // Deserialize the message
     PlugMessage plugMessage = PlugMessage::deserialize(messageString);
 
+    // Create a map of message handlers
+    unordered_map<string, function<void(unique_ptr<IPlugMessageData>)>> messageHandlers = {
+        {"SetBleConfig", bleConfigUpdateHandler},
+        {"SetAcDimmerConfig", setAcDimmerConfigHandler},
+        {"SetWifiConfig", setWifiConfigHandler},
+        {"SetMqttConfig", setMqttConfigHandler}
+    };
+
+// {
+//     type: "MessageResponse",
+//     data: {
+//         messageId: messageId,
+//         success: true,
+//         error: null
+//     }
+// }
+
+
+    // Get the message handler
+    auto messageHandler = messageHandlers.find(plugMessage.type);
+
+    // Check if the message handler was found
+    if (messageHandler == messageHandlers.end()) {
+        ESP_LOGE(TAG, "no message handler found for message type %s", plugMessage.type.c_str());
+        return;
+    }
+
+    // Call the message handler
+    messageHandler->second(move(plugMessage.data));
 }
 
-void setAcDimmerConfigHandler(PlugMessage message) {
-    // // Deserialize the message
-    // SetAcDimmerConfig config = SetAcDimmerConfig::deserialize(message.message);
+////////////////////////////////////////////////////////////////////////////////
+/// Message handlers
+////////////////////////////////////////////////////////////////////////////////
 
-    // // Set the ac dimmer configuration
-    // acDimmer.setConfig(config);
+void setAcDimmerConfigHandler(unique_ptr<IPlugMessageData> message) {
+    ESP_LOGI(TAG, "setting ac dimmer config");
+}
+
+void setWifiConfigHandler(unique_ptr<IPlugMessageData> message) {
+    ESP_LOGI(TAG, "setting wifi config");
+
+    // Cast the message to the correct type
+    auto wifiConfigMessage = dynamic_cast<SetWifiConfig*>(message.get());
+    if (wifiConfigMessage == nullptr) {
+        ESP_LOGE(TAG, "failed to cast message to SetWifiConfig");
+        return;
+    }
+
+    // Update the wifi configuration
+    config.get()->wifiConfig = make_shared<WifiConfig>(
+        wifiConfigMessage->ssid,
+        wifiConfigMessage->password
+    );
+
+    // Commit the configuration to NVS
+    config->writePlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, *config);
+
+    // Attempt to connect to wifi
+    attemptConnectToWifi(config.get()->wifiConfig);
+}
+
+void setMqttConfigHandler(unique_ptr<IPlugMessageData> message) {
+    ESP_LOGI(TAG, "setting mqtt config");
+}
+
+Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessageData> message) {
+    // Cast the message to the correct type
+    auto bleConfigMessage = dynamic_cast<SetBleConfig*>(message.get());
+    if (bleConfigMessage == nullptr) {
+        return Result<shared_ptr<ISerializable>>::createFailure("failed to cast message to SetBleConfig");
+    }
+
+    // Update the device name for the BLE advertiser if a device name is present in the message
+    if (bleConfigMessage->deviceName.has_value()) {
+        if(BleAdvertiser::setName(bleConfigMessage->deviceName.value())) {
+            ESP_LOGI(TAG, "ble device name updated");
+        } else {
+            return Result<shared_ptr<ISerializable>>::createFailure("failed to update ble device name");
+        }
+    }
+
+    // Update the BLE configuration
+    config.get()->bleConfig->deviceName = bleConfigMessage->deviceName.value_or(config.get()->bleConfig->deviceName);
+
+    // Commit the configuration to NVS
+    Result result = config->writePlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, *config);
+    if (!result.isSuccess()) {
+        return Result<shared_ptr<ISerializable>>::createFailure("failed to configuration to storage");
+    }
+
+    return Result<shared_ptr<ISerializable>>::createSuccess(nullptr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Meta functions
+////////////////////////////////////////////////////////////////////////////////
+
+esp_err_t reset() {
+    // Erase the plug configuration from NVS
+    esp_err_t error = nvs_flash_erase();
+    if (error != ESP_OK) {
+        ESP_LOGE(TAG, "failed to erase nvs, error code: %s", esp_err_to_name(error));
+        return error;
+    }
+
+    // Reboot the device
+    // FIXME: Enable this in prod on a pin interrupt
+    // esp_restart();
+
+    return ESP_OK;
 }

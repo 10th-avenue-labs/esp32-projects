@@ -5,6 +5,9 @@
 #include <string>
 #include <type_traits>
 #include <esp_log.h>
+#include "ISerializable.h"
+#include <cJSON.h>
+#include <memory>
 
 using namespace std;
 
@@ -12,7 +15,7 @@ static const char* RESULT_TAG = "RESULT";
 
 // Primary template for Result with a value of type T
 template <typename T = void>
-class Result {
+class Result: ISerializable {
     public:
         bool success;           // Flag indicating success or failure
         optional<T> value;      // Optional value for success
@@ -71,6 +74,48 @@ class Result {
             }
             return *error;
         }
+
+        string serialize() override {
+            // Create a new cJSON object
+            unique_ptr<cJSON, decltype(&cJSON_Delete)> root(cJSON_CreateObject(), cJSON_Delete);
+
+            // Serialize the object
+            cJSON_AddItemToObject(root.get(), "success", cJSON_CreateBool(success));
+            cJSON_AddItemToObject(root.get(), "error", error.has_value() ? cJSON_CreateString(error.value().c_str()) : cJSON_CreateNull());
+
+            // Check if a value is present
+            if (!value.has_value()) {
+                cJSON_AddItemToObject(root.get(), "value", cJSON_CreateNull());
+                return cJSON_Print(root.get());
+            }
+
+            // Check if the value is a boolean
+            if constexpr (is_same<T, bool>::value) {
+                cJSON_AddItemToObject(root.get(), "value", cJSON_CreateBool(value.value()));
+            }
+
+            // Check if the value is a number
+            else if constexpr (is_arithmetic<T>::value) {
+                cJSON_AddItemToObject(root.get(), "value", cJSON_CreateNumber(value.value()));
+            }
+
+            // Check if the value is a string
+            else if constexpr (is_same<T, string>::value) {
+                cJSON_AddItemToObject(root.get(), "value", cJSON_CreateString(value.value().c_str()));
+            }
+
+            // Check if the value implements ISerializable
+            else if constexpr (is_base_of<ISerializable, T>::value) {
+                cJSON_AddItemToObject(root.get(), "value", cJSON_Parse(value.value().serialize().c_str()));
+            }
+
+            // The value is not serializable
+            else {
+                ESP_LOGW(RESULT_TAG, "attempted to serialize a non-serializable type %s", typeid(T).name());
+            }
+
+            return cJSON_Print(root.get());
+        }
     private:
 
         /**
@@ -86,7 +131,7 @@ class Result {
 
 // Specialization of Result<> when there is no value (void type)
 template <>
-class Result<void> {
+class Result<void>: ISerializable {
     public:
         bool success;           // Flag indicating success or failure
         optional<string> error; // Optional error message for failure
@@ -130,6 +175,10 @@ class Result<void> {
                 ESP_LOGE(RESULT_TAG, "attempted to get error from successful result");
             }
             return *error;
+        }
+
+        string serialize() override {
+            return "{\"success\":" + to_string(success) + ",\"error\":\"" + error.value_or("null") + "\"}";
         }
     private:
 
