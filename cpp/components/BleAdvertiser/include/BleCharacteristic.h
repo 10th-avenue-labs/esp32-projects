@@ -48,7 +48,7 @@ class BleAdvertiser;
 
 class BleCharacteristic {
 public:
-    function<int(vector<byte>)> onWrite;
+    function<int(vector<byte>, shared_ptr<BleDevice>)> onWrite;
     function<vector<byte>(void)> onRead;
     function<void(shared_ptr<BleDevice>)> onSubscribe;
     bool read;
@@ -63,13 +63,13 @@ public:
      * @brief Construct a new Ble Characteristic object
      * 
      * @param uuid The UUID of the characteristic
-     * @param onWrite The callback for write access
+     * @param onWrite The callback for write access. Take is the received data and the device that sent it
      * @param onRead The callback for read access
      * @param acknowledgeWrites Flag for write acknowledgment
      */
     BleCharacteristic(
         string uuid,
-        function<int(vector<byte>)> onWrite,
+        function<int(vector<byte>, shared_ptr<BleDevice>)> onWrite,
         function<vector<byte>(void)> onRead,
         function<void(shared_ptr<BleDevice>)> onSubscribe,
         bool acknowledgeWrites

@@ -1,4 +1,5 @@
 #include "BleCharacteristic.h"
+#include "BleAdvertiser.h"
 
 static const char* TAG = "BLE_CHARACTERISTIC";
 
@@ -8,7 +9,7 @@ static const char* TAG = "BLE_CHARACTERISTIC";
 
 BleCharacteristic::BleCharacteristic(
     string uuid,
-    function<int(vector<byte>)> onWrite,
+    function<int(vector<byte>, shared_ptr<BleDevice>)> onWrite,
     function<vector<byte>(void)> onRead,
     function<void(shared_ptr<BleDevice>)> onSubscribe,
     bool acknowledgeWrites
@@ -177,6 +178,13 @@ int BleCharacteristic::characteristicAccessHandler
                 return BLE_ATT_ERR_UNLIKELY;
             }
 
+            // Get the device that wrote to the characteristic
+            shared_ptr<BleDevice> device = BleAdvertiser::connectedDevicesByHandle[connectionHandle];
+            if (device == nullptr) {
+                ESP_LOGE(TAG, "device not found for connection handle: %d", connectionHandle);
+                return BLE_ATT_ERR_UNLIKELY;
+            }
+
             // Convert the data to a vector of bytes
             vector<byte> data = vector<byte>(
                 (byte*) gattAccessContext->om->om_data,
@@ -184,7 +192,7 @@ int BleCharacteristic::characteristicAccessHandler
             );
 
             // Call the write callback
-            return characteristic->onWrite(data);
+            return characteristic->onWrite(data, device);
         }
         // Read descriptor
         case BLE_GATT_ACCESS_OP_READ_DSC:
