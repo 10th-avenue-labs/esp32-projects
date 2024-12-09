@@ -5,13 +5,12 @@ using System.Text.Json;
 
 // Bluetooth Information
 const string TARGET                 = "Smart Plug";
-const string ADT_SERVICE_UUID       = "6b0a95b9-0000-44d9-957c-1f7cd56563b4";
-const string ADT_MTU_CHAR_UUID      = "6b0a95b9-0010-44d9-957c-1f7cd56563b4";
-const string ADT_TRANSMIT_CHAR_UUID = "6b0a95b9-0020-44d9-957c-1f7cd56563b4";
 
-// Information to transmit
-const string SSID = "denhac";
-const string PASSWORD = "denhac rules";
+// Define the ADT service and characteristic UUIDs
+const string ADT_SERVICE_UUID =                                "cc3aab60-0001-0000-81e0-c88f19fb28cb";
+const string ADT_SERVICE_MTU_CHARACTERISTIC_UUID =             "cc3aab60-0001-0001-81e0-c88f19fb28cb";
+const string ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID =    "cc3aab60-0001-0002-81e0-c88f19fb28cb";
+const string ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID =         "cc3aab60-0001-0003-81e0-c88f19fb28cb";
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Get and print the bluetooth adapter and device information
@@ -82,8 +81,12 @@ Console.WriteLine("Connected to device.");
 
 AdtService adtService = new(
     ADT_SERVICE_UUID,
-    ADT_MTU_CHAR_UUID,
-    ADT_TRANSMIT_CHAR_UUID
+    ADT_SERVICE_MTU_CHARACTERISTIC_UUID,
+    ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID,
+    ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID,
+    async (List<Byte> data) => {
+        Console.WriteLine($"Received data: {Encoding.ASCII.GetString([.. data])}");
+    }
 );
 
 // Initialize the service
@@ -93,24 +96,27 @@ if (!await adtService.Init(device)) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Transmit the connection information to the device
+/// Transmit a SetBleConfig message to the device
 ///////////////////////////////////////////////////////////////////////////////
 
 // Create an object to store the connection information
-var connectionInfo = new {
-    eventType = "WIFI_INFO",
+var setBleConfigMessage = new {
+    type = "SetBleConfig",
     data = new {
-        ssid = SSID,
-        password = PASSWORD
+        deviceName = TARGET,
     }
 };
 
 // Convert to string using JSON serialization
-string jsonString = JsonSerializer.Serialize(connectionInfo);
+string jsonString = JsonSerializer.Serialize(setBleConfigMessage);
 Console.WriteLine(jsonString);
 
 var success = await adtService.Transmit([.. Encoding.ASCII.GetBytes(jsonString)]);
 Console.WriteLine($"Transmit success: {success}");
+
+while (true) {
+    await Task.Delay(1000);
+}
 
 return 0;
 
