@@ -10,7 +10,7 @@ using namespace std;
 
 class SetBleConfig : public IPlugMessageData {
     public:
-        string deviceName;
+        optional<string> deviceName;
 
         static unique_ptr<IPlugMessageData> deserialize(const string& serialized);
 };
