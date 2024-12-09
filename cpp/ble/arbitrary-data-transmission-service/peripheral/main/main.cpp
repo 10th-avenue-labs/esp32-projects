@@ -20,6 +20,11 @@ static const char *TAG = "adt service";
 #define BLE_GAP_APPEARANCE_GENERIC_TAG 0x0200
 #define BLE_GAP_LE_ROLE_PERIPHERAL 0x00
 
+#define ADT_SERVICE_UUID                                "cc3aab60-0001-0000-81e0-c88f19fb28cb"
+#define ADT_SERVICE_MTU_CHARACTERISTIC_UUID             "cc3aab60-0001-0001-81e0-c88f19fb28cb"
+#define ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID    "cc3aab60-0001-0002-81e0-c88f19fb28cb"
+#define ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID         "cc3aab60-0001-0003-81e0-c88f19fb28cb"
+
 static void bleAdvertiserTask(void* args) {
     // Advertise the Ble Device
     ESP_LOGI(TAG, "advertising BLE Device");
@@ -31,13 +36,15 @@ static void bleAdvertiserTask(void* args) {
 extern "C" void app_main(void)
 {
     bool* sendTransfer = new bool(false);
+    uint16_t* messageId = new uint16_t(0);
+    shared_ptr<BleDevice> device;
 
     AdtService adtService(
-        "00000000-0000-0000-0000-000000012346",             // Service UUID
-        "12345670-0000-0000-0000-000000000000",             // MTU Characteristic UUID
-        "12345679-0000-0000-0000-000000000000",             // Transmission Characteristic UUID
-        "12345678-0000-0000-0000-000000000000",             // Receive Characteristic UUID
-        [sendTransfer](std::vector<std::byte> data) {                   // onMessageReceived
+        ADT_SERVICE_UUID,
+        ADT_SERVICE_MTU_CHARACTERISTIC_UUID,
+        ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID,
+        ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID,
+        [messageId, sendTransfer, &device](uint16_t sendingMessageId, std::vector<std::byte> data, shared_ptr<BleDevice> sendingDevice) {
             ESP_LOGI(TAG, "message received of size %d", data.size());
 
             // Convert the data to a string
@@ -49,8 +56,10 @@ extern "C" void app_main(void)
             // Log the message
             ESP_LOGI(TAG, "message: %s", message.c_str());
 
-            // Set the transfer flag
+            // Set the lambda variables
+            *messageId = sendingMessageId;
             *sendTransfer = true;
+            device = sendingDevice;
         }
     );
 
@@ -74,6 +83,8 @@ extern "C" void app_main(void)
             // Wait for a time while the connection finishes
             vTaskDelay(3000 / portTICK_PERIOD_MS);
 
+            ESP_LOGI(TAG, "responding to message %d", *messageId);
+
             // Create a message to sent to the device
             std::string partD = std::string(249, 'd');
             std::string partE = std::string(249, 'e');
@@ -86,7 +97,7 @@ extern "C" void app_main(void)
                 reinterpret_cast<const std::byte*>(message.data()) + message.size()
             );
 
-            adtService.sendMessage({BleAdvertiser::connectedDevicesByHandle.begin()->second}, data);
+            adtService.sendMessage({device}, data);
 
             *sendTransfer = false;
         }

@@ -1,14 +1,14 @@
 ﻿using System.Text;
 using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
-using Tmds.DBus;
 
 const string TARGET = "ADT Service";
 
-const string ARBITRARY_DATA_TRANSFER_SERVICE_UUID =                     "00000000-0000-0000-0000-000000012346";
-const string ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID =          "12345670-0000-0000-0000-000000000000";
-const string ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID = "12345679-0000-0000-0000-000000000000";
-const string ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID =      "12345678-0000-0000-0000-000000000000";
+// ADT service UUIDs
+const string ADT_SERVICE_UUID =                                "cc3aab60-0001-0000-81e0-c88f19fb28cb";
+const string ADT_SERVICE_MTU_CHARACTERISTIC_UUID =             "cc3aab60-0001-0001-81e0-c88f19fb28cb";
+const string ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID =    "cc3aab60-0001-0002-81e0-c88f19fb28cb";
+const string ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID =         "cc3aab60-0001-0003-81e0-c88f19fb28cb";
 
 const int MTU_RESERVED_BYTES = 3;
 
@@ -81,10 +81,10 @@ Console.WriteLine("Connected to device.");
 
 // Get the Arbitrary Data Transfer Service
 Console.WriteLine($"Searching for Arbitrary Data Transfer Service.");
-var arbitraryDataTransferService = await device.GetServiceAsync(ARBITRARY_DATA_TRANSFER_SERVICE_UUID);
+var arbitraryDataTransferService = await device.GetServiceAsync(ADT_SERVICE_UUID);
 if (arbitraryDataTransferService == null) {
     var services = await device.GetServicesAsync();
-    Console.WriteLine($"Could not find dimmer service with ID '{ARBITRARY_DATA_TRANSFER_SERVICE_UUID}'. Instead found the following:");
+    Console.WriteLine($"Could not find dimmer service with ID '{ADT_SERVICE_UUID}'. Instead found the following:");
     foreach(var found in services) {
         await PrintServiceInfo(found);
     }
@@ -95,10 +95,10 @@ await PrintServiceInfo(arbitraryDataTransferService);
 
 // Get the MTU characteristic
 Console.WriteLine($"Searching for MTU characteristic.");
-var mtuCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID);
+var mtuCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ADT_SERVICE_MTU_CHARACTERISTIC_UUID);
 if (mtuCharacteristic == null) {
     var characteristics = await arbitraryDataTransferService.GetCharacteristicsAsync();
-    Console.WriteLine($"Could not find MTU characteristic with ID '{ARBITRARY_DATA_TRANSFER_MTU_CHARACTERISTIC_UUID}'. Instead found the following:");
+    Console.WriteLine($"Could not find MTU characteristic with ID '{ADT_SERVICE_MTU_CHARACTERISTIC_UUID}'. Instead found the following:");
     foreach(var found in characteristics) {
         await PrintCharacteristicInfo(found);
     }
@@ -113,10 +113,10 @@ Console.WriteLine($"MTU: {mtu}");
 
 // Get the transmission characteristic
 Console.WriteLine($"Searching for Transmission characteristic.");
-var transmissionCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID);
+var transmissionCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID);
 if (transmissionCharacteristic == null) {
     var characteristics = await arbitraryDataTransferService.GetCharacteristicsAsync();
-    Console.WriteLine($"Could not find Transmission characteristic with ID '{ARBITRARY_DATA_TRANSFER_TRANSMISSION_CHARACTERISTIC_UUID}'. Instead found the following:");
+    Console.WriteLine($"Could not find Transmission characteristic with ID '{ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID}'. Instead found the following:");
     foreach(var found in characteristics) {
         await PrintCharacteristicInfo(found);
     }
@@ -126,10 +126,10 @@ await PrintCharacteristicInfo(transmissionCharacteristic);
 
 // Get the receive characteristic
 Console.WriteLine($"Searching for Receive characteristic.");
-var receiveCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID);
+var receiveCharacteristic = await arbitraryDataTransferService.GetCharacteristicAsync(ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID);
 if (receiveCharacteristic == null) {
     var characteristics = await arbitraryDataTransferService.GetCharacteristicsAsync();
-    Console.WriteLine($"Could not find Receive characteristic with ID '{ARBITRARY_DATA_TRANSFER_RECEIVE_CHARACTERISTIC_UUID}'. Instead found the following:");
+    Console.WriteLine($"Could not find Receive characteristic with ID '{ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID}'. Instead found the following:");
     foreach(var found in characteristics) {
         await PrintCharacteristicInfo(found);
     }
@@ -137,7 +137,10 @@ if (receiveCharacteristic == null) {
 }
 await PrintCharacteristicInfo(receiveCharacteristic);
 
-// Subscribe to the receive characteristic
+///////////////////////////////////////////////////////////////////////////////
+/// Subscribe to the receive characteristic
+///////////////////////////////////////////////////////////////////////////////
+
 // Reading the characteristic will also affect it's value and cause an event to be emitted (due to the peripheral changing the value)
 // Using a unique characteristic specifically for notifications mitigates this
 Dictionary<UInt16, MessageInformation> messageInfos = [];
