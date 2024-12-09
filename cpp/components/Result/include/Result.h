@@ -14,9 +14,9 @@ static const char* RESULT_TAG = "RESULT";
 template <typename T = void>
 class Result {
     public:
-        bool success;                       // Flag indicating success or failure
-        optional<T> value;             // Optional value for success
-        optional<string> error;   // Optional error message for failure
+        bool success;           // Flag indicating success or failure
+        optional<T> value;      // Optional value for success
+        optional<string> error; // Optional error message for failure
 
         /**
          * @brief Create a success result with a value
@@ -88,8 +88,8 @@ class Result {
 template <>
 class Result<void> {
     public:
-        bool success;                       // Flag indicating success or failure
-        optional<string> error;   // Optional error message for failure
+        bool success;           // Flag indicating success or failure
+        optional<string> error; // Optional error message for failure
 
         /**
          * @brief Create a success result without a value
