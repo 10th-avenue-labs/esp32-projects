@@ -1,20 +1,30 @@
 using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
 
+class MessageInformation {
+    public UInt16 TotalChunks { get; set; }
+    public List<byte> Data { get; set; } = [];
+}
+
 class AdtService(
     string serviceUuid,
     string mtuCharacteristicUuid,
-    string transmissionCharacteristicUuid
-    )
-{
+    string transmissionCharacteristicUuid,
+    string receiveCharacteristicUuid,
+    Func<List<byte>, Task> onMessageReceived
+) {
     private static readonly int MTU_RESERVED_BYTES = 3;
     private static readonly int TRANSMISSION_HEADER_SIZE = 4;
 
     public string ServiceUuid { get; } = serviceUuid;
-    public string MtuCharacteristicUuid { get; } = mtuCharacteristicUuid;
-    public string TransmissionCharacteristicUuid { get; } = transmissionCharacteristicUuid;
-    public UInt16 Mtu { get; private set; }
-    private GattCharacteristic? transmitCharacteristic = null;
+
+    string MtuCharacteristicUuid { get; } = mtuCharacteristicUuid;
+    string TransmissionCharacteristicUuid { get; } = transmissionCharacteristicUuid;
+    string ReceiveCharacteristicUuid { get; } = receiveCharacteristicUuid;
+    Func<List<byte>, Task> OnMessageReceived { get; } = onMessageReceived;
+    UInt16 Mtu { get; set; }
+    GattCharacteristic? transmitCharacteristic = null;
+    Dictionary<UInt16, MessageInformation> messageInfos = [];
 
     public async Task<bool> Init(Device? device)
     {
@@ -63,6 +73,19 @@ class AdtService(
         }
         await PrintCharacteristicInfo(transmitCharacteristic);
 
+        // Get the Receive characteristic
+        Console.WriteLine($"Searching for Receive characteristic.");
+        var receiveCharacteristic = await adtService.GetCharacteristicAsync(ReceiveCharacteristicUuid);
+        if (receiveCharacteristic == null) {
+            var characteristics = await adtService.GetCharacteristicsAsync();
+            Console.WriteLine($"Could not find Receive characteristic with ID '{ReceiveCharacteristicUuid}'. Instead found the following:");
+            foreach(var found in characteristics) {
+                await PrintCharacteristicInfo(found);
+            }
+            return false;
+        }
+        await PrintCharacteristicInfo(receiveCharacteristic);
+
         // Read the MTU characteristic
         var mtuBytes = await mtuCharacteristic.ReadValueAsync(new Dictionary<string, object>());
         try {
@@ -72,6 +95,10 @@ class AdtService(
             return false;
         }
         Console.WriteLine($"MTU: {Mtu}");
+
+        // Subscribe to the Receive characteristic
+        await receiveCharacteristic.StartNotifyAsync();
+        receiveCharacteristic.Value += ChunkReceivedHandler;
 
         return true;
     }
@@ -179,6 +206,67 @@ class AdtService(
         data.RemoveRange(0, chunkSize);
 
         return [.. removedSubset];
+    }
+
+    private async Task ChunkReceivedHandler(GattCharacteristic sender, GattCharacteristicValueEventArgs eventArgs) {
+        // Get the chunk
+        var chunk = eventArgs.Value;
+
+        // Get the event type as an integer
+        var eventType = (int) chunk[0];
+
+        // Get the chunkByte. This is the total number of chunks for start events and the chunk number for data events
+        var chunkByte = chunk[1];
+
+        // Get the message ID
+        var messageId = BitConverter.ToUInt16(chunk[2..4]);
+
+        // Log the header information
+        Console.WriteLine($"Event type: {eventType}, Chunk byte: {chunkByte}, Message ID: {messageId}");
+
+        switch(eventType) {
+            case 0: {
+                // Create a list to store the data
+                var data = new List<byte>();
+
+                // Move the data to the message
+                data.AddRange(chunk[4..]);
+
+                // Check if this is the only chunk in the message
+                if (chunkByte == 1) {
+                    // Call the on message received delegate
+                    await OnMessageReceived(data);
+                    break;
+                }
+
+                // Store the data until all chunks are received
+                messageInfos[messageId] = new MessageInformation {
+                    TotalChunks = chunkByte,
+                    Data = data
+                };
+
+                break;
+            }
+            case 1: {
+                // Add the data to the message
+                messageInfos[messageId].Data.AddRange(chunk[4..]);
+
+                // Check if there is more data to receive
+                if (chunkByte < messageInfos[messageId].TotalChunks - 1) {
+                    return;
+                }
+
+                // Call the on message received delegate
+                await OnMessageReceived(messageInfos[messageId].Data);
+
+                // Remove the message from the dictionary
+                messageInfos.Remove(messageId);
+
+                break;
+            }
+            default:
+                throw new Exception($"Unknown event type: {eventType}");
+        }
     }
 
     static async Task PrintServiceInfo(IGattService1 service)
