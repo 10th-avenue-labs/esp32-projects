@@ -13,7 +13,7 @@ using namespace std;
 class PlugMessage {
     public:
         string type;
-        unique_ptr<IPlugMessageData> message;
+        unique_ptr<IPlugMessageData> data;
 
         static void registerDeserializer(const string& type, function<unique_ptr<IPlugMessageData>(const string&)> deserializer);
 

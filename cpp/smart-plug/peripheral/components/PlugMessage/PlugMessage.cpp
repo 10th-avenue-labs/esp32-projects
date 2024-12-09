@@ -25,7 +25,7 @@ PlugMessage PlugMessage::deserialize(const string& serialized) {
 
     string serializedData = cJSON_Print(cJSON_GetObjectItem(root.get(), "data"));
 
-    config.message = deserializer(serializedData);
+    config.data = deserializer(serializedData);
 
     return config;
 };
