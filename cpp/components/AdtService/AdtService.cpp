@@ -9,11 +9,10 @@ AdtService::AdtService(
     std::string mtuCharacteristicUuid,
     std::string transmissionCharacteristicUuid,
     std::string receiveCharacteristicUuid,
-    std::function<void(std::vector<std::byte>)> onMessageReceived
-) {
-    // Set the message received delegate
-    this->onMessageReceived = onMessageReceived;
-
+    std::function<void(uint16_t messageId, std::vector<std::byte>, shared_ptr<BleDevice> device)> onMessageReceived
+):
+    onMessageReceived(onMessageReceived)
+{
     // Create the receive characteristic
     this->receiveCharacteristic = make_shared<BleCharacteristic>(
         receiveCharacteristicUuid,
@@ -48,7 +47,7 @@ AdtService::AdtService(
         ),
         make_shared<BleCharacteristic>(
             transmissionCharacteristicUuid,
-            [this](std::vector<std::byte> data) -> int {
+            [this](std::vector<std::byte> data, shared_ptr<BleDevice> device) -> int {
                 // Log the write event
                 ESP_LOGI(TAG, "transmission characteristic write");
 
@@ -78,7 +77,7 @@ AdtService::AdtService(
                         if (chunkByte == 1) {
                             // Call the message received delegate
                             if (this->onMessageReceived != nullptr) {
-                                this->onMessageReceived(messageData);
+                                this->onMessageReceived(messageId, messageData, device);
                             }
                             return 0;
                         }
@@ -101,7 +100,7 @@ AdtService::AdtService(
 
                         // Call the message received delegate
                         if (this->onMessageReceived != nullptr) {
-                            this->onMessageReceived(this->messageInfos[messageId].data);
+                            this->onMessageReceived(messageId, this->messageInfos[messageId].data, device);
                         }
 
                         // Remove the message from the map

@@ -42,14 +42,14 @@ public:
      * @param mtuCharacteristicUuid The UUID of the MTU characteristic
      * @param transmissionCharacteristicUuid The UUID of the transmission characteristic
      * @param receiveCharacteristicUuid The UUID of the receive characteristic
-     * @param onMessageReceived The callback function for when a message is received
+     * @param onMessageReceived The callback function for when a message is received. Takes in a message id, the received data, and the device that sent it
      */
     AdtService(
         string serviceUuid,
         string mtuCharacteristicUuid,
         string transmissionCharacteristicUuid,
         string receiveCharacteristicUuid,
-        function<void(vector<byte>)> onMessageReceived
+        function<void(uint16_t messageId, vector<byte>, shared_ptr<BleDevice> device)> onMessageReceived
     );
 
     /**
@@ -70,7 +70,7 @@ public:
 private:
     shared_ptr<BleService> bleService;
     map<uint16_t, MessageInformation> messageInfos;
-    function<void(vector<byte>)> onMessageReceived;
+    function<void(uint16_t messageId, vector<byte>, shared_ptr<BleDevice> device)> onMessageReceived;
     shared_ptr<BleCharacteristic> receiveCharacteristic;
 
     /**
