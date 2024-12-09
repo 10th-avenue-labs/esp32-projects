@@ -18,6 +18,8 @@ class PlugMessage {
         static void registerDeserializer(const string& type, function<unique_ptr<IPlugMessageData>(const string&)> deserializer);
 
         static PlugMessage deserialize(const string& serialized);
+
+        string serialize();
     private:
         static map<string, function<unique_ptr<IPlugMessageData>(const string&)>> deserializers;
 };

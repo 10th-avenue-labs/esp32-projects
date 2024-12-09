@@ -14,6 +14,7 @@ class SetWifiConfig: public IPlugMessageData {
         string password;
 
         static unique_ptr<IPlugMessageData> deserialize(const string& serialized);
+        string serialize() override { return ""; };
 };
 
 #endif // SET_WIFI_CONFIG_H

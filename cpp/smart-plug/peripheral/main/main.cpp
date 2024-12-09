@@ -8,6 +8,7 @@
 #include "PlugConfig.h"
 #include "Result.h"
 #include "ISerializable.h"
+#include "MessageResponse.h"
 
 #include <string.h>
 #include <inttypes.h>
@@ -59,60 +60,21 @@ void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleD
 
 // Message handlers
 Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessageData> message);
-void setAcDimmerConfigHandler(unique_ptr<IPlugMessageData> message);
-void setWifiConfigHandler(unique_ptr<IPlugMessageData> message);
-void setMqttConfigHandler(unique_ptr<IPlugMessageData> message);
+Result<shared_ptr<ISerializable>> setAcDimmerConfigHandler(unique_ptr<IPlugMessageData> message);
+Result<shared_ptr<ISerializable>> setWifiConfigHandler(unique_ptr<IPlugMessageData> message);
+Result<shared_ptr<ISerializable>> setMqttConfigHandler(unique_ptr<IPlugMessageData> message);
 
 // Meta functions
 esp_err_t reset();
 
 // Shared resources
 shared_ptr<PlugConfig> config;
+unique_ptr<AdtService> adtService;
 unique_ptr<AcDimmer> acDimmer;
 
 extern "C" void app_main(void)
 {
     // reset();
-
-
-
-    // Create a success result
-    Result<void> successResult = Result<void>::createSuccess();
-    ESP_LOGI(TAG, "success result: %s", successResult.serialize().c_str());
-
-    // Create a failure result
-    Result<void> failureResult = Result<void>::createFailure("this is an error message");
-    ESP_LOGI(TAG, "failure result: %s", failureResult.serialize().c_str());
-
-    // Create a success result with an int value
-    Result<int> successIntResult = Result<int>::createSuccess(42);
-    ESP_LOGI(TAG, "success int result: %s", successIntResult.serialize().c_str());
-
-    // Create a failure result with an int value
-    Result<int> failureIntResult = Result<int>::createFailure("this is an error message");
-    ESP_LOGI(TAG, "failure int result: %s", failureIntResult.serialize().c_str());
-    
-    // Create a success result with a string value
-    Result<string> successStringResult = Result<string>::createSuccess("this is a string");
-    ESP_LOGI(TAG, "success string result: %s", successStringResult.serialize().c_str());
-
-    // Create a success result with a bool value
-    Result<bool> successBoolResult = Result<bool>::createSuccess(true);
-    ESP_LOGI(TAG, "success bool result: %s", successBoolResult.serialize().c_str());
-
-    // Create a success result with an array value
-    Result<vector<int>> successArrayResult = Result<vector<int>>::createSuccess({1, 2, 3, 4, 5});
-    ESP_LOGI(TAG, "success array result: %s", successArrayResult.serialize().c_str());
-
-    // Create a success result with a nested serializable object value
-    Result<PlugConfig> successNestedResult = Result<PlugConfig>::createSuccess(*config.get());
-    ESP_LOGI(TAG, "success nested result: %s", successNestedResult.serialize().c_str());
-
-    return;
-
-
-
-
 
     // Register the Plug message deserializers
     PlugMessage::registerDeserializer("SetAcDimmerConfig", SetAcDimmerConfig::deserialize);
@@ -144,7 +106,7 @@ extern "C" void app_main(void)
 
     // Create the ADT service
     ESP_LOGI(TAG, "creating adt service");
-    AdtService adtService(
+    adtService = make_unique<AdtService>(
         ADT_SERVICE_UUID,
         ADT_SERVICE_MTU_CHARACTERISTIC_UUID,
         ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID,
@@ -159,7 +121,7 @@ extern "C" void app_main(void)
         BLE_GAP_APPEARANCE_GENERIC_TAG,
         BLE_GAP_LE_ROLE_PERIPHERAL,
         {
-            adtService.getBleService()
+            adtService->getBleService()
         },
         nullptr // No device connected handler needed
     );
@@ -380,22 +342,12 @@ void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleD
     PlugMessage plugMessage = PlugMessage::deserialize(messageString);
 
     // Create a map of message handlers
-    unordered_map<string, function<void(unique_ptr<IPlugMessageData>)>> messageHandlers = {
+    unordered_map<string, function<Result<shared_ptr<ISerializable>>(unique_ptr<IPlugMessageData>)>> messageHandlers = {
         {"SetBleConfig", bleConfigUpdateHandler},
         {"SetAcDimmerConfig", setAcDimmerConfigHandler},
         {"SetWifiConfig", setWifiConfigHandler},
         {"SetMqttConfig", setMqttConfigHandler}
     };
-
-// {
-//     type: "MessageResponse",
-//     data: {
-//         messageId: messageId,
-//         success: true,
-//         error: null
-//     }
-// }
-
 
     // Get the message handler
     auto messageHandler = messageHandlers.find(plugMessage.type);
@@ -407,42 +359,63 @@ void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleD
     }
 
     // Call the message handler
-    messageHandler->second(move(plugMessage.data));
+    Result<shared_ptr<ISerializable>> result = messageHandler->second(move(plugMessage.data));
+
+    // Create a response message
+    PlugMessage response("Response", make_unique<MessageResponse<shared_ptr<ISerializable>>>(messageId, result));
+
+    // Serialize the response message
+    string serializedResponse = response.serialize();
+
+    // Log the response
+    ESP_LOGI(TAG, "response: %s", serializedResponse.c_str());
+
+    // Convert the message to a vector of bytes
+    vector<byte> responseBytes(
+        reinterpret_cast<const std::byte*>(serializedResponse.data()),
+        reinterpret_cast<const std::byte*>(serializedResponse.data()) + serializedResponse.size()
+    );
+
+    // Send the response message
+    adtService->sendMessage({device}, responseBytes);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Message handlers
 ////////////////////////////////////////////////////////////////////////////////
 
-void setAcDimmerConfigHandler(unique_ptr<IPlugMessageData> message) {
+Result<shared_ptr<ISerializable>> setAcDimmerConfigHandler(unique_ptr<IPlugMessageData> message) {
     ESP_LOGI(TAG, "setting ac dimmer config");
+    return Result<shared_ptr<ISerializable>>::createFailure("not implemented");
 }
 
-void setWifiConfigHandler(unique_ptr<IPlugMessageData> message) {
-    ESP_LOGI(TAG, "setting wifi config");
+Result<shared_ptr<ISerializable>> setWifiConfigHandler(unique_ptr<IPlugMessageData> message) {
+    return Result<shared_ptr<ISerializable>>::createFailure("not implemented");
+    // ESP_LOGI(TAG, "setting wifi config");
 
-    // Cast the message to the correct type
-    auto wifiConfigMessage = dynamic_cast<SetWifiConfig*>(message.get());
-    if (wifiConfigMessage == nullptr) {
-        ESP_LOGE(TAG, "failed to cast message to SetWifiConfig");
-        return;
-    }
+    // // Cast the message to the correct type
+    // auto wifiConfigMessage = dynamic_cast<SetWifiConfig*>(message.get());
+    // if (wifiConfigMessage == nullptr) {
+    //     ESP_LOGE(TAG, "failed to cast message to SetWifiConfig");
+    //     return;
+    // }
 
-    // Update the wifi configuration
-    config.get()->wifiConfig = make_shared<WifiConfig>(
-        wifiConfigMessage->ssid,
-        wifiConfigMessage->password
-    );
+    // // Update the wifi configuration
+    // config.get()->wifiConfig = make_shared<WifiConfig>(
+    //     wifiConfigMessage->ssid,
+    //     wifiConfigMessage->password
+    // );
 
-    // Commit the configuration to NVS
-    config->writePlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, *config);
+    // // Commit the configuration to NVS
+    // config->writePlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, *config);
 
-    // Attempt to connect to wifi
-    attemptConnectToWifi(config.get()->wifiConfig);
+    // // Attempt to connect to wifi
+    // attemptConnectToWifi(config.get()->wifiConfig);
 }
 
-void setMqttConfigHandler(unique_ptr<IPlugMessageData> message) {
+Result<shared_ptr<ISerializable>> setMqttConfigHandler(unique_ptr<IPlugMessageData> message) {
     ESP_LOGI(TAG, "setting mqtt config");
+    return Result<shared_ptr<ISerializable>>::createFailure("not implemented");
 }
 
 Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessageData> message) {

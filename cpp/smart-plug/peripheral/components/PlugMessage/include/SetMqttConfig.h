@@ -13,6 +13,7 @@ class SetMqttConfig: public IPlugMessageData {
         string brokerAddress;
 
         static unique_ptr<IPlugMessageData> deserialize(const string& serialized);
+        string serialize() override { return ""; };
 };
 
 #endif // SET_MQTT_CONFIG_H

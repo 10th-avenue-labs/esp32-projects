@@ -13,6 +13,7 @@ class SetBleConfig : public IPlugMessageData {
         optional<string> deviceName;
 
         static unique_ptr<IPlugMessageData> deserialize(const string& serialized);
+        string serialize() override { return ""; };
 };
 
 #endif // SET_BLE_CONFIG_H

@@ -29,3 +29,10 @@ PlugMessage PlugMessage::deserialize(const string& serialized) {
 
     return config;
 };
+
+string PlugMessage::serialize() {
+    cJSON* root = cJSON_CreateObject();
+    cJSON_AddStringToObject(root, "type", type.c_str());
+    cJSON_AddItemToObject(root, "data", cJSON_Parse(data->serialize().c_str()));
+    return cJSON_Print(root);
+}
