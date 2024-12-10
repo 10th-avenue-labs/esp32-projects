@@ -17,7 +17,7 @@ class MessageResponse: public IPlugMessageData {
             cJSON* root = cJSON_CreateObject();
             cJSON_AddNumberToObject(root, "messageId", messageId);
             cJSON_AddItemToObject(root, "result", cJSON_Parse(result.serialize().c_str()));
-            return cJSON_Print(root);
+            return cJSON_PrintUnformatted(root);
         }
 };
 

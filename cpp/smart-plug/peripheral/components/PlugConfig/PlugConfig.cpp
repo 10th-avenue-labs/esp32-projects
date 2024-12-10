@@ -87,7 +87,7 @@ Result<> PlugConfig::writePlugConfig(const string& namespaceValue, const string&
     }
 
     // Serialize the plug configuration
-    string serialized = cJSON_Print(serialize().get());
+    string serialized = cJSON_PrintUnformatted(serialize().get());
 
     // Write the serialized plug configuration to the NVS
     error = handle->set_blob(key.c_str(), serialized.c_str(), serialized.length());
@@ -127,13 +127,13 @@ PlugConfig PlugConfig::deserialize(const string& serialized) {
 
     // Deserialize the object
     auto bleConfig = cJSON_GetObjectItem(root.get(), "bleConfig");
-    plugConfig.bleConfig = cJSON_IsNull(bleConfig) ? nullptr : make_shared<BleConfig>(BleConfig::deserialize(cJSON_Print(bleConfig)));
+    plugConfig.bleConfig = cJSON_IsNull(bleConfig) ? nullptr : make_shared<BleConfig>(BleConfig::deserialize(cJSON_PrintUnformatted(bleConfig)));
     auto acDimmerConfig = cJSON_GetObjectItem(root.get(), "acDimmerConfig");
-    plugConfig.acDimmerConfig = cJSON_IsNull(acDimmerConfig) ? nullptr : make_shared<AcDimmerConfig>(AcDimmerConfig::deserialize(cJSON_Print(acDimmerConfig)));
+    plugConfig.acDimmerConfig = cJSON_IsNull(acDimmerConfig) ? nullptr : make_shared<AcDimmerConfig>(AcDimmerConfig::deserialize(cJSON_PrintUnformatted(acDimmerConfig)));
     auto wifiConfig = cJSON_GetObjectItem(root.get(), "wifiConfig");
-    plugConfig.wifiConfig = cJSON_IsNull(wifiConfig) ? nullptr : make_shared<WifiConfig>(WifiConfig::deserialize(cJSON_Print(wifiConfig)));
+    plugConfig.wifiConfig = cJSON_IsNull(wifiConfig) ? nullptr : make_shared<WifiConfig>(WifiConfig::deserialize(cJSON_PrintUnformatted(wifiConfig)));
     auto mqttConfig = cJSON_GetObjectItem(root.get(), "mqttConfig");
-    plugConfig.mqttConfig = cJSON_IsNull(mqttConfig) ? nullptr : make_shared<MqttConfig>(MqttConfig::deserialize(cJSON_Print(mqttConfig)));
+    plugConfig.mqttConfig = cJSON_IsNull(mqttConfig) ? nullptr : make_shared<MqttConfig>(MqttConfig::deserialize(cJSON_PrintUnformatted(mqttConfig)));
 
     return plugConfig;
 };

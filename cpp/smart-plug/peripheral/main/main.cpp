@@ -367,9 +367,6 @@ void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleD
     // Serialize the response message
     string serializedResponse = response.serialize();
 
-    // Log the response
-    ESP_LOGI(TAG, "response: %s", serializedResponse.c_str());
-
     // Convert the message to a vector of bytes
     vector<byte> responseBytes(
         reinterpret_cast<const std::byte*>(serializedResponse.data()),
@@ -383,6 +380,34 @@ void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleD
 ////////////////////////////////////////////////////////////////////////////////
 /// Message handlers
 ////////////////////////////////////////////////////////////////////////////////
+
+Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessageData> message) {
+    // Cast the message to the correct type
+    auto bleConfigMessage = dynamic_cast<SetBleConfig*>(message.get());
+    if (bleConfigMessage == nullptr) {
+        return Result<shared_ptr<ISerializable>>::createFailure("failed to cast message to SetBleConfig");
+    }
+
+    // Update the device name for the BLE advertiser if a device name is present in the message
+    if (bleConfigMessage->deviceName.has_value()) {
+        if(BleAdvertiser::setName(bleConfigMessage->deviceName.value())) {
+            ESP_LOGI(TAG, "ble device name updated");
+        } else {
+            return Result<shared_ptr<ISerializable>>::createFailure("failed to update ble device name");
+        }
+    }
+
+    // Update the BLE configuration
+    config.get()->bleConfig->deviceName = bleConfigMessage->deviceName.value_or(config.get()->bleConfig->deviceName);
+
+    // Commit the configuration to NVS
+    Result result = config->writePlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, *config);
+    if (!result.isSuccess()) {
+        return Result<shared_ptr<ISerializable>>::createFailure("failed to configuration to storage");
+    }
+
+    return Result<shared_ptr<ISerializable>>::createSuccess(nullptr);
+}
 
 Result<shared_ptr<ISerializable>> setAcDimmerConfigHandler(unique_ptr<IPlugMessageData> message) {
     ESP_LOGI(TAG, "setting ac dimmer config");
@@ -416,34 +441,6 @@ Result<shared_ptr<ISerializable>> setWifiConfigHandler(unique_ptr<IPlugMessageDa
 Result<shared_ptr<ISerializable>> setMqttConfigHandler(unique_ptr<IPlugMessageData> message) {
     ESP_LOGI(TAG, "setting mqtt config");
     return Result<shared_ptr<ISerializable>>::createFailure("not implemented");
-}
-
-Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessageData> message) {
-    // Cast the message to the correct type
-    auto bleConfigMessage = dynamic_cast<SetBleConfig*>(message.get());
-    if (bleConfigMessage == nullptr) {
-        return Result<shared_ptr<ISerializable>>::createFailure("failed to cast message to SetBleConfig");
-    }
-
-    // Update the device name for the BLE advertiser if a device name is present in the message
-    if (bleConfigMessage->deviceName.has_value()) {
-        if(BleAdvertiser::setName(bleConfigMessage->deviceName.value())) {
-            ESP_LOGI(TAG, "ble device name updated");
-        } else {
-            return Result<shared_ptr<ISerializable>>::createFailure("failed to update ble device name");
-        }
-    }
-
-    // Update the BLE configuration
-    config.get()->bleConfig->deviceName = bleConfigMessage->deviceName.value_or(config.get()->bleConfig->deviceName);
-
-    // Commit the configuration to NVS
-    Result result = config->writePlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, *config);
-    if (!result.isSuccess()) {
-        return Result<shared_ptr<ISerializable>>::createFailure("failed to configuration to storage");
-    }
-
-    return Result<shared_ptr<ISerializable>>::createSuccess(nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

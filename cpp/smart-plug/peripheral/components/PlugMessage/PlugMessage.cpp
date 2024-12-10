@@ -23,7 +23,7 @@ PlugMessage PlugMessage::deserialize(const string& serialized) {
         return config;
     }
 
-    string serializedData = cJSON_Print(cJSON_GetObjectItem(root.get(), "data"));
+    string serializedData = cJSON_PrintUnformatted(cJSON_GetObjectItem(root.get(), "data"));
 
     config.data = deserializer(serializedData);
 
@@ -34,5 +34,5 @@ string PlugMessage::serialize() {
     cJSON* root = cJSON_CreateObject();
     cJSON_AddStringToObject(root, "type", type.c_str());
     cJSON_AddItemToObject(root, "data", cJSON_Parse(data->serialize().c_str()));
-    return cJSON_Print(root);
+    return cJSON_PrintUnformatted(root);
 }
