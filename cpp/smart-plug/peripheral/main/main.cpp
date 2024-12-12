@@ -344,8 +344,8 @@ void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleD
     // Create a map of message handlers
     unordered_map<string, function<Result<shared_ptr<ISerializable>>(unique_ptr<IPlugMessageData>)>> messageHandlers = {
         {"SetBleConfig", bleConfigUpdateHandler},
-        {"SetAcDimmerConfig", setAcDimmerConfigHandler},
         {"SetWifiConfig", setWifiConfigHandler},
+        {"SetAcDimmerConfig", setAcDimmerConfigHandler},
         {"SetMqttConfig", setMqttConfigHandler}
     };
 
@@ -385,15 +385,15 @@ Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessage
     // Cast the message to the correct type
     auto bleConfigMessage = dynamic_cast<SetBleConfig*>(message.get());
     if (bleConfigMessage == nullptr) {
-        return Result<shared_ptr<ISerializable>>::createFailure("failed to cast message to SetBleConfig");
+        return Result<shared_ptr<ISerializable>>::createFailure("Failed to cast message to SetBleConfig");
     }
 
     // Update the device name for the BLE advertiser if a device name is present in the message
     if (bleConfigMessage->deviceName.has_value()) {
         if(BleAdvertiser::setName(bleConfigMessage->deviceName.value())) {
-            ESP_LOGI(TAG, "ble device name updated");
+            ESP_LOGI(TAG, "ble device name updated to '%s'", bleConfigMessage->deviceName.value().c_str());
         } else {
-            return Result<shared_ptr<ISerializable>>::createFailure("failed to update ble device name");
+            return Result<shared_ptr<ISerializable>>::createFailure("Failed to update ble device name");
         }
     }
 
@@ -403,7 +403,38 @@ Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessage
     // Commit the configuration to NVS
     Result result = config->writePlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, *config);
     if (!result.isSuccess()) {
-        return Result<shared_ptr<ISerializable>>::createFailure("failed to configuration to storage");
+        return Result<shared_ptr<ISerializable>>::createFailure("Failed to configuration to storage");
+    }
+
+    return Result<shared_ptr<ISerializable>>::createSuccess(nullptr);
+}
+
+Result<shared_ptr<ISerializable>> setWifiConfigHandler(unique_ptr<IPlugMessageData> message) {
+    // Cast the message to the correct type
+    auto wifiConfigMessage = dynamic_cast<SetWifiConfig*>(message.get());
+    if (wifiConfigMessage == nullptr) {
+        return Result<shared_ptr<ISerializable>>::createFailure("Failed to cast message to SetWifiConfig");
+    }
+
+    // Update the wifi configuration
+    config.get()->wifiConfig = make_shared<WifiConfig>(
+        wifiConfigMessage->ssid,
+        wifiConfigMessage->password
+    );
+
+    // Commit the configuration to NVS
+    config->writePlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, *config);
+
+    // Attempt to connect to wifi
+    attemptConnectToWifi(config.get()->wifiConfig);
+
+    bool success = WifiService::waitConnectionState({ ConnectionState::CONNECTED }, 30000);
+    if (!success) {
+        return Result<shared_ptr<ISerializable>>::createFailure("Wifi connection timed out");
+    }
+
+    if (WifiService::getConnectionState() != ConnectionState::CONNECTED) {
+        return Result<shared_ptr<ISerializable>>::createFailure("Failed to connect to wifi");
     }
 
     return Result<shared_ptr<ISerializable>>::createSuccess(nullptr);
@@ -412,30 +443,6 @@ Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessage
 Result<shared_ptr<ISerializable>> setAcDimmerConfigHandler(unique_ptr<IPlugMessageData> message) {
     ESP_LOGI(TAG, "setting ac dimmer config");
     return Result<shared_ptr<ISerializable>>::createFailure("not implemented");
-}
-
-Result<shared_ptr<ISerializable>> setWifiConfigHandler(unique_ptr<IPlugMessageData> message) {
-    return Result<shared_ptr<ISerializable>>::createFailure("not implemented");
-    // ESP_LOGI(TAG, "setting wifi config");
-
-    // // Cast the message to the correct type
-    // auto wifiConfigMessage = dynamic_cast<SetWifiConfig*>(message.get());
-    // if (wifiConfigMessage == nullptr) {
-    //     ESP_LOGE(TAG, "failed to cast message to SetWifiConfig");
-    //     return;
-    // }
-
-    // // Update the wifi configuration
-    // config.get()->wifiConfig = make_shared<WifiConfig>(
-    //     wifiConfigMessage->ssid,
-    //     wifiConfigMessage->password
-    // );
-
-    // // Commit the configuration to NVS
-    // config->writePlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, *config);
-
-    // // Attempt to connect to wifi
-    // attemptConnectToWifi(config.get()->wifiConfig);
 }
 
 Result<shared_ptr<ISerializable>> setMqttConfigHandler(unique_ptr<IPlugMessageData> message) {
