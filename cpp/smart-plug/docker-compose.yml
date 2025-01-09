@@ -6,7 +6,7 @@ services:
     container_name: mosquitto-broker
     ports:
       - "1883:1883"   # MQTT protocol
-      # - "9001:9001"   # WebSocket protocol (optional, configure if needed)
+      - "9001:9001"   # WebSocket protocol (optional, configure if needed)
     volumes:
       - ./mosquitto_config:/mosquitto/config
       - ./mosquitto_data:/mosquitto/data

@@ -21,6 +21,7 @@
 #include <SetWifiConfig.h>
 #include <SetMqttConfig.h>
 #include <SetBleConfig.h>
+#include <DeviceInfo.h>
 
 // Define the namespace and key for the plug configuration
 #define PLUG_CONFIG_NAMESPACE "storage"
@@ -59,6 +60,7 @@ void updateMqttClient(shared_ptr<MqttConfig> mqttConfig, shared_ptr<Mqtt::MqttCl
 void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleDevice> device);
 
 // Message handlers
+Result<shared_ptr<ISerializable>> getDeviceInfoHandler(unique_ptr<IPlugMessageData> message);
 Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessageData> message);
 Result<shared_ptr<ISerializable>> setAcDimmerConfigHandler(unique_ptr<IPlugMessageData> message);
 Result<shared_ptr<ISerializable>> setWifiConfigHandler(unique_ptr<IPlugMessageData> message);
@@ -74,8 +76,6 @@ unique_ptr<AcDimmer> acDimmer;
 
 extern "C" void app_main(void)
 {
-    // reset();
-
     // Register the Plug message deserializers
     PlugMessage::registerDeserializer("SetAcDimmerConfig", SetAcDimmerConfig::deserialize);
     PlugMessage::registerDeserializer("SetWifiConfig", SetWifiConfig::deserialize);
@@ -207,7 +207,6 @@ Result<shared_ptr<PlugConfig>> getConfigOrDefault() {
 
     return Result<shared_ptr<PlugConfig>>::createSuccess(move(config));
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// WiFi Connection Handlers
@@ -343,6 +342,7 @@ void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleD
 
     // Create a map of message handlers
     unordered_map<string, function<Result<shared_ptr<ISerializable>>(unique_ptr<IPlugMessageData>)>> messageHandlers = {
+        {"GetDeviceInfo", getDeviceInfoHandler},
         {"SetBleConfig", bleConfigUpdateHandler},
         {"SetWifiConfig", setWifiConfigHandler},
         {"SetAcDimmerConfig", setAcDimmerConfigHandler},
@@ -380,6 +380,24 @@ void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleD
 ////////////////////////////////////////////////////////////////////////////////
 /// Message handlers
 ////////////////////////////////////////////////////////////////////////////////
+
+Result<shared_ptr<ISerializable>> getDeviceInfoHandler(unique_ptr<IPlugMessageData> message) {
+    // Ensure the message is null (device info request messages have no data)
+    if (message != nullptr) {
+        return Result<shared_ptr<ISerializable>>::createFailure("GetDeviceInfo message data is not null");
+    }
+
+    // Create a device info object
+    shared_ptr<DeviceInfo> deviceInfo = make_shared<DeviceInfo>(
+        DeviceInfo(
+            "Smart Plug",
+            "Smart Plug"
+        )
+    );
+
+    // Return a result with the device info
+    return Result<shared_ptr<ISerializable>>::createSuccess(deviceInfo);
+}
 
 Result<shared_ptr<ISerializable>> bleConfigUpdateHandler(unique_ptr<IPlugMessageData> message) {
     // Cast the message to the correct type

@@ -90,7 +90,7 @@ class Result: ISerializable {
             }
 
             // Check if the value is a boolean
-            if constexpr (is_same<T, bool>::value) {
+            if constexpr (is_same<T, bool>::value || is_same<T, bool>::value) {
                 cJSON_AddItemToObject(root.get(), "value", cJSON_CreateBool(value.value()));
             }
 
@@ -107,6 +107,12 @@ class Result: ISerializable {
             // Check if the value implements ISerializable
             else if constexpr (is_base_of<ISerializable, T>::value) {
                 cJSON_AddItemToObject(root.get(), "value", cJSON_Parse(value.value().serialize().c_str()));
+            }
+
+            // Check if the type is a shared pointer to a type that implements ISerializable
+            // TODO: We should have some more kind of generic serialization for shared pointers, in fact, this whole function could use a more generic re-write
+            else if constexpr (is_same<T, shared_ptr<ISerializable>>::value) {
+                cJSON_AddItemToObject(root.get(), "value", value.value() == nullptr ? cJSON_CreateNull() : cJSON_Parse(value.value()->serialize().c_str()));
             }
 
             // The value is not serializable
