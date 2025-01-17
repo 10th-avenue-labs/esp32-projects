@@ -47,7 +47,8 @@ namespace Mqtt
 
     void MqttClient::connect()
     {
-        // TODO: Consider if we should return an esp_err_t from this function
+        // TODO: Consider if we should return an esp_err_t from this function (probably a result actually)
+        // TODO: Check the current connection state before connecting and act accordingly
         // Start the mqtt client
         ESP_LOGI(TAG, "starting mqtt client");
         esp_err_t error = esp_mqtt_client_start(client); // This will immediately cause a MQTT_EVENT_BEFORE_CONNECT event to be dispatched
