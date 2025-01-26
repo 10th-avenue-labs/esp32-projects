@@ -16,7 +16,8 @@ namespace Mqtt
             .broker = {
                 .address = {
                     .uri = brokerUri.c_str(),
-                }}};
+                }},
+            .network = {.disable_auto_reconnect = true}};
 
         // Initialize the mqtt client
         ESP_LOGI(TAG, "initializing mqtt client");
