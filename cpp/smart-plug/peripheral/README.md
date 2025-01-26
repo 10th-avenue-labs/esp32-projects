@@ -1,32 +1,47 @@
-# _Sample project_
+# Smart Plug
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+## Notes:
 
+**Publish a connected state with ephemeral data to the topic.**
 
+```bash
+mosquitto_pub \
+  -h localhost \
+  -p 1883 \
+  -t "devices/1d83e896-b059-47af-974b-1a9eb6230189/state" \
+  -m '{"connected": true, "ephemeralData": { "brightness": 50, "poweredOn": true }}' \
+  -r \
+  --will-topic "devices/1d83e896-b059-47af-974b-1a9eb6230189/state" \
+  --will-payload '{"connected": false}'
+```
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+**Publish a disconnected state to the topic.**
 
-## Example folder contents
+```bash
+mosquitto_pub \
+  -h localhost \
+  -p 1883 \
+  -t "devices/1d83e896-b059-47af-974b-1a9eb6230189/state" \
+  -m '{"connected": false }' \
+  -r \
+  --will-topic "devices/1d83e896-b059-47af-974b-1a9eb6230189/state" \
+  --will-payload '{"connected": false}'
+```
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
+**Subscribe to a topic**
 
 ```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
+mosquitto_sub -h localhost -p 1883 -t "devices/+/requested_state"
 ```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+
+**Publish a message to the requested_state topic**
+
+```bash
+mosquitto_pub \
+  -h localhost \
+  -p 1883 \
+  -t "device/1234/requested_state" \
+  -m '{"poweredOn": true, "brightness": 55 }'
+```
