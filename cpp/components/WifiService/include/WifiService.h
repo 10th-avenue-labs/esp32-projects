@@ -20,129 +20,138 @@
 #include <esp_event.h>
 #include <esp_wifi.h>
 
-enum ConnectionState {
-    NOT_CONNECTED,
-    CONNECTING,
-    CONNECTED,
-    DISCONNECTING
-};
-
-class WifiService {
-public:
-    static std::function<void(void)> onConnect;     // Delegate to call when the WiFi station connects
-    static std::function<void(void)> onDisconnect;  // Delegate to call when the WiFi station disconnects
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Initialization and Disposal
-    ////////////////////////////////////////////////////////////////////////////
-
+namespace WifiService
+{
     /**
-     * @brief Initialize the WiFi service.
-     * 
-     * @return true if the WiFi service was successfully initialized, false otherwise.
+     * @brief The connection state describing the current state of the WiFi service
+     *
      */
-    static bool init();
+    enum ConnectionState
+    {
+        NOT_CONNECTED,
+        CONNECTING,
+        CONNECTED,
+        DISCONNECTING
+    };
 
-    // TODO: Dispose method
+    class WifiService
+    {
+    public:
+        static std::function<void(void)> onConnect;    // Delegate to call when the WiFi station connects
+        static std::function<void(void)> onDisconnect; // Delegate to call when the WiFi station disconnects
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Access Point Scanning
-    ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        // Initialization and Disposal
+        ////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @brief Scan for available access points.
-     * 
-     * @param maxApsCount The maximum number of access points to scan for.
-     * @return ApScanResults The results of the scan.
-     */
-    static ApScanResults scanAvailableAccessPoints(uint8_t maxApsCount);
+        /**
+         * @brief Initialize the WiFi service.
+         *
+         * @return true if the WiFi service was successfully initialized, false otherwise.
+         */
+        static bool init();
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Connection Management
-    ////////////////////////////////////////////////////////////////////////////
+        // TODO: Dispose method
 
-    /**
-     * @brief Connect to an access point.
-     * 
-     * @param apCredentialInfo The access point credentials.
-     * @return true if the connection was successfully started, false otherwise.
-     */
-    static bool startConnect(
-        ApCredentialInfo apCredentialInfo
-    );
+        ////////////////////////////////////////////////////////////////////////////
+        // Access Point Scanning
+        ////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @brief Disconnect from the current access point.
-     * 
-     * @return true if the disconnection was successfully started, false otherwise.
-     */
-    static bool startDisconnect();
+        /**
+         * @brief Scan for available access points.
+         *
+         * @param maxApsCount The maximum number of access points to scan for.
+         * @return ApScanResults The results of the scan.
+         */
+        static ApScanResults scanAvailableAccessPoints(uint8_t maxApsCount);
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Connection State Management
-    ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        // Connection Management
+        ////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @brief Get the current connection state.
-     * 
-     * @return ConnectionState The current connection state.
-     */
-    static ConnectionState getConnectionState();
+        /**
+         * @brief Connect to an access point.
+         *
+         * @param apCredentialInfo The access point credentials.
+         * @return true if the connection was successfully started, false otherwise.
+         */
+        static bool startConnect(
+            ApCredentialInfo apCredentialInfo);
 
-    /**
-     * @brief Set the connection state.
-     * 
-     * Warning: This method has not been thoroughly tested and may not work as expected, particularly in multi-threaded environments.
-     * 
-     * @param newState The new connection state.
-     */
-    static void setConnectionState(ConnectionState newState);
+        /**
+         * @brief Disconnect from the current access point.
+         *
+         * @return true if the disconnection was successfully started, false otherwise.
+         */
+        static bool startDisconnect();
 
-    /**
-     * @brief Wait for the connection state to be one of the specified states.
-     * 
-     * Warning: This method has not been thoroughly tested and may not work as expected, particularly in multi-threaded environments.
-     * 
-     * @param connectionStates The connection states to wait for.
-     * @param timeoutMs The timeout in milliseconds. If -1, wait indefinitely.
-     * @return true if the connection state is one of the specified states, false if the timeout was reached.
-     */
-    static bool waitConnectionState(const std::vector<ConnectionState>& connectionStates, int timeoutMs = -1);
+        ////////////////////////////////////////////////////////////////////////////
+        // Connection State Management
+        ////////////////////////////////////////////////////////////////////////////
 
-private:
-    static std::atomic<ConnectionState> connectionState;    // The current connection state
-    static std::condition_variable stateChanged;            // Condition variable for state change notifications
-    static std::mutex stateMutex;                           // Mutex to protect condition variable
+        /**
+         * @brief Get the current connection state.
+         *
+         * @return ConnectionState The current connection state.
+         */
+        static ConnectionState getConnectionState();
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Event Handlers
-    ////////////////////////////////////////////////////////////////////////////
+        /**
+         * @brief Set the connection state.
+         *
+         * Warning: This method has not been thoroughly tested and may not work as expected, particularly in multi-threaded environments.
+         *
+         * @param newState The new connection state.
+         */
+        static void setConnectionState(ConnectionState newState);
 
-    /**
-     * @brief Handle generic events and delegate them to more specific event handlers.
-     * 
-     * @param arg Arguments passed to the generic event handler.
-     * @param eventBase The event base, eg wifi event or IP event.
-     * @param eventId The event ID, eg wifi ready or IP obtained.
-     * @param eventData The data associated with the event, eg an IP address for an IP obtained event.
-     */
-    static void genericEventHandler(void* arg, esp_event_base_t eventBase, int32_t eventId, void* eventData);
+        /**
+         * @brief Wait for the connection state to be one of the specified states.
+         *
+         * Warning: This method has not been thoroughly tested and may not work as expected, particularly in multi-threaded environments.
+         *
+         * @param connectionStates The connection states to wait for.
+         * @param timeoutMs The timeout in milliseconds. If -1, wait indefinitely.
+         * @return true if the connection state is one of the specified states, false if the timeout was reached.
+         */
+        static bool waitConnectionState(const std::vector<ConnectionState> &connectionStates, int timeoutMs = -1);
 
-    /**
-     * @brief Handle WiFi events.
-     * 
-     * @param eventId The specific WiFi event, eg WiFi ready or WiFi disconnected.
-     * @param eventData The data associated with the WiFi event.
-     */
-    static void wifiEventHandler(int32_t eventId, void* eventData);
+    private:
+        static std::atomic<ConnectionState> connectionState; // The current connection state
+        static std::condition_variable stateChanged;         // Condition variable for state change notifications
+        static std::mutex stateMutex;                        // Mutex to protect condition variable
 
-    /**
-     * @brief Handle IP events.
-     * 
-     * @param eventId The specific IP event, eg IP obtained.
-     * @param eventData The data associated with the IP event.
-     */
-    static void ipEventHandler(int32_t eventId, void* eventData);
-};
+        ////////////////////////////////////////////////////////////////////////////
+        // Event Handlers
+        ////////////////////////////////////////////////////////////////////////////
+
+        /**
+         * @brief Handle generic events and delegate them to more specific event handlers.
+         *
+         * @param arg Arguments passed to the generic event handler.
+         * @param eventBase The event base, eg wifi event or IP event.
+         * @param eventId The event ID, eg wifi ready or IP obtained.
+         * @param eventData The data associated with the event, eg an IP address for an IP obtained event.
+         */
+        static void genericEventHandler(void *arg, esp_event_base_t eventBase, int32_t eventId, void *eventData);
+
+        /**
+         * @brief Handle WiFi events.
+         *
+         * @param eventId The specific WiFi event, eg WiFi ready or WiFi disconnected.
+         * @param eventData The data associated with the WiFi event.
+         */
+        static void wifiEventHandler(int32_t eventId, void *eventData);
+
+        /**
+         * @brief Handle IP events.
+         *
+         * @param eventId The specific IP event, eg IP obtained.
+         * @param eventData The data associated with the IP event.
+         */
+        static void ipEventHandler(int32_t eventId, void *eventData);
+    };
+
+}
 
 #endif
