@@ -39,4 +39,6 @@ TODO: It's certainly possible, but probably just copy and paste for now
    `cp -r /Result mynewComponentName`
 2. Modify the CMakeLists.txt
 3. Change the filenames accordingly
-4. Use the component in your project to test/develop it, (instructions on using above)
+4. Modify the component headers for `#ifndef`. Example `#ifndef RESULT_H` to `#ifndef WAITER_H` in `Waiter.h`.
+5. Some components require certain features to be enabled. For example Result requires runtime-type information. Check the components readme to find more information for these components with additional requirements.
+6. Use the component in your project to test/develop it, (instructions on using above)
