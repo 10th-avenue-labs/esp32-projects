@@ -7,6 +7,7 @@
 #include "esp_log.h"
 #include "esp_event.h"
 #include <functional>
+// #include <algorithm>
 
 using namespace std;
 
@@ -20,12 +21,19 @@ struct WaitFunctions
      * Ex: if 5000 is passed in, the waiter will wait for 5000 ms every time
      *
      * @param milliseconds The number of milliseconds to wait
+     * @param skipFirstWait Whether or not to skip the first wait
      * @return std::function<int(int, uint64_t, uint64_t)>
      */
-    static std::function<int(int, uint64_t, uint64_t)> ConstantTime(int milliseconds)
+    static std::function<int(int, uint64_t, uint64_t)> ConstantTime(int milliseconds, bool skipFirstWait = false)
     {
-        return [milliseconds](int waitNumber, uint64_t currentTime, uint64_t timeAtLastWaitCompletion)
+        return [milliseconds, skipFirstWait](int waitNumber, uint64_t currentTime, uint64_t timeAtLastWaitCompletion)
         {
+            // Check if this is the first wait
+            if (waitNumber == 0 && skipFirstWait)
+            {
+                return 0;
+            }
+
             return milliseconds;
         };
     }
@@ -38,10 +46,10 @@ struct WaitFunctions
      */
     static std::function<int(int, uint64_t, uint64_t)> LinearMs(int milliseconds)
     {
-        return [milliseconds](int _, uint64_t currentTime, uint64_t timeAtLastWaitCompletion)
+        return [milliseconds](int waitNumber, uint64_t currentTime, uint64_t timeAtLastWaitCompletion)
         {
             // Check if this is the first wait
-            if (timeAtLastWaitCompletion == -1)
+            if (waitNumber == 0)
             {
                 return 0;
             }
@@ -56,28 +64,33 @@ struct WaitFunctions
     }
 
     /**
-     * @brief Wait for an exponential amount of time sense the completion of the last wait
+     * @brief Wait for an exponential amount of time sense the completion of the last wait. The wait time is calculated as follows:
+     * multiplier * base ^ waitNumber and then made relative to the last wait completion time
      *
      * @param base The base number to use for the exponential growth
+     * @param multiplier The multiplier to use for the exponential growth
      * @return std::function<int(int, uint64_t, uint64_t)>
      */
-    static std::function<int(int, uint64_t, uint64_t)> ExponentialTime(int base)
+    static std::function<int(int, uint64_t, uint64_t)> ExponentialTime(int base, int multiplier)
     {
-        return [base](int waitNumber, uint64_t currentTime, uint64_t timeAtLastWaitCompletion)
+        return [base, multiplier](int waitNumber, uint64_t currentTime, uint64_t timeAtLastWaitCompletion)
         {
             // Check if this is the first wait
-            if (timeAtLastWaitCompletion == -1)
+            if (waitNumber == 0)
             {
                 return 0;
             }
 
-            // Calculate the wait duration for this wait
-            uint64_t waitMs = (uint64_t)pow(base, waitNumber);
+            // Calculate the absolute, un-adjusted wait time
+            uint64_t absoluteWaitMs = (uint64_t)(multiplier * pow(base, waitNumber));
 
             // Caluculate the time we should be waiting until
-            uint64_t waitUntil = timeAtLastWaitCompletion + (uint64_t)milliseconds;
+            uint64_t waitUntil = timeAtLastWaitCompletion + absoluteWaitMs;
 
-            return 0;
+            // Calculate the number of milliseconds to wait
+            uint64_t waitMs = currentTime < waitUntil ? waitUntil - currentTime : 0;
+
+            return (int)waitMs;
         };
     }
 };
@@ -100,6 +113,16 @@ public:
     Waiter(int waitTimeMs) : waitTimeFunction(WaitFunctions::LinearMs(waitTimeMs)) {};
 
     /**
+     * @brief Set a maximum time to wait for each wait. If the maximum wait time is reached, the waiter will wait for the maximum time for each subsequent wait until reset.
+     *
+     * @param maxWaitMs The maximum number of milliseconds to wait for each wait
+     */
+    void setMaxWaitMs(int maxWaitMs)
+    {
+        this->maxWaitMs = maxWaitMs;
+    }
+
+    /**
      * @brief Wait for an amount of time defined by the waiting function upon initialization
      *
      * @return Result<> A result object indicating success or failure. This fails if the waiter is already waiting
@@ -114,31 +137,32 @@ public:
             return Result<>::createFailure("Attempted to wait while already waiting");
         }
 
-        // Check if we have reached the maximum wait time
-        if (maxWaitMsReached)
-        {
-            // Wait for the maximum wait time
-            ESP_LOGI(WAITER_TAG, "waiting for max wait time of %d ms", maxWaitMs);
-            vTaskDelay(maxWaitMs / portTICK_PERIOD_MS);
-
-            // Reset the waiting flag
-            waiting.store(false);
-
-            return Result<>::createSuccess();
-        }
-
         // Get the current time
         uint64_t currentTime = getTimeMs();
 
-        // Calculate the number of milliseconds to wait
+        // Calculate the wait time from the wait function
         int waitMs = waitTimeFunction(waitNumber, currentTime, timeAtLastWaitCompletion);
 
-        // Check if we have reached the maximum wait time
-        if (maxWaitMs > 0 && waitMs > maxWaitMs)
+        // Calculate the maximum allowed wait time
+        int maxWaitTime = timeAtLastWaitCompletion + maxWaitMs - currentTime;
+        maxWaitTime = maxWaitTime > 0 ? maxWaitTime : 0;
+
+        // Check if the maximum wait time has been reached
+        if (maxWaitMsReached || (maxWaitMs != -1 && waitMs > maxWaitTime))
         {
-            waitMs = maxWaitMs;
+            ESP_LOGI(WAITER_TAG, "max wait time reached, waiting for %d ms", maxWaitTime);
+            waitMs = maxWaitTime;
             maxWaitMsReached = true;
         }
+
+        ESP_LOGI(WAITER_TAG, "\n");
+        ESP_LOGI(WAITER_TAG, "wait number:                  %d", waitNumber);
+        ESP_LOGI(WAITER_TAG, "current time:                 %llu", currentTime);
+        ESP_LOGI(WAITER_TAG, "time at last wait completion: %llu", timeAtLastWaitCompletion);
+        ESP_LOGI(WAITER_TAG, "wait function time:           %d", waitTimeFunction(waitNumber, currentTime, timeAtLastWaitCompletion));
+        ESP_LOGI(WAITER_TAG, "max wait time:                %d", maxWaitTime);
+        ESP_LOGI(WAITER_TAG, "selected wait time:           %d", waitMs);
+        ESP_LOGI(WAITER_TAG, "waiting until:                %llu", currentTime + (uint64_t)waitMs);
 
         // Wait for the specified amount of time
         if (waitMs > 0)
@@ -158,13 +182,36 @@ public:
     };
 
     /**
+     * @brief Get the current wait number
+     *
+     * @return int The current wait number
+     */
+    int getWaitNumber()
+    {
+        return waitNumber;
+    }
+
+    /**
      * @brief Reset the waiter
      *
      */
-    void reset()
+    Result<> reset()
     {
+        // Verify we are not currently waiting
+        bool expected = false;
+        if (!waiting.compare_exchange_strong(expected, true))
+        {
+            return Result<>::createFailure("Attempted to reset while already waiting");
+        }
+
         waitNumber = 0;
-        timeAtLastWaitCompletion = -1;
+        timeAtLastWaitCompletion = 0;
+        maxWaitMsReached = false;
+
+        // Reset the waiting flag
+        waiting.store(false);
+
+        return Result<>::createSuccess();
     };
 
     /**
@@ -172,7 +219,7 @@ public:
      *
      * @return uint64_t The current time in milliseconds
      */
-    uint64_t getTimeMs()
+    static uint64_t getTimeMs()
     {
         // Get the current time
         struct timeval timeval;
@@ -185,10 +232,10 @@ public:
 private:
     atomic<bool> waiting = atomic<bool>{false};                                                              // Whether or not we are currently waiting
     int waitNumber = 0;                                                                                      // Number of waits called sinse inception or last reset
-    int timeAtLastWaitCompletion = -1;                                                                       // The time in milliseconds when the last wait finished, -1 if no wait has been called
+    uint64_t timeAtLastWaitCompletion = 0;                                                                   // The time in milliseconds when the last wait finished, 0 if no wait has been called
     function<int(int waitNumber, uint64_t currentTime, uint64_t timeAtLastWaitCompletion)> waitTimeFunction; // Function to calculate the wait time in ms
     int maxWaitMs = -1;                                                                                      // The maximum number of milliseconds to wait
-    bool maxWaitMsReached = false;                                                                           // Whether or not the maximum wait time for individual waits has been reached
+    bool maxWaitMsReached = false;                                                                           // Whether or not the maximum wait time for individual waits has been reached. This helps avoid integer overflows
 };
 
 #endif // WAITER_H
