@@ -184,6 +184,7 @@ public:
     /**
      * @brief Reset the waiter
      *
+     * @return Result<> A result object indicating success or failure. This fails if the waiter is currently waiting
      */
     Result<> reset()
     {
