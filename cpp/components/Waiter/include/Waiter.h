@@ -7,7 +7,6 @@
 #include "esp_log.h"
 #include "esp_event.h"
 #include <functional>
-// #include <algorithm>
 
 using namespace std;
 
@@ -154,15 +153,6 @@ public:
             waitMs = maxWaitTime;
             maxWaitMsReached = true;
         }
-
-        ESP_LOGI(WAITER_TAG, "\n");
-        ESP_LOGI(WAITER_TAG, "wait number:                  %d", waitNumber);
-        ESP_LOGI(WAITER_TAG, "current time:                 %llu", currentTime);
-        ESP_LOGI(WAITER_TAG, "time at last wait completion: %llu", timeAtLastWaitCompletion);
-        ESP_LOGI(WAITER_TAG, "wait function time:           %d", waitTimeFunction(waitNumber, currentTime, timeAtLastWaitCompletion));
-        ESP_LOGI(WAITER_TAG, "max wait time:                %d", maxWaitTime);
-        ESP_LOGI(WAITER_TAG, "selected wait time:           %d", waitMs);
-        ESP_LOGI(WAITER_TAG, "waiting until:                %llu", currentTime + (uint64_t)waitMs);
 
         // Wait for the specified amount of time
         if (waitMs > 0)
