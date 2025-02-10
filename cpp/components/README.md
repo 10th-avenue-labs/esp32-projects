@@ -35,7 +35,7 @@ TODO: It's certainly possible, but probably just copy and paste for now
 
 ## Creating a New Component
 
-1. Copy an existing component directory [Result](./Result/) for example.
+1. Copy an existing component directory, such as [Result](./Result/) for example.
    `cp -r /Result mynewComponentName`
 2. Modify the CMakeLists.txt
 3. Change the filenames accordingly
