@@ -12,12 +12,13 @@ To include one of these components in a project,
 2. Navigate to the project directory you wish to include a components in, for example, [waiter in the component-tests directory](../component-tests/waiter/).
    `cd ../component-tests/Waiter/`
 3. Create the components directory if necessary. `mkdir components`
-4. Create a symlink in the projects components directory pointing to a component directory here
+4. Navicage to the components directory in the project.
+5. Create a symlink in the projects components directory pointing to a component directory here
    `ln -s ../../../components/Waiter components/Waiter`
    1. Some components require other components too, which would need to also be symlinked to be included. Build will fail otherwise.
-5. Run build `esp.if build`. Note: A fullclean may be required first.
-6. Include the component with a `#include "myComponent.h"`. No other changes are necessary.
-7. Begin using and testing the component
+6. Run build `esp.if build`. Note: A fullclean may be required first.
+7. Include the component with a `#include "myComponent.h"`. No other changes are necessary.
+8. Begin using and testing the component
 
 ### Storing the symlink in Git
 
