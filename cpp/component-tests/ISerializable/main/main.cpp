@@ -50,6 +50,30 @@ public:
 
         return json;
     }
+
+    // static MySerializable deserialize(cJSON *json)
+    // {
+    //     // Provide a simple implementation for the deserialize method
+    //     int myInt = cJSON_GetObjectItem(json, "myInt")->valueint;
+    //     const char *myString = cJSON_GetObjectItem(json, "myString")->valuestring;
+    //     bool myBool = cJSON_GetObjectItem(json, "myBool")->valueint;
+    //     unique_ptr<MySerializable> myObject = nullptr;
+    //     cJSON *myObjectJson = cJSON_GetObjectItem(json, "myObject");
+    //     if (myObjectJson && !cJSON_IsNull(myObjectJson))
+    //     {
+    //         myObject = make_unique<MySerializable>(MySerializable::deserialize(myObjectJson));
+    //     }
+    //     std::vector<int> myVector;
+    //     cJSON *myVectorArray = cJSON_GetObjectItem(json, "myVector");
+    //     cJSON *myVectorElement = myVectorArray->child;
+    //     while (myVectorElement)
+    //     {
+    //         myVector.push_back(myVectorElement->valueint);
+    //         myVectorElement = myVectorElement->next;
+    //     }
+
+    //     return MySerializable(myInt, myString, myBool, std::move(myObject), myVector);
+    // }
 };
 
 extern "C" void app_main()

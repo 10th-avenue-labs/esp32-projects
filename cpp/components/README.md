@@ -14,7 +14,7 @@ To include one of these components in a project,
 3. Create the components directory if necessary. `mkdir components`
 4. Navicage to the components directory in the project.
 5. Create a symlink in the projects components directory pointing to a component directory here
-   `ln -s ../../../components/Waiter components/Waiter`
+   `ln -s ../../../components/Waiter Waiter`
    1. Some components require other components too, which would need to also be symlinked to be included. Build will fail otherwise.
 6. Run build `esp.if build`. Note: A fullclean may be required first.
 7. Include the component with a `#include "myComponent.h"`. No other changes are necessary.
