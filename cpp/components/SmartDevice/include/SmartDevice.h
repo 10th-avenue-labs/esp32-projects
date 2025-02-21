@@ -4,6 +4,9 @@
 #include "MqttClient.h"
 #include "SmartDeviceConfig.h"
 #include "AdtService.h"
+#include "IDeserializable.h"
+#include "ISerializable.h"
+#include "Message.h"
 
 #include <unordered_map>
 #include <functional>
@@ -37,16 +40,50 @@ namespace SmartDevice
 
         virtual ~SmartDevice() = default;
 
+        template <typename T>
         void registerMessageHandler(string messageType, function<Result<shared_ptr<ISerializable>>(unique_ptr<IDeserializable>)> handler)
         {
+            // Register the message type
+            Message::registerMessageType(messageType, typeid(T));
+
+            // Register the message handler
             messageHandlers[messageType] = handler;
         }
 
-        // void handleMessage(string messageString) {
-        //     // Deserialize the message
-        //     auto message = IDeserializable::getDeserializer<>()
+        Result<std::shared_ptr<ISerializable>> handleMessage(string messageString)
+        {
+            // Get the message deserializer
+            auto messageDeserializer = IDeserializable::getDeserializer<Message>();
+            if (!messageDeserializer)
+            {
+                return Result<std::shared_ptr<ISerializable>>::createFailure("Failed to get message deserializer");
+            }
 
-        // }
+            // Deserialize the message
+            auto deserializedMessageResult = messageDeserializer(cJSON_Parse(messageString.c_str()));
+            if (!deserializedMessageResult.isSuccess())
+            {
+                return Result<std::shared_ptr<ISerializable>>::createFailure("Failed to deserialize message: " + deserializedMessageResult.getError());
+            }
+
+            // Transfer ownership from the result and cast the message
+            std::unique_ptr<Message> deserializedMessage = std::unique_ptr<Message>(dynamic_cast<Message *>(deserializedMessageResult.getValue().release()));
+            ESP_LOGI(SMART_DEVICE_TAG, "message type: %s", deserializedMessage->type.c_str());
+
+            // Get the message handler
+            auto it = messageHandlers.find(deserializedMessage->type);
+            if (it == messageHandlers.end())
+            {
+                return Result<std::shared_ptr<ISerializable>>::createFailure("No handler found for message type '" + deserializedMessage->type + "'");
+            }
+            auto messageHandler = it->second;
+
+            // Get the message data
+            std::unique_ptr<IDeserializable> messagePayload = std::unique_ptr<IDeserializable>(deserializedMessage->data.release());
+
+            // Call the message handler
+            return messageHandler(std::move(messagePayload));
+        }
 
     private:
         SmartDeviceConfig config;

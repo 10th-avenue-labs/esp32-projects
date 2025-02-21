@@ -44,9 +44,6 @@ namespace SmartDevice
             return Result<std::unique_ptr<IDeserializable>>::createSuccess(std::make_unique<SmartDeviceConfig>(std::move(bleConfig)));
         }
     };
-
-    // HACK: Ensures the deserializer is registered when the SmartDeviceConfig class is included
-    static bool smartDeviceConfigRegistered = (IDeserializable::registerDeserializer<SmartDeviceConfig>(SmartDeviceConfig::deserialize), true);
 };
 
 #endif // SMART_DEVICE_CONFIG_H

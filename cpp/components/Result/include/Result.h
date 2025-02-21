@@ -148,8 +148,8 @@ private:
      * @param value Optional value to store in the result
      * @param error Optional error message to store in the result
      */
-    // Result(bool success, optional<T> value = nullopt, optional<string> error = nullopt)
-    //     : success(success), value(value), error(error) {}
+    Result(bool success, optional<T> value = nullopt, optional<string> error = nullopt)
+        : success(success), value(value), error(error) {}
 };
 
 // Specialization of Result<> when the value type is std::unique_ptr<T>
@@ -176,15 +176,12 @@ public:
         return success;
     }
 
-    // std::unique_ptr<T> getValue() const
-    // {
-    //     if (!success || !value)
-    //     {
-    //         ESP_LOGE(RESULT_TAG, "attempted to get value from failed result");
-    //     }
-    //     return std::move(value); // Move the unique_ptr to avoid ownership issues
-    // }
-
+    /**
+     * @brief Get the Value object
+     * Note: This function will transfer ownership of the value to the caller. Subsequent calls to this function will return nullptr
+     *
+     * @return std::unique_ptr<T> The value object
+     */
     std::unique_ptr<T> getValue()
     {
         if (success && value.has_value())

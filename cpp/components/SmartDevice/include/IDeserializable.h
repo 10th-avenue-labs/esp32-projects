@@ -53,6 +53,16 @@ public:
         return nullptr; // Or throw an exception if deserializer not found
     }
 
-    // private:
+    static std::function<Result<std::unique_ptr<IDeserializable>>(const cJSON *root)> getDeserializer(const std::type_index &type)
+    {
+        auto it = deserializers.find(type);
+        if (it != deserializers.end())
+        {
+            return it->second;
+        }
+        return nullptr; // Or throw an exception if deserializer not found
+    }
+
+private:
     static std::unordered_map<type_index, std::function<Result<std::unique_ptr<IDeserializable>>(const cJSON *root)>> deserializers;
 };
