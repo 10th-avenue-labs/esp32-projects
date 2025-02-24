@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SmartDeviceConfig.h"
+#include "config/SmartDeviceConfig.h"
 #include "IDeserializable.h"
 #include "Result.h"
 #include "cJSON.h"
@@ -27,6 +27,7 @@ public:
      * @param myTestString A string value
      * @param myTestVector A vector of integers
      * @param bleConfig The BLE configuration
+     * @param cloudConnectionConfig The cloud connection configuration
      */
     TestDeviceConfig(
         int myTestInt,
@@ -34,8 +35,9 @@ public:
         bool myTestBool,
         string myTestString,
         vector<int> myTestVector,
-        std::unique_ptr<SmartDevice::BleConfig> bleConfig)
-        : SmartDevice::SmartDeviceConfig(std::move(bleConfig)),
+        std::unique_ptr<SmartDevice::BleConfig> bleConfig,
+        std::unique_ptr<SmartDevice::CloudConnectionConfig> cloudConnectionConfig)
+        : SmartDevice::SmartDeviceConfig(std::move(bleConfig), std::move(cloudConnectionConfig)),
           myTestInt(myTestInt),
           myTestFloat(myTestFloat),
           myTestBool(myTestBool),
@@ -111,6 +113,9 @@ public:
         // Extract the BLE config from the base class (already deserialized)
         std::unique_ptr<SmartDevice::BleConfig> bleConfig = std::move(deserializedBaseConfig->bleConfig);
 
+        // Extract the cloud connection config from the base class (already deserialized)
+        std::unique_ptr<SmartDevice::CloudConnectionConfig> cloudConnectionConfig = std::move(deserializedBaseConfig->cloudConnectionConfig);
+
         // Return the fully deserialized object, including the base class and derived fields
         return Result<std::unique_ptr<IDeserializable>>::createSuccess(std::make_unique<TestDeviceConfig>(
             myTestInt,
@@ -118,6 +123,7 @@ public:
             myTestBool,
             myTestString,
             myTestVector,
-            std::move(bleConfig))); // Pass BLE config to the constructor
+            std::move(bleConfig),
+            std::move(cloudConnectionConfig))); // Pass BLE config to the constructor
     }
 };

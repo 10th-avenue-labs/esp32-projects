@@ -2,11 +2,14 @@
 
 #include "Result.h"
 #include "MqttClient.h"
-#include "SmartDeviceConfig.h"
+#include "config/SmartDeviceConfig.h"
 #include "AdtService.h"
 #include "IDeserializable.h"
 #include "ISerializable.h"
 #include "Message.h"
+#include "BleAdvertiser.h"
+#include "WifiService.h"
+#include "Waiter.h"
 
 #include <unordered_map>
 #include <functional>
@@ -36,7 +39,12 @@ namespace SmartDevice
     class SmartDevice
     {
     public:
-        SmartDevice(SmartDeviceConfig cfg) : config(std::move(cfg)) {};
+        SmartDevice(SmartDeviceConfig cfg)
+            : config(std::move(cfg)),
+              waiter(WaitFunctions::ExponentialTime(2, 1000))
+        {
+            waiter.setMaxWaitMs(1000 * 60 * 30); // 30 minutes
+        };
 
         virtual ~SmartDevice() = default;
 
@@ -85,8 +93,93 @@ namespace SmartDevice
             return messageHandler(std::move(messagePayload));
         }
 
+        // void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleDevice> device)
+        // {
+        //     // Convert the data to a string
+        //     string messageString(
+        //         reinterpret_cast<const char *>(message.data()),
+        //         reinterpret_cast<const char *>(message.data()) + message.size());
+
+        //     // TODO: Handle the message
+        // }
+
+        void initialize()
+        {
+            // // Create the ADT service
+            // ESP_LOGI(SMART_DEVICE_TAG, "creating adt service");
+            // adtService = make_unique<AdtService>(
+            //     ADT_SERVICE_UUID,
+            //     ADT_SERVICE_MTU_CHARACTERISTIC_UUID,
+            //     ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID,
+            //     ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID,
+            //     adtMessageHandler);
+
+            // // Initialize the BLE advertiser
+            // ESP_LOGI(SMART_DEVICE_TAG, "initializing ble advertiser");
+            // BleAdvertiser::init(
+            //     config.bleConfig->deviceName,
+            //     BLE_GAP_APPEARANCE_GENERIC_TAG,
+            //     BLE_GAP_LE_ROLE_PERIPHERAL,
+            //     {adtService->getBleService()},
+            //     nullptr // No device connected handler needed
+            // );
+
+            // // Initialize the wifi service
+            // ESP_LOGI(SMART_DEVICE_TAG, "initializing wifi service");
+            // WifiService::WifiService::init();
+        }
+
+        void start()
+        {
+            // Start the BLE advertiser
+            ESP_LOGI(SMART_DEVICE_TAG, "starting ble advertiser");
+            BleAdvertiser::advertise();
+
+            // Check if we have a cloud configuration
+            if (true)
+            {
+                // Initiate the cloud connection loop
+
+                // Connect to the cloud
+            }
+        }
+
+        void initiateCloudConnectionLoop()
+        {
+            // Reset connection info
+
+            // Set the wifi disconnect handler
+
+            // Set the mqtt disconnect handler
+        }
+
+        Result<void> connectCloud()
+        {
+            // Atomically ensure that we're in the correct connection state (NOT_CONNECTED) and update the connection state to CONNECTING if so
+            int expectedValue = ConnectionState::NOT_CONNECTED;
+            if (!connectionState.compare_exchange_strong(expectedValue, ConnectionState::CONNECTING))
+            {
+                return Result<>::createFailure(format("Failed to connect to cloud, device is already in a connection state of: %d", expectedValue));
+            }
+
+            // Wait an appropriate amount of time
+            waiter.wait();
+
+            // Connect to wifi if not connected already
+            if (WifiService::WifiService::getConnectionState() != WifiService::ConnectionState::CONNECTED)
+            {
+                // Connect to wifi
+                // auto wifiConfig = config.cloudConnectionConfig->getWifiConfig();
+            }
+
+            return Result<>::createFailure("Not implemented");
+        }
+
     private:
+        atomic<int> connectionState{ConnectionState::NOT_CONNECTED};
         SmartDeviceConfig config;
+        Waiter waiter;
         unordered_map<string, function<Result<shared_ptr<ISerializable>>(unique_ptr<IDeserializable>)>> messageHandlers;
+        unique_ptr<AdtService> adtService;
     };
 };

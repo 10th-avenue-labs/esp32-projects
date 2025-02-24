@@ -1,16 +1,15 @@
 #pragma once
 
-#include "ISerializable.h"
 #include "Result.h"
+
 #include <esp_log.h>
-#include <string>
-#include <map>
 #include <functional>
 #include <typeindex>
+#include <memory>
+#include <unordered_map>
+#include <cJSON.h>
 
 static const char *IDESERIALIZABLE_TAG = "IDESERIALIZABLE";
-
-using namespace std;
 
 class IDeserializable
 {

@@ -25,6 +25,8 @@ extern "C" void app_main()
 
     // Register deserializers
     IDeserializable::registerDeserializer<SmartDevice::SmartDeviceConfig>(SmartDevice::SmartDeviceConfig::deserialize);
+    IDeserializable::registerDeserializer<SmartDevice::BleConfig>(SmartDevice::BleConfig::deserialize);
+    IDeserializable::registerDeserializer<SmartDevice::CloudConnectionConfig>(SmartDevice::CloudConnectionConfig::deserialize);
     IDeserializable::registerDeserializer<TestDeviceConfig>(TestDeviceConfig::deserialize);
     IDeserializable::registerDeserializer<SmartDevice::Message>(SmartDevice::Message::deserialize);
     IDeserializable::registerDeserializer<TestMessage>(TestMessage::deserialize);
@@ -34,7 +36,14 @@ extern "C" void app_main()
     ///////////////////////////////////////////////////////////////////////////
 
     // Create a SmartDeviceConfig object
-    SmartDevice::SmartDeviceConfig config(make_unique<SmartDevice::BleConfig>("My Device"));
+    SmartDevice::SmartDeviceConfig config(
+        make_unique<SmartDevice::BleConfig>("My Device"),
+        make_unique<SmartDevice::CloudConnectionConfig>(
+            "deviceId",
+            "jwt",
+            "ssid",
+            "password",
+            "mqttConnectionString"));
 
     // Serialize the config
     auto serializedConfig = config.serializeToString(true);
@@ -48,10 +57,27 @@ extern "C" void app_main()
         return;
     }
     auto deserializedConfig = std::unique_ptr<SmartDevice::SmartDeviceConfig>(dynamic_cast<SmartDevice::SmartDeviceConfig *>(deserializedConfigResult.getValue().release()));
-    ESP_LOGI(TAG, "deserialized config: %s", deserializedConfig->bleConfig->getDeviceName().c_str());
+    ESP_LOGI(TAG, "deserialized config, BLE device name: %s", deserializedConfig->bleConfig->deviceName.c_str());
+    ESP_LOGI(TAG, "deserialized config, Cloud info deviceId: %s", deserializedConfig->cloudConnectionConfig->deviceId.c_str());
+    ESP_LOGI(TAG, "deserialized config, Cloud info jwt: %s", deserializedConfig->cloudConnectionConfig->jwt.c_str());
+    ESP_LOGI(TAG, "deserialized config, Cloud info ssid: %s", deserializedConfig->cloudConnectionConfig->ssid.c_str());
+    ESP_LOGI(TAG, "deserialized config, Cloud info password: %s", deserializedConfig->cloudConnectionConfig->password.c_str());
+    ESP_LOGI(TAG, "deserialized config, Cloud info mqttConnectionString: %s", deserializedConfig->cloudConnectionConfig->mqttConnectionString.c_str());
 
     // Create a TestDeviceConfig object
-    TestDeviceConfig testConfig(42, 3.14, true, "Hello, world!", {1, 2, 3, 4, 5}, make_unique<SmartDevice::BleConfig>("My New Device"));
+    TestDeviceConfig testConfig(
+        42,
+        3.14,
+        true,
+        "Hello, world!",
+        {1, 2, 3, 4, 5},
+        make_unique<SmartDevice::BleConfig>("My New Device"),
+        make_unique<SmartDevice::CloudConnectionConfig>(
+            "deviceId",
+            "jwt",
+            "ssid",
+            "password",
+            "mqttConnectionString"));
 
     // Serialize the test config
     auto serializedTestConfig = testConfig.serializeToString(true);
@@ -65,7 +91,7 @@ extern "C" void app_main()
         return;
     }
     auto deserializedTestConfig = std::unique_ptr<TestDeviceConfig>(dynamic_cast<TestDeviceConfig *>(deserializedTestConfigResult.getValue().release()));
-    ESP_LOGI(TAG, "deserialized test config deviceName: %s", deserializedTestConfig->bleConfig->getDeviceName().c_str());
+    ESP_LOGI(TAG, "deserialized test config deviceName: %s", deserializedTestConfig->bleConfig->deviceName.c_str());
     ESP_LOGI(TAG, "deserialized test config myTestInt: %d", deserializedTestConfig->myTestInt);
     ESP_LOGI(TAG, "deserialized test config myTestFloat: %f", deserializedTestConfig->myTestFloat);
     ESP_LOGI(TAG, "deserialized test config myTestBool: %s", deserializedTestConfig->myTestBool ? "true" : "false");
@@ -138,4 +164,8 @@ extern "C" void app_main()
     auto response = result.getValue();
     auto serializedResponse = response->serializeToString(true);
     ESP_LOGI(TAG, "serialized response: %s", serializedResponse.c_str());
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Test code for initiation
+    ///////////////////////////////////////////////////////////////////////////
 }
