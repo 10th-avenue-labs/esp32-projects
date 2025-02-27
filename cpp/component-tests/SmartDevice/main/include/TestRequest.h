@@ -11,10 +11,10 @@ static const char *TEST_MESSAGE_TAG = "TEST_MESSAGE";
 using namespace std;
 
 /**
- * @brief A test message class
+ * @brief A test request class
  *
  */
-class TestMessage : public IDeserializable
+class TestRequest : public IDeserializable
 {
 public:
     int myInt;
@@ -23,18 +23,18 @@ public:
     string myString;
     vector<int> myVector;
 
-    TestMessage(int myInt, float myFloat, bool myBool, string myString, vector<int> myVector)
+    TestRequest(int myInt, float myFloat, bool myBool, string myString, vector<int> myVector)
         : myInt(myInt), myFloat(myFloat), myBool(myBool), myString(myString), myVector(myVector) {}
 
     /**
-     * @brief Deserialize a TestMessage object
+     * @brief Deserialize a TestRequest object
      *
      * @param root The root cJSON object
-     * @return std::unique_ptr<IDeserializable> The deserialized TestMessage object
+     * @return std::unique_ptr<IDeserializable> The deserialized TestRequest object
      */
     static Result<std::unique_ptr<IDeserializable>> deserialize(const cJSON *root)
     {
-        ESP_LOGI(TEST_MESSAGE_TAG, "deserializing TestMessage");
+        ESP_LOGI(TEST_MESSAGE_TAG, "deserializing TestRequest");
 
         if (!root)
         {
@@ -89,6 +89,6 @@ public:
             ESP_LOGW(TEST_MESSAGE_TAG, "myVector is missing or not an array");
         }
 
-        return Result<std::unique_ptr<IDeserializable>>::createSuccess(std::make_unique<TestMessage>(myInt, myFloat, myBool, myString, myVector));
+        return Result<std::unique_ptr<IDeserializable>>::createSuccess(std::make_unique<TestRequest>(myInt, myFloat, myBool, myString, myVector));
     }
 };

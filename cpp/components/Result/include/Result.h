@@ -121,7 +121,7 @@ public:
         // Check if the value implements ISerializable
         else if constexpr (is_base_of<ISerializable, T>::value)
         {
-            cJSON_AddItemToObject(root.get(), "value", cJSON_Parse(value.value().serialize().c_str()));
+            cJSON_AddItemToObject(root.get(), "value", value.value().serialize().release());
         }
 
         // Check if the type is a shared pointer to a type that implements ISerializable

@@ -6,10 +6,13 @@
 #include "AdtService.h"
 #include "IDeserializable.h"
 #include "ISerializable.h"
-#include "Message.h"
+#include "Request.h"
 #include "BleAdvertiser.h"
 #include "WifiService.h"
 #include "Waiter.h"
+#include "responses/DeviceInfo.h"
+#include "Response.h"
+#include "ResultResponderResponse.h"
 
 #include <unordered_map>
 #include <functional>
@@ -39,101 +42,153 @@ namespace SmartDevice
     class SmartDevice
     {
     public:
-        SmartDevice(SmartDeviceConfig cfg)
+        SmartDevice(SmartDeviceConfig cfg, string deviceType)
             : config(std::move(cfg)),
+              deviceType(deviceType),
               waiter(WaitFunctions::ExponentialTime(2, 1000))
         {
+            // Set the max wait time to 30 minutes
             waiter.setMaxWaitMs(1000 * 60 * 30); // 30 minutes
+
+            // Register event handlers
+            registerRequestHandler<void>("GetDeviceInfo", std::bind(&SmartDevice::getDeviceInfo, this, std::placeholders::_1));
         };
 
         virtual ~SmartDevice() = default;
 
         template <typename T>
-        void registerMessageHandler(string messageType, function<Result<shared_ptr<ISerializable>>(unique_ptr<IDeserializable>)> handler)
+        void registerRequestHandler(string requestType, function<Result<shared_ptr<ISerializable>>(unique_ptr<IDeserializable>)> handler)
         {
-            // Register the message type
-            Message::registerMessageType(messageType, typeid(T));
+            // Register the request type
+            Request::registerRequestType(requestType, typeid(T));
 
-            // Register the message handler
-            messageHandlers[messageType] = handler;
+            // Register the request handler
+            requestHandlers[requestType] = handler;
         }
 
-        Result<std::shared_ptr<ISerializable>> handleMessage(string messageString)
+        Result<Result<std::shared_ptr<ISerializable>>> handleRequest(string requestString)
         {
-            // Get the message deserializer
-            auto messageDeserializer = IDeserializable::getDeserializer<Message>();
-            if (!messageDeserializer)
+            // Get the request deserializer
+            auto requestDeserializer = IDeserializable::getDeserializer<Request>();
+            if (!requestDeserializer)
             {
-                return Result<std::shared_ptr<ISerializable>>::createFailure("Failed to get message deserializer");
+                return Result<Result<std::shared_ptr<ISerializable>>>::createFailure("Failed to get request deserializer");
             }
 
-            // Deserialize the message
-            auto deserializedMessageResult = messageDeserializer(cJSON_Parse(messageString.c_str()));
-            if (!deserializedMessageResult.isSuccess())
+            // Deserialize the request
+            auto deserializedRequestResult = requestDeserializer(cJSON_Parse(requestString.c_str()));
+            if (!deserializedRequestResult.isSuccess())
             {
-                return Result<std::shared_ptr<ISerializable>>::createFailure("Failed to deserialize message: " + deserializedMessageResult.getError());
+                return Result<Result<std::shared_ptr<ISerializable>>>::createFailure("Failed to deserialize request: " + deserializedRequestResult.getError());
             }
 
-            // Transfer ownership from the result and cast the message
-            std::unique_ptr<Message> deserializedMessage = std::unique_ptr<Message>(dynamic_cast<Message *>(deserializedMessageResult.getValue().release()));
-            ESP_LOGI(SMART_DEVICE_TAG, "message type: %s", deserializedMessage->type.c_str());
+            // Transfer ownership from the result and cast the request
+            std::unique_ptr<Request> deserializedRequest = std::unique_ptr<Request>(dynamic_cast<Request *>(deserializedRequestResult.getValue().release()));
+            ESP_LOGI(SMART_DEVICE_TAG, "request type: %s", deserializedRequest->type.c_str());
 
-            // Get the message handler
-            auto it = messageHandlers.find(deserializedMessage->type);
-            if (it == messageHandlers.end())
+            // Get the request handler
+            auto it = requestHandlers.find(deserializedRequest->type);
+            if (it == requestHandlers.end())
             {
-                return Result<std::shared_ptr<ISerializable>>::createFailure("No handler found for message type '" + deserializedMessage->type + "'");
+                ESP_LOGI(SMART_DEVICE_TAG, "request handlers registered for types:");
+                for (auto &handler : requestHandlers)
+                {
+                    ESP_LOGI(SMART_DEVICE_TAG, "  %s", handler.first.c_str());
+                }
+                return Result<Result<std::shared_ptr<ISerializable>>>::createFailure("No handler found for request type '" + deserializedRequest->type + "'");
             }
-            auto messageHandler = it->second;
+            auto requestHandler = it->second;
 
-            // Get the message data
-            std::unique_ptr<IDeserializable> messagePayload = std::unique_ptr<IDeserializable>(deserializedMessage->data.release());
+            // Get the request data
+            std::unique_ptr<IDeserializable> requestPayload = std::unique_ptr<IDeserializable>(deserializedRequest->data.release());
 
-            // Call the message handler
-            return messageHandler(std::move(messagePayload));
+            // Call the request handler
+            return Result<Result<std::shared_ptr<ISerializable>>>::createSuccess(requestHandler(std::move(requestPayload)));
         }
 
-        // void adtMessageHandler(uint16_t messageId, vector<byte> message, shared_ptr<BleDevice> device)
-        // {
-        //     // Convert the data to a string
-        //     string messageString(
-        //         reinterpret_cast<const char *>(message.data()),
-        //         reinterpret_cast<const char *>(message.data()) + message.size());
+        void adtMessageHandler(uint16_t messageId, vector<byte> request, shared_ptr<BleDevice> device)
+        {
+            // Convert the data to a string
+            string requestString(
+                reinterpret_cast<const char *>(request.data()),
+                reinterpret_cast<const char *>(request.data()) + request.size());
 
-        //     // TODO: Handle the message
-        // }
+            // Handle the request
+            Result<Result<std::shared_ptr<ISerializable>>> result = handleRequest(requestString);
+            if (!result.isSuccess())
+            {
+                ESP_LOGE(SMART_DEVICE_TAG, "failed to handle request: %s", result.getError().c_str());
+                // TODO: Send an error response
+                return;
+            }
+
+            // Get the handler result
+            Result<std::shared_ptr<ISerializable>> handlerResult = result.getValue();
+
+            // Create a response
+            Response response("Response", make_unique<ResultResponderResponse>(messageId, handlerResult));
+
+            // Serialize the response request
+            string serializedResponse = response.serializeToString();
+            ESP_LOGI(SMART_DEVICE_TAG, "serialized response: %s", serializedResponse.c_str());
+
+            // Convert the request to a vector of bytes
+            vector<byte> responseBytes(
+                reinterpret_cast<const std::byte *>(serializedResponse.data()),
+                reinterpret_cast<const std::byte *>(serializedResponse.data()) + serializedResponse.size());
+
+            // Send the response request
+            adtService->sendMessage({device}, responseBytes);
+        }
 
         void initialize()
         {
-            // // Create the ADT service
-            // ESP_LOGI(SMART_DEVICE_TAG, "creating adt service");
-            // adtService = make_unique<AdtService>(
-            //     ADT_SERVICE_UUID,
-            //     ADT_SERVICE_MTU_CHARACTERISTIC_UUID,
-            //     ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID,
-            //     ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID,
-            //     adtMessageHandler);
+            // Create the ADT service
+            ESP_LOGI(SMART_DEVICE_TAG, "creating adt service");
+            adtService = make_unique<AdtService>(
+                ADT_SERVICE_UUID,
+                ADT_SERVICE_MTU_CHARACTERISTIC_UUID,
+                ADT_SERVICE_TRANSMISSION_CHARACTERISTIC_UUID,
+                ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID,
+                [this](uint16_t messageId, std::vector<std::byte> data, std::shared_ptr<BleDevice> device)
+                {
+                    ESP_LOGI(SMART_DEVICE_TAG, "lambda request handlers length: %d", requestHandlers.size());
+                    this->adtMessageHandler(messageId, std::move(data), std::move(device));
+                });
 
-            // // Initialize the BLE advertiser
-            // ESP_LOGI(SMART_DEVICE_TAG, "initializing ble advertiser");
-            // BleAdvertiser::init(
-            //     config.bleConfig->deviceName,
-            //     BLE_GAP_APPEARANCE_GENERIC_TAG,
-            //     BLE_GAP_LE_ROLE_PERIPHERAL,
-            //     {adtService->getBleService()},
-            //     nullptr // No device connected handler needed
-            // );
+            // Initialize the BLE advertiser
+            ESP_LOGI(SMART_DEVICE_TAG, "initializing ble advertiser");
+            BleAdvertiser::init(
+                config.bleConfig->deviceName,
+                BLE_GAP_APPEARANCE_GENERIC_TAG,
+                BLE_GAP_LE_ROLE_PERIPHERAL,
+                {adtService->getBleService()},
+                nullptr // No device connected handler needed
+            );
 
-            // // Initialize the wifi service
-            // ESP_LOGI(SMART_DEVICE_TAG, "initializing wifi service");
-            // WifiService::WifiService::init();
+            // Initialize the wifi service
+            ESP_LOGI(SMART_DEVICE_TAG, "initializing wifi service");
+            WifiService::WifiService::init();
         }
 
         void start()
         {
-            // Start the BLE advertiser
+            // FIXME: When we create a task here, that means that the function is non-blocking and will quickly return
+            // When this returns, if our main function returns, then this smart device will go out of scope and request handlers
+            // will be deallocated. Not sure why but that's what I'm observing when removing the while true loop in main.cpp
+
+            // Start the BLE advertiser in a separate task
             ESP_LOGI(SMART_DEVICE_TAG, "starting ble advertiser");
-            BleAdvertiser::advertise();
+            xTaskCreate(
+                [](void *)
+                {
+                    BleAdvertiser::advertise();
+                },
+                "ble_advertiser",
+                4096,
+                nullptr,
+                5,
+                nullptr);
 
             // Check if we have a cloud configuration
             if (true)
@@ -175,11 +230,29 @@ namespace SmartDevice
             return Result<>::createFailure("Not implemented");
         }
 
+        ///////////////////////////////////////////////////////////////////////////
+        // Request handlers
+        ///////////////////////////////////////////////////////////////////////////
+
+        Result<shared_ptr<ISerializable>> getDeviceInfo(unique_ptr<IDeserializable> data)
+        {
+            ESP_LOGI(SMART_DEVICE_TAG, "handling GetDeviceInfo request");
+
+            // Create the device info request
+            DeviceInfo deviceInfo(deviceType, config.bleConfig->deviceName);
+
+            // Return the device info request
+            return Result<shared_ptr<ISerializable>>::createSuccess(make_shared<DeviceInfo>(deviceInfo));
+
+            // return Result<shared_ptr<ISerializable>>::createFailure("Not implemented");
+        };
+
     private:
-        atomic<int> connectionState{ConnectionState::NOT_CONNECTED};
         SmartDeviceConfig config;
+        std::string deviceType;
         Waiter waiter;
-        unordered_map<string, function<Result<shared_ptr<ISerializable>>(unique_ptr<IDeserializable>)>> messageHandlers;
+        atomic<int> connectionState{ConnectionState::NOT_CONNECTED};
+        unordered_map<string, function<Result<shared_ptr<ISerializable>>(unique_ptr<IDeserializable>)>> requestHandlers;
         unique_ptr<AdtService> adtService;
     };
 };
