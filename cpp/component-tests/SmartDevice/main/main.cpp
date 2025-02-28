@@ -403,25 +403,25 @@ void testEventHandleing()
     }
     */
 
-    // Handle the test request
-    auto result = device.handleRequest(testPayload);
-    if (!result.isSuccess())
-    {
-        ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
-        return;
-    }
+    // // Handle the test request (Need to make method public to test)
+    // auto result = device.handleRequest(testPayload);
+    // if (!result.isSuccess())
+    // {
+    //     ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
+    //     return;
+    // }
 
-    // Serialize the response
-    auto handleResult = result.getValue();
-    if (!handleResult.isSuccess())
-    {
-        ESP_LOGE(TAG, "failed to handle request with error for consumer: %s", handleResult.getError().c_str());
-        return;
-    }
+    // // Serialize the response
+    // auto handleResult = result.getValue();
+    // if (!handleResult.isSuccess())
+    // {
+    //     ESP_LOGE(TAG, "failed to handle request with error for consumer: %s", handleResult.getError().c_str());
+    //     return;
+    // }
 
-    // Serialize the response
-    auto serializedResponse = handleResult.getValue()->serializeToString(true);
-    ESP_LOGI(TAG, "serialized response: %s", serializedResponse.c_str());
+    // // Serialize the response
+    // auto serializedResponse = handleResult.getValue()->serializeToString(true);
+    // ESP_LOGI(TAG, "serialized response: %s", serializedResponse.c_str());
 }
 
 extern "C" void app_main()
@@ -491,6 +491,26 @@ extern "C" void app_main()
 
     // Start the device
     testDevice.start();
+
+    // Create an InitiateCloudConnection request
+    string initiateCloudConnectionRequest = R"({
+        "type": "InitiateCloudConnection",
+        "data": {
+            "deviceId": "deviceId",
+            "jwt": "jwt",
+            "ssid": "IP-in-the-hot-tub",
+            "password": "everytime",
+            "mqttConnectionString": "mqttConnectionString"
+        }
+    })";
+
+    // Handle the InitiateCloudConnection request
+    auto result = testDevice.handleRequest(initiateCloudConnectionRequest);
+    if (!result.isSuccess())
+    {
+        ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
+        return;
+    }
 
     while (true)
     {
