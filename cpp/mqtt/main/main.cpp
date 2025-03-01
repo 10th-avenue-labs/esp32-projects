@@ -1,18 +1,15 @@
 #include "WifiService.h"
 #include "MqttClient.h"
 
-extern "C"
-{
-    #include <stdio.h>
-    #include <esp_err.h>
-    #include <esp_log.h>
-    #include <nvs_flash.h>
-    #include <esp_wifi.h>
-    #include <mqtt_client.h>
-    #include <esp_event.h>
-}
+#include <stdio.h>
+#include <esp_err.h>
+#include <esp_log.h>
+#include <nvs_flash.h>
+#include <esp_wifi.h>
+#include <mqtt_client.h>
+#include <esp_event.h>
 
-static char *TAG = "mqtt client";
+static char *TAG = "main";
 static char *SSID = "IP-in-the-hot-tub";
 static char *PASSWORD = "everytime";
 
@@ -22,10 +19,10 @@ void wifiInit()
 {
     // Initialize the wifi service
     ESP_LOGI(TAG, "initializing wifi service");
-    WifiService::init();
+    WifiService::WifiService::init();
 
     // Set the onDisconnect delegate
-    WifiService::onDisconnect = []()
+    WifiService::WifiService::onDisconnect = []()
     {
         ESP_LOGI(TAG, "wifi disconnected");
 
@@ -34,8 +31,8 @@ void wifiInit()
         {
             ESP_LOGI(TAG, "attempting to reconnect, attempt %d of %d", reconnectAttempts + 1, maxReconnectAttempts);
             reconnectAttempts++;
-            WifiService::startConnect({SSID,
-                                       PASSWORD});
+            WifiService::WifiService::startConnect({SSID,
+                                                    PASSWORD});
         }
         else
         {
@@ -44,7 +41,7 @@ void wifiInit()
     };
 
     // Set the onConnect delegate
-    WifiService::onConnect = []()
+    WifiService::WifiService::onConnect = []()
     {
         ESP_LOGI(TAG, "wifi connected");
         reconnectAttempts = 0;
@@ -52,19 +49,33 @@ void wifiInit()
 
     // Connect to the access point
     ESP_LOGI(TAG, "connecting to access point");
-    WifiService::startConnect({SSID,
-                               PASSWORD});
+    WifiService::WifiService::startConnect({SSID,
+                                            PASSWORD});
 }
 
-void onConnect(Mqtt::MqttClient* client)
+void onConnect(Mqtt::MqttClient *client)
 {
     ESP_LOGI(TAG, "connected to broker");
 }
 
-void onDisconnect(Mqtt::MqttClient* client)
+int retries = 3;
+void onDisconnect(Mqtt::MqttClient *client)
 {
-    ESP_LOGI(TAG, "disconnected from broker");
-    // We could implement reconnect logic here
+    ESP_LOGI(TAG, "disconnected from broker with retries: %d", retries);
+
+    if (retries == 0)
+    {
+        return;
+    }
+
+    if (retries == 1)
+    {
+        client->setBrokerUri("mqtt://test.mosquitto.org:1883");
+    }
+
+    client->reconnect();
+
+    retries--;
 }
 
 extern "C" int app_main(void)
@@ -74,11 +85,12 @@ extern "C" int app_main(void)
 
     // Wait for the wifi to connect
     ESP_LOGI(TAG, "waiting for wifi to connect");
-    WifiService::waitConnectionState({ConnectionState::CONNECTED});
+    WifiService::WifiService::waitConnectionState({WifiService::ConnectionState::CONNECTED});
 
     // Create the mqtt client
-    Mqtt::MqttClient client("mqtt://test.mosquitto.org");
-    
+    Mqtt::MqttClient client("mqtt://nope.doesntexist");
+    // Mqtt::MqttClient client("mqtt://test.mosquitto.org:1883");
+
     // Set the onConnected delegate
     client.onConnected = onConnect;
 
@@ -93,7 +105,8 @@ extern "C" int app_main(void)
     client.waitConnectionState({Mqtt::ConnectionState::CONNECTED});
 
     // Subscribe to a topic
-    int messageId = client.subscribe("/topic/qos0", [](Mqtt::MqttClient* client, int messageId, std::vector<std::byte> data) -> void {
+    int messageId = client.subscribe("/topic/qos0", [](Mqtt::MqttClient *client, int messageId, std::vector<std::byte> data) -> void
+                                     {
         ESP_LOGI(TAG, "message received");
 
         // Convert the data to a string
@@ -113,15 +126,15 @@ extern "C" int app_main(void)
         }
 
         // Log the message
-        ESP_LOGI(TAG, "message: %d, %s", data.size(), message.c_str());
-    });
+        ESP_LOGI(TAG, "message: %d, %s", data.size(), message.c_str()); });
     ESP_LOGI(TAG, "subscribed to topic, message id: %d", messageId);
 
     // Publish a byte vector message to a topic
     std::string message = "hello";
     std::vector<std::byte> data(message.size());
     std::transform(message.begin(), message.end(), data.begin(),
-                [](char c) { return static_cast<std::byte>(c); });
+                   [](char c)
+                   { return static_cast<std::byte>(c); });
     int msg1Id = client.publish("/topic/qos0", data);
     ESP_LOGI(TAG, "published message, message id: %d", msg1Id);
 
