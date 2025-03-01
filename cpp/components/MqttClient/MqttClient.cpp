@@ -24,6 +24,7 @@ namespace Mqtt
         client = esp_mqtt_client_init(&mqtt_cfg);
 
         // Register the event handler
+        // FIXME: We should be using results here instead. ESP_ERROR_CHECK will crash the program if the error is not ESP_OK
         ESP_LOGI(TAG, "registering mqtt event handler");
         ESP_ERROR_CHECK(esp_mqtt_client_register_event(client, MQTT_EVENT_ANY, mqttEventHandler, this)); // No events will be dispatched from this
     }
@@ -240,6 +241,9 @@ namespace Mqtt
             // Client has disconnected from the broker
             ESP_LOGI(TAG, "disconnected from broker");
 
+            // Disconnect the client
+            esp_mqtt_client_disconnect(mqttClient->client);
+
             // Set the connection state to disconnected
             mqttClient->setConnectionState(ConnectionState::NOT_CONNECTED);
 
@@ -249,8 +253,19 @@ namespace Mqtt
                 break;
             }
 
-            // Call the onDisconnected delegate
-            mqttClient->onDisconnected(mqttClient);
+            // Spawn the onDisconnect delegate on a new task
+            xTaskCreate(
+                [](void *mqttClientPointer)
+                {
+                    MqttClient *mqttClient = (MqttClient *)mqttClientPointer;
+                    mqttClient->onDisconnected(mqttClient);
+                    vTaskDelete(NULL);
+                },
+                "onDisconnect",
+                4096,
+                mqttClient,
+                5,
+                nullptr);
             break;
         case MQTT_EVENT_SUBSCRIBED:
             // Client has subscribed to a topic

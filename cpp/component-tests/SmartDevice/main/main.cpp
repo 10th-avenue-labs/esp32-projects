@@ -500,7 +500,7 @@ extern "C" void app_main()
             "jwt": "jwt",
             "ssid": "IP-in-the-hot-tub",
             "password": "everytime",
-            "mqttConnectionString": "mqttConnectionString"
+            "mqttConnectionString": "mqtt://10.11.2.80:188"
         }
     })";
 
@@ -509,7 +509,11 @@ extern "C" void app_main()
     if (!result.isSuccess())
     {
         ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
-        return;
+    }
+
+    if (!result.getValue().isSuccess())
+    {
+        ESP_LOGI(TAG, "failed to handle request with error for consumer: %s", result.getValue().getError().c_str());
     }
 
     while (true)

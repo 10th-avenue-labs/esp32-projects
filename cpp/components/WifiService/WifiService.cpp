@@ -372,7 +372,18 @@ void WifiService::WifiService::wifiEventHandler(
         // Call the onDisconnect delegate
         if (onDisconnect != nullptr)
         {
-            onDisconnect();
+            // Spawn the onDisconnect delegate on a new task
+            xTaskCreate(
+                [](void *)
+                {
+                    onDisconnect();
+                    vTaskDelete(NULL);
+                },
+                "onDisconnect",
+                4096,
+                nullptr,
+                5,
+                nullptr);
         }
         break;
     default:

@@ -313,11 +313,10 @@ namespace SmartDevice
          */
         Result<shared_ptr<ISerializable>> initiateCloudConnectionHandler(unique_ptr<IDeserializable> request)
         {
-            ESP_LOGI(SMART_DEVICE_TAG, "handling InitiateCloudConnection request");
+            ESP_LOGI(SMART_DEVICE_TAG, "INITIATE handling InitiateCloudConnection request");
 
             // Cast the request to the correct type
             std::unique_ptr<CloudConnectionConfig> cloudConnectionConfig = std::unique_ptr<CloudConnectionConfig>(dynamic_cast<CloudConnectionConfig *>(request.release()));
-
             if (!cloudConnectionConfig)
             {
                 return Result<shared_ptr<ISerializable>>::createFailure("Failed to cast request to CloudConnectionConfig");
@@ -331,9 +330,16 @@ namespace SmartDevice
 
             // Attempt to connect to the cloud
             Result result = connectCloud();
+            if (!result.isSuccess()) // Debug
+            {
+                ESP_LOGI(SMART_DEVICE_TAG, "INITIATE failed to connect to cloud: %s", result.getError().c_str());
+            }
 
             // Wait for the connection state to reach connected
-            bool stateReached = waitConnectionState({ConnectionState::CONNECTED}, 30000);
+            ESP_LOGI(SMART_DEVICE_TAG, "INITIATE waiting for connection state to reach connected");
+            bool stateReached = waitConnectionState({ConnectionState::CONNECTED}, 30 * 1000);
+            ESP_LOGI(SMART_DEVICE_TAG, "INITIATE connection state reached: %d", stateReached);
+            ESP_LOGI(SMART_DEVICE_TAG, "INITIATE connection state: %d", getConnectionState());
             if (stateReached)
             {
                 // Call the config updated delegate
@@ -472,27 +478,44 @@ namespace SmartDevice
          */
         Result<> connectCloud()
         {
+            // Generate a unique id for the connection attempt
+            string connectionAttemptId = std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
+
+            ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connecting to cloud", connectionAttemptId.c_str());
+
             // Atomically ensure that we're in the correct connection state (NOT_CONNECTED) and update the connection state to CONNECTING if so
             ConnectionState expectedValue = ConnectionState::NOT_CONNECTED;
             if (!setConnectionStateCompareExchange(expectedValue, ConnectionState::CONNECTING))
             {
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connect attempt failed", connectionAttemptId.c_str());
                 return Result<>::createFailure(format("Failed to connect to cloud, device is already in a connection state of: %d", (int)expectedValue));
             }
 
             // Verify that the cloud connection config is present
             if (!config.cloudConnectionConfig)
             {
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connect attempt failed", connectionAttemptId.c_str());
+                setConnectionState(ConnectionState::NOT_CONNECTED);
                 return Result<>::createFailure("Cloud connection config is not present");
             }
 
             // Wait an appropriate amount of time
-            waiter.wait();
+            Result res = waiter.wait();
+            if (!res.isSuccess())
+            {
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connect attempt failed - failed to wait for an appropriate amount of time", connectionAttemptId.c_str());
+                setConnectionState(ConnectionState::NOT_CONNECTED);
+                return Result<>::createFailure("Failed to wait for an appropriate amount of time");
+            }
 
             // Wait for the wifi connection state to settle such that it is not connecting or disconnecting
             // TODO: Add timeout
+            ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s waiting for wifi connection state to settle, current state: %d", connectionAttemptId.c_str(), WifiService::WifiService::getConnectionState());
             WifiService::WifiService::waitConnectionState({WifiService::ConnectionState::CONNECTED, WifiService::ConnectionState::NOT_CONNECTED});
+            ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s wifi connection state settled, current state: %d", connectionAttemptId.c_str(), WifiService::WifiService::getConnectionState());
 
             // Connect to wifi if not connected already
+            ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connecting to wifi, current wifi state %d", connectionAttemptId.c_str(), WifiService::WifiService::getConnectionState());
             if (WifiService::WifiService::getConnectionState() != WifiService::ConnectionState::CONNECTED)
             {
                 // Start connecting to wifi
@@ -500,40 +523,74 @@ namespace SmartDevice
                                                                                  config.cloudConnectionConfig->password});
                 if (!connectionStarted)
                 {
+                    ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connect attempt failed - failed to start connecting to wifi", connectionAttemptId.c_str());
+                    setConnectionState(ConnectionState::NOT_CONNECTED);
                     return Result<>::createFailure("Failed to start connecting to wifi");
                 }
 
                 // Wait until we're either connected or disconnected
                 // TODO: Add and handle timeout
-                WifiService::WifiService::waitConnectionState({WifiService::ConnectionState::CONNECTED, WifiService::ConnectionState::NOT_CONNECTED});
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s waiting for wifi connection state to settle, current state %d", connectionAttemptId.c_str(), WifiService::WifiService::getConnectionState());
+                bool desiredStateReached = WifiService::WifiService::waitConnectionState({WifiService::ConnectionState::CONNECTED, WifiService::ConnectionState::NOT_CONNECTED});
+                // bool desiredStateReached = WifiService::WifiService::waitConnectionState({WifiService::ConnectionState::CONNECTED, WifiService::ConnectionState::NOT_CONNECTED}, 10000);
+                if (!desiredStateReached)
+                {
+                    ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connect attempt failed - failed to reach desired state after connecting to wifi, current state: %d", connectionAttemptId.c_str(), WifiService::WifiService::getConnectionState());
+                    setConnectionState(ConnectionState::NOT_CONNECTED);
+                    return Result<>::createFailure("Failed to reach desired state after connecting to wifi");
+                }
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s wifi connection state settled, current state %d", connectionAttemptId.c_str(), WifiService::WifiService::getConnectionState());
+
+                // Check if we're connected
+                if (WifiService::WifiService::getConnectionState() != WifiService::ConnectionState::CONNECTED)
+                {
+                    ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connect attempt failed - failed to connect to wifi", connectionAttemptId.c_str());
+                    setConnectionState(ConnectionState::NOT_CONNECTED);
+                    return Result<>::createFailure("Failed to connect to wifi");
+                }
             }
 
             // Create the mqtt client if not done so already
             if (!mqttClient)
             {
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s creating mqtt client", connectionAttemptId.c_str());
                 mqttClient = make_unique<Mqtt::MqttClient>(config.cloudConnectionConfig->mqttConnectionString);
                 mqttClient->onDisconnected = [this](Mqtt::MqttClient *)
                 { cloudDisconnectHandler(); };
             }
             else
             {
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s mqtt client already exists, updating connection string", connectionAttemptId.c_str());
                 // Update the mqtt client connection string
                 mqttClient->setBrokerUri(config.cloudConnectionConfig->mqttConnectionString);
             }
 
             // Wait for the mqtt connection state to settle such that it is not connecting or disconnecting
             // TODO: Add timeout
+            ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s waiting for mqtt connection state to settle, current state: %d", connectionAttemptId.c_str(), mqttClient->getConnectionState());
             mqttClient->waitConnectionState({Mqtt::ConnectionState::CONNECTED, Mqtt::ConnectionState::NOT_CONNECTED});
+            ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s mqtt connection state settled, current state: %d", connectionAttemptId.c_str(), mqttClient->getConnectionState());
 
             // Connect to mqtt if not connected already
             if (mqttClient->getConnectionState() != Mqtt::ConnectionState::CONNECTED)
             {
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connecting to mqtt", connectionAttemptId.c_str());
                 // Start connecting to the mqtt broker
                 mqttClient->connect();
 
                 // Wait until we're either connected or disconnected
                 // TODO: Add and handle timeout
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s waiting for mqtt connection state to settle, current state: %d", connectionAttemptId.c_str(), mqttClient->getConnectionState());
                 mqttClient->waitConnectionState({Mqtt::ConnectionState::CONNECTED, Mqtt::ConnectionState::NOT_CONNECTED});
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s mqtt connection state settled, current state: %d", connectionAttemptId.c_str(), mqttClient->getConnectionState());
+
+                // Check if we're connected
+                if (mqttClient->getConnectionState() != Mqtt::ConnectionState::CONNECTED)
+                {
+                    ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connect attempt failed", connectionAttemptId.c_str());
+                    setConnectionState(ConnectionState::NOT_CONNECTED);
+                    return Result<>::createFailure("Failed to connect to mqtt broker");
+                }
             }
 
             // Subscribe to the topic if not done already
@@ -544,12 +601,16 @@ namespace SmartDevice
             ConnectionState endingState = getConnectionState();
             if (endingState != ConnectionState::CONNECTING)
             {
+                ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connect attempt failed", connectionAttemptId.c_str());
+                setConnectionState(ConnectionState::NOT_CONNECTED);
                 return Result<>::createFailure(format("Connection was interrupted while connecting. Ending state: %d", (int)endingState));
             }
 
             // Set the connection state to connected
-            setConnectionState(ConnectionState::CONNECTED);
+            ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connected to cloud", connectionAttemptId.c_str());
 
+            ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connect attempt completed", connectionAttemptId.c_str());
+            setConnectionState(ConnectionState::CONNECTED);
             return Result<>::createSuccess();
         }
 
@@ -559,19 +620,33 @@ namespace SmartDevice
          */
         void cloudDisconnectHandler()
         {
-            // Check if the connection state is anything other than connected
-            if (getConnectionState() != ConnectionState::CONNECTED)
+            // Generate a unique id for the connection attempt
+            string disconnectId = std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
+
+            // Get stack high-water mark (minimum free stack space in words)
+            UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
+            ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s Stack high-water mark: %d bytes", disconnectId.c_str(), stackLeft * sizeof(StackType_t));
+
+            ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s disconnected from cloud, handling disconnect", disconnectId.c_str());
+            ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s connection state: %d", disconnectId.c_str(), getConnectionState());
+
+            ConnectionState currentState = getConnectionState();
+
+            // Wait for the connection state to settle
+            ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s waiting for connection state to settle, current state %d", disconnectId.c_str(), currentState);
+            bool desiredStateReached = waitConnectionState({ConnectionState::NOT_CONNECTED}, 10000);
+            if (!desiredStateReached)
             {
+                ESP_LOGE(SMART_DEVICE_TAG, "DISCONNECT %s failed to reach desired state after disconnecting from cloud", disconnectId.c_str());
                 return;
             }
-
-            // Update the connection state
-            setConnectionState(ConnectionState::NOT_CONNECTED);
+            ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s connection state settled, current state %d", disconnectId.c_str(), getConnectionState());
 
             // Check if the auto-reconnect flag is set
             if (!autoReconnect)
             {
                 // Do not try to reconnect
+                ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s auto-reconnect flag is not set, not attempting to reconnect", disconnectId.c_str());
                 return;
             }
 
@@ -579,8 +654,74 @@ namespace SmartDevice
             Result result = connectCloud();
             if (!result.isSuccess())
             {
-                ESP_LOGW(SMART_DEVICE_TAG, "failed to reconnect to cloud: %s", result.getError().c_str());
+                ESP_LOGW(SMART_DEVICE_TAG, "DISCONNECT %s failed to reconnect to cloud: %s", disconnectId.c_str(), result.getError().c_str());
             }
+            ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s reconnect attempt complete", disconnectId.c_str());
+
+            // // Check if the connection state is DISCONNECTING
+            // if (currentState == ConnectionState::DISCONNECTING)
+            // {
+            //     // Update the connection state
+            //     setConnectionState(ConnectionState::NOT_CONNECTED);
+
+            //     return;
+            // }
+
+            // // Check if the connection state is NOT_CONNECTED
+            // if (currentState == ConnectionState::NOT_CONNECTED)
+            // {
+            //     ESP_LOGE(SMART_DEVICE_TAG, "disconnect handler called in a state of NOT_CONNECTED. This should not be possible");
+            //     return;
+            // }
+
+            // // Check if the connection state is CONNECTED
+            // if (currentState == ConnectionState::CONNECTED)
+            // {
+            //     // Update the connection state
+            //     setConnectionState(ConnectionState::NOT_CONNECTED);
+
+            //     // Check if the auto-reconnect flag is set
+            //     if (!autoReconnect)
+            //     {
+            //         // Do not try to reconnect
+            //         return;
+            //     }
+
+            //     // Call the connect cloud function
+            //     Result result = connectCloud();
+            //     if (!result.isSuccess())
+            //     {
+            //         ESP_LOGW(SMART_DEVICE_TAG, "failed to reconnect to cloud: %s", result.getError().c_str());
+            //     }
+            //     return;
+            // }
+
+            // // Check if we're currently connecting
+            // if (currentState == ConnectionState::CONNECTING)
+            // {
+            //     // Wait for the connection attempt to finish (it should result in a NOT_CONNECTED state)
+            //     // Will this block the cloud connect function?
+            //     bool desiredStateReached = waitConnectionState({ConnectionState::NOT_CONNECTED}, 30000);
+            //     if (!desiredStateReached)
+            //     {
+            //         ESP_LOGE(SMART_DEVICE_TAG, "failed to reach desired state after disconnecting from cloud");
+            //     }
+
+            //     // Check if the auto-reconnect flag is set
+            //     if (!autoReconnect)
+            //     {
+            //         // Do not try to reconnect
+            //         return;
+            //     }
+
+            //     // Call the connect cloud function
+            //     Result result = connectCloud();
+            //     if (!result.isSuccess())
+            //     {
+            //         ESP_LOGW(SMART_DEVICE_TAG, "failed to reconnect to cloud: %s", result.getError().c_str());
+            //     }
+            //     return;
+            // }
         }
     };
 };
