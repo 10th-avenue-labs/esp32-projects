@@ -152,6 +152,7 @@ namespace SmartDevice
         std::condition_variable stateChanged;
         unordered_map<string, function<Result<shared_ptr<ISerializable>>(unique_ptr<IDeserializable>)>> requestHandlers;
         bool autoReconnect = false;
+        int retries = 0;
 
         ///////////////////////////////////////////////////////////////////////////
         // Message handling
@@ -337,7 +338,7 @@ namespace SmartDevice
 
             // Wait for the connection state to reach connected
             ESP_LOGI(SMART_DEVICE_TAG, "INITIATE waiting for connection state to reach connected");
-            bool stateReached = waitConnectionState({ConnectionState::CONNECTED}, 30 * 1000);
+            bool stateReached = waitConnectionState({ConnectionState::CONNECTED}, 60 * 1000);
             ESP_LOGI(SMART_DEVICE_TAG, "INITIATE connection state reached: %d", stateReached);
             ESP_LOGI(SMART_DEVICE_TAG, "INITIATE connection state: %d", getConnectionState());
             if (stateReached)
@@ -551,7 +552,8 @@ namespace SmartDevice
             }
 
             // Create the mqtt client if not done so already
-            if (!mqttClient)
+            bool firstConnection = !mqttClient;
+            if (firstConnection)
             {
                 ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s creating mqtt client", connectionAttemptId.c_str());
                 mqttClient = make_unique<Mqtt::MqttClient>(config.cloudConnectionConfig->mqttConnectionString);
@@ -576,7 +578,14 @@ namespace SmartDevice
             {
                 ESP_LOGI(SMART_DEVICE_TAG, "CONNECT %s connecting to mqtt", connectionAttemptId.c_str());
                 // Start connecting to the mqtt broker
-                mqttClient->connect();
+                if (firstConnection)
+                {
+                    mqttClient->connect();
+                }
+                else
+                {
+                    mqttClient->reconnect();
+                }
 
                 // Wait until we're either connected or disconnected
                 // TODO: Add and handle timeout
@@ -623,6 +632,15 @@ namespace SmartDevice
             // Generate a unique id for the connection attempt
             string disconnectId = std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
 
+            retries++;
+
+            ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s retry count %d", disconnectId.c_str(), retries);
+
+            if (retries == 3)
+            {
+                config.cloudConnectionConfig->mqttConnectionString = "mqtt://test.mosquitto.org:1883";
+            }
+
             // Get stack high-water mark (minimum free stack space in words)
             UBaseType_t stackLeft = uxTaskGetStackHighWaterMark(NULL);
             ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s Stack high-water mark: %d bytes", disconnectId.c_str(), stackLeft * sizeof(StackType_t));
@@ -657,71 +675,6 @@ namespace SmartDevice
                 ESP_LOGW(SMART_DEVICE_TAG, "DISCONNECT %s failed to reconnect to cloud: %s", disconnectId.c_str(), result.getError().c_str());
             }
             ESP_LOGI(SMART_DEVICE_TAG, "DISCONNECT %s reconnect attempt complete", disconnectId.c_str());
-
-            // // Check if the connection state is DISCONNECTING
-            // if (currentState == ConnectionState::DISCONNECTING)
-            // {
-            //     // Update the connection state
-            //     setConnectionState(ConnectionState::NOT_CONNECTED);
-
-            //     return;
-            // }
-
-            // // Check if the connection state is NOT_CONNECTED
-            // if (currentState == ConnectionState::NOT_CONNECTED)
-            // {
-            //     ESP_LOGE(SMART_DEVICE_TAG, "disconnect handler called in a state of NOT_CONNECTED. This should not be possible");
-            //     return;
-            // }
-
-            // // Check if the connection state is CONNECTED
-            // if (currentState == ConnectionState::CONNECTED)
-            // {
-            //     // Update the connection state
-            //     setConnectionState(ConnectionState::NOT_CONNECTED);
-
-            //     // Check if the auto-reconnect flag is set
-            //     if (!autoReconnect)
-            //     {
-            //         // Do not try to reconnect
-            //         return;
-            //     }
-
-            //     // Call the connect cloud function
-            //     Result result = connectCloud();
-            //     if (!result.isSuccess())
-            //     {
-            //         ESP_LOGW(SMART_DEVICE_TAG, "failed to reconnect to cloud: %s", result.getError().c_str());
-            //     }
-            //     return;
-            // }
-
-            // // Check if we're currently connecting
-            // if (currentState == ConnectionState::CONNECTING)
-            // {
-            //     // Wait for the connection attempt to finish (it should result in a NOT_CONNECTED state)
-            //     // Will this block the cloud connect function?
-            //     bool desiredStateReached = waitConnectionState({ConnectionState::NOT_CONNECTED}, 30000);
-            //     if (!desiredStateReached)
-            //     {
-            //         ESP_LOGE(SMART_DEVICE_TAG, "failed to reach desired state after disconnecting from cloud");
-            //     }
-
-            //     // Check if the auto-reconnect flag is set
-            //     if (!autoReconnect)
-            //     {
-            //         // Do not try to reconnect
-            //         return;
-            //     }
-
-            //     // Call the connect cloud function
-            //     Result result = connectCloud();
-            //     if (!result.isSuccess())
-            //     {
-            //         ESP_LOGW(SMART_DEVICE_TAG, "failed to reconnect to cloud: %s", result.getError().c_str());
-            //     }
-            //     return;
-            // }
         }
     };
 };

@@ -89,16 +89,20 @@ namespace Mqtt
             // TODO: Check the current connection state before connecting and act accordingly
             // Start the mqtt client
             ESP_LOGI(TAG, "starting mqtt client");
-            esp_err_t error = esp_mqtt_client_start(client); // This will immediately cause a MQTT_EVENT_BEFORE_CONNECT event to be dispatched
-
-            if (error != ESP_OK)
-            {
-                ESP_LOGW(TAG, "failed to start mqtt client, error code: %s", esp_err_to_name(error));
-                return;
-            }
 
             // Set the connection state to connecting
             setConnectionState(ConnectionState::CONNECTING);
+
+            // Start the mqtt client
+            esp_err_t error = esp_mqtt_client_start(client); // This will immediately cause a MQTT_EVENT_BEFORE_CONNECT event to be dispatched
+            if (error != ESP_OK)
+            {
+                // Revert the connection state
+                setConnectionState(ConnectionState::NOT_CONNECTED);
+
+                ESP_LOGW(TAG, "failed to start mqtt client, error code: %s", esp_err_to_name(error));
+                return;
+            }
         }
 
         /**
@@ -130,10 +134,16 @@ namespace Mqtt
          */
         Result<> reconnect()
         {
+            // Set the connection state to connecting
+            setConnectionState(ConnectionState::CONNECTING);
+
             // Attempt to reconnect the client
             esp_err_t error = esp_mqtt_client_reconnect(client);
             if (error != ESP_OK)
             {
+                // Revert the connection state
+                setConnectionState(ConnectionState::NOT_CONNECTED);
+
                 return Result<>::createFailure(format("Failed to reconnect mqtt client, error code: %s", esp_err_to_name(error)));
             }
 
