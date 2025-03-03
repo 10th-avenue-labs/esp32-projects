@@ -453,10 +453,11 @@ void testConnectAndDisconnect()
         if (!result.isSuccess())
         {
             ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
+            return;
         }
         if (!result.getValue().isSuccess())
         {
-            ESP_LOGI(TAG, "failed to handle request with error for consumer: %s", result.getValue().getError().c_str());
+            ESP_LOGE(TAG, "failed to handle request with error for consumer: %s", result.getValue().getError().c_str());
             return;
         }
 
@@ -645,9 +646,9 @@ extern "C" void app_main()
     // testConnectAndDisconnect();
 
     // Test code for connecting with failures
-    // testConnectWithFailures();
+    testConnectWithFailures();
 
-    connectAndStayConnected();
+    // connectAndStayConnected();
 
     ESP_LOGI(TAG, "done with test code");
     while (true)
