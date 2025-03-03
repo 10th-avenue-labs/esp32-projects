@@ -402,26 +402,209 @@ void testEventHandleing()
         }
     }
     */
+}
 
-    // // Handle the test request (Need to make method public to test)
-    // auto result = device.handleRequest(testPayload);
-    // if (!result.isSuccess())
-    // {
-    //     ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
-    //     return;
-    // }
+void testConnectAndDisconnect()
+{
+    // Create a Test Config
+    TestDeviceConfig testConfig(
+        42,
+        3.14,
+        true,
+        "Hello, world!",
+        {1, 2, 3, 4, 5},
+        make_unique<SmartDevice::BleConfig>("Test Device"),
+        make_unique<SmartDevice::CloudConnectionConfig>(
+            "deviceId",
+            "jwt",
+            "IP-in-the-hot-tub",
+            "everytime",
+            "mqttConnectionString"));
 
-    // // Serialize the response
-    // auto handleResult = result.getValue();
-    // if (!handleResult.isSuccess())
-    // {
-    //     ESP_LOGE(TAG, "failed to handle request with error for consumer: %s", handleResult.getError().c_str());
-    //     return;
-    // }
+    // Create a TestDevice object
+    TestDevice testDevice(std::move(testConfig));
 
-    // // Serialize the response
-    // auto serializedResponse = handleResult.getValue()->serializeToString(true);
-    // ESP_LOGI(TAG, "serialized response: %s", serializedResponse.c_str());
+    // Initiate the device
+    testDevice.initialize();
+
+    // Start the device
+    testDevice.start();
+
+    // Create an InitiateCloudConnection request
+    string initiateCloudConnectionRequest = R"({
+        "type": "InitiateCloudConnection",
+        "data": {
+            "deviceId": "deviceId",
+            "jwt": "jwt",
+            "ssid": "IP-in-the-hot-tub",
+            "password": "everytime",
+            "mqttConnectionString": "mqtt://192.168.0.100:1883"
+        }
+    })";
+
+    int runs = 3;
+    for (int i = 0; i < runs; i++)
+    {
+        ESP_LOGI(TAG, "run %d", i);
+
+        // Connect to cloud
+        ESP_LOGI(TAG, "connecting to cloud\n");
+        auto result = testDevice.handleRequest(initiateCloudConnectionRequest);
+        if (!result.isSuccess())
+        {
+            ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
+        }
+        if (!result.getValue().isSuccess())
+        {
+            ESP_LOGI(TAG, "failed to handle request with error for consumer: %s", result.getValue().getError().c_str());
+            return;
+        }
+
+        ESP_LOGI(TAG, "\n\ndisconnecting from cloud");
+        testDevice.terminateConnectionLoop();
+        auto disconnectResult = testDevice.disconnectCloud();
+        if (!disconnectResult.isSuccess())
+        {
+            ESP_LOGE(TAG, "failed to disconnect from cloud: %s", disconnectResult.getError().c_str());
+            return;
+        }
+    }
+}
+
+void testConnectWithFailures()
+{
+    // Create a Test Config
+    TestDeviceConfig testConfig(
+        42,
+        3.14,
+        true,
+        "Hello, world!",
+        {1, 2, 3, 4, 5},
+        make_unique<SmartDevice::BleConfig>("Test Device"),
+        make_unique<SmartDevice::CloudConnectionConfig>(
+            "deviceId",
+            "jwt",
+            "IP-in-the-hot-tub",
+            "everytime",
+            "mqttConnectionString"));
+
+    // Create a TestDevice object
+    TestDevice testDevice(std::move(testConfig));
+
+    // Initiate the device
+    testDevice.initialize();
+
+    // Start the device
+    testDevice.start();
+
+    // Create an InitiateCloudConnection request
+    string initiateCloudConnectionRequest = R"({
+        "type": "InitiateCloudConnection",
+        "data": {
+            "deviceId": "deviceId",
+            "jwt": "jwt",
+            "ssid": "IP-in-the-hot-tub",
+            "password": "everytime",
+            "mqttConnectionString": "mqtt://test-will-fail.mosquitto.org:1883"
+        }
+    })";
+
+    // This will fail
+    auto result = testDevice.handleRequest(initiateCloudConnectionRequest);
+    if (!result.isSuccess())
+    {
+        ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
+    }
+    if (!result.getValue().isSuccess())
+    {
+        ESP_LOGI(TAG, "failed to handle request with error for consumer: %s", result.getValue().getError().c_str());
+    }
+
+    ESP_LOGI(TAG, "failure code complete, now testing success code");
+
+    // Create an InitiateCloudConnection request
+    string initiateCloudConnectionRequestToSucceed = R"({
+        "type": "InitiateCloudConnection",
+        "data": {
+            "deviceId": "deviceId",
+            "jwt": "jwt",
+            "ssid": "IP-in-the-hot-tub",
+            "password": "everytime",
+            "mqttConnectionString": "mqtt://test.mosquitto.org:1883"
+        }
+    })";
+
+    // This will succeed
+    auto resultToSucceed = testDevice.handleRequest(initiateCloudConnectionRequestToSucceed);
+    if (!resultToSucceed.isSuccess())
+    {
+        ESP_LOGE(TAG, "failed to handle request: %s", resultToSucceed.getError().c_str());
+        return;
+    }
+    if (!resultToSucceed.getValue().isSuccess())
+    {
+        ESP_LOGI(TAG, "failed to handle request with error for consumer: %s", resultToSucceed.getValue().getError().c_str());
+        return;
+    }
+}
+
+void connectAndStayConnected()
+{
+    // Create a Test Config
+    TestDeviceConfig testConfig(
+        42,
+        3.14,
+        true,
+        "Hello, world!",
+        {1, 2, 3, 4, 5},
+        make_unique<SmartDevice::BleConfig>("Test Device"),
+        make_unique<SmartDevice::CloudConnectionConfig>(
+            "deviceId",
+            "jwt",
+            "IP-in-the-hot-tub",
+            "everytime",
+            "mqtt://test.mosquitto.org:1883"));
+
+    // Create a TestDevice object
+    TestDevice testDevice(std::move(testConfig));
+
+    // Initiate the device
+    testDevice.initialize();
+
+    // Start the device
+    testDevice.start();
+
+    // Create an InitiateCloudConnection request
+    string initiateCloudConnectionRequest = R"({
+        "type": "InitiateCloudConnection",
+        "data": {
+            "deviceId": "deviceId",
+            "jwt": "jwt",
+            "ssid": "IP-in-the-hot-tub",
+            "password": "everytime",
+            "mqttConnectionString": "mqtt://test.mosquitto.org:1883"
+        }
+    })";
+
+    // Handle the request
+    auto result = testDevice.handleRequest(initiateCloudConnectionRequest);
+    if (!result.isSuccess())
+    {
+        ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
+        return;
+    }
+    if (!result.getValue().isSuccess())
+    {
+        ESP_LOGE(TAG, "failed to handle request with error for consumer: %s", result.getValue().getError().c_str());
+        return;
+    }
+
+    ESP_LOGI(TAG, "connected to cloud");
+
+    while (true)
+    {
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
 }
 
 extern "C" void app_main()
@@ -458,64 +641,15 @@ extern "C" void app_main()
     // Test code for the smart device event handling
     // testEventHandleing();
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Test code for initiation
-    ///////////////////////////////////////////////////////////////////////////
+    // Test code for connecting and disconnecting
+    // testConnectAndDisconnect();
 
-    ESP_LOGI(TAG, "\n\ntest code for initiation\n\n");
+    // Test code for connecting with failures
+    // testConnectWithFailures();
 
-    // Create a Test Config
-    TestDeviceConfig testConfig2(
-        42,
-        3.14,
-        true,
-        "Hello, world!",
-        {1, 2, 3, 4, 5},
-        make_unique<SmartDevice::BleConfig>("Test Device"),
-        make_unique<SmartDevice::CloudConnectionConfig>(
-            "deviceId",
-            "jwt",
-            "IP-in-the-hot-tub",
-            "everytime",
-            "mqttConnectionString"));
+    connectAndStayConnected();
 
-    // Create a TestDevice object
-    TestDevice testDevice(std::move(testConfig2));
-
-    // Initiate the device
-    testDevice.initialize();
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Test code for starting the device
-    ///////////////////////////////////////////////////////////////////////////
-
-    // Start the device
-    testDevice.start();
-
-    // Create an InitiateCloudConnection request
-    string initiateCloudConnectionRequest = R"({
-        "type": "InitiateCloudConnection",
-        "data": {
-            "deviceId": "deviceId",
-            "jwt": "jwt",
-            "ssid": "IP-in-the-hot-tub",
-            "password": "everytime",
-            "mqttConnectionString": "mqtt://10.11.2.80:188"
-        }
-    })";
-
-    // Handle the InitiateCloudConnection request
-    auto result = testDevice.handleRequest(initiateCloudConnectionRequest);
-    if (!result.isSuccess())
-    {
-        ESP_LOGE(TAG, "failed to handle request: %s", result.getError().c_str());
-    }
-
-    if (!result.getValue().isSuccess())
-    {
-        ESP_LOGI(TAG, "failed to handle request with error for consumer: %s", result.getValue().getError().c_str());
-    }
-
+    ESP_LOGI(TAG, "done with test code");
     while (true)
     {
         vTaskDelay(1000 / portTICK_PERIOD_MS);

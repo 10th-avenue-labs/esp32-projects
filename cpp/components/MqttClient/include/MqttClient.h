@@ -64,16 +64,32 @@ namespace Mqtt
          */
         ~MqttClient()
         {
+            // TODO: Do we need to unsubscribe from topics here?
+
             // Disconnect the client
-            disconnect();
+            Result result = disconnect();
+            if (!result.isSuccess())
+            {
+                ESP_LOGW(TAG, "failed to disconnect mqtt client: %s", result.getError().c_str());
+            }
 
             // Unregister the event handler
             ESP_LOGI(TAG, "unregistering mqtt event handler");
-            ESP_ERROR_CHECK(esp_mqtt_client_unregister_event(client, MQTT_EVENT_ANY, mqttEventHandler));
+            esp_err_t unregisterError = esp_mqtt_client_unregister_event(client, MQTT_EVENT_ANY, mqttEventHandler);
+            if (unregisterError != ESP_OK)
+            {
+                ESP_LOGW(TAG, "failed to unregister mqtt event handler, error code: %s", esp_err_to_name(unregisterError));
+            }
 
-            // Deinitialize the mqtt client
-            ESP_LOGI(TAG, "deinitializing mqtt client");
-            ESP_ERROR_CHECK(esp_mqtt_client_destroy(client));
+            // Destroy the mqtt client
+            ESP_LOGI(TAG, "destroying mqtt client");
+            esp_err_t destroyError = esp_mqtt_client_destroy(client);
+            if (destroyError != ESP_OK)
+            {
+                ESP_LOGW(TAG, "failed to destroy mqtt client, error code: %s", esp_err_to_name(destroyError));
+            }
+
+            client = NULL;
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -107,26 +123,25 @@ namespace Mqtt
 
         /**
          * @brief Disconnect from the broker
+         * Note: This will not trigger a MQTT_EVENT_DISCONNECTED event.
          */
-        void disconnect()
+        Result<> disconnect()
         {
             // Check if we are already disconnected
             if (getConnectionState() == ConnectionState::NOT_CONNECTED)
             {
                 ESP_LOGI(TAG, "already disconnected");
-                return;
+                return Result<>::createSuccess();
             }
 
             // Stop the mqtt client
             ESP_LOGI(TAG, "stopping mqtt client");
-            ESP_ERROR_CHECK(esp_mqtt_client_stop(client));
+            esp_err_t error = esp_mqtt_client_stop(client);
 
             // Set the connection state to disconnected
             setConnectionState(ConnectionState::NOT_CONNECTED);
 
-            /**
-             * Note: This will not trigger a MQTT_EVENT_DISCONNECTED event.
-             */
+            return error == ESP_OK ? Result<>::createSuccess() : Result<>::createFailure(format("Failed to stop mqtt client, error code: %s", esp_err_to_name(error)));
         }
 
         /**
