@@ -646,9 +646,9 @@ extern "C" void app_main()
     // testConnectAndDisconnect();
 
     // Test code for connecting with failures
-    testConnectWithFailures();
+    // testConnectWithFailures();
 
-    // connectAndStayConnected();
+    connectAndStayConnected();
 
     ESP_LOGI(TAG, "done with test code");
     while (true)

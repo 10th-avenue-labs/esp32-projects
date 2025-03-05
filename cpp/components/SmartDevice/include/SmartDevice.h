@@ -42,9 +42,17 @@ namespace SmartDevice
     class SmartDevice
     {
     public:
-        SmartDevice(SmartDeviceConfig cfg, string deviceType)
+        /**
+         * @brief Construct a new Smart Device object
+         *
+         * @param cfg The configuration to use for the smart device
+         * @param deviceType The type to register the smart device as
+         * @param configUpdatedDelegate An optional config updated delegate to call when the device configuration is updated
+         */
+        SmartDevice(SmartDeviceConfig cfg, string deviceType, std::function<void(void)> configUpdatedDelegate = nullptr)
             : config(std::move(cfg)),
               deviceType(deviceType),
+              configUpdatedDelegate(configUpdatedDelegate),
               waiter(WaitFunctions::ExponentialTime(2, 1000))
         {
             // Set the max wait time to 30 minutes
@@ -60,7 +68,21 @@ namespace SmartDevice
             registerRequestHandler<CloudConnectionConfig>("InitiateCloudConnection", std::bind(&SmartDevice::initiateCloudConnectionHandler, this, std::placeholders::_1));
         };
 
+        /**
+         * @brief Destroy the Smart Device object
+         *
+         */
         virtual ~SmartDevice() = default;
+
+        /**
+         * @brief Set the Config Updated Delegate
+         *
+         * @param delegate The delegate to call when the config is updated
+         */
+        void setConfigUpdatedDelegate(std::function<void(void)> delegate)
+        {
+            configUpdatedDelegate = delegate;
+        }
 
         /**
          * @brief Register a request handler
@@ -113,6 +135,10 @@ namespace SmartDevice
             WifiService::WifiService::init();
         }
 
+        /**
+         * @brief Start the smart device
+         *
+         */
         void start()
         {
             // FIXME: When we create a task here, that means that the function is non-blocking and will quickly return
@@ -133,11 +159,19 @@ namespace SmartDevice
                 nullptr);
 
             // Check if we have a cloud configuration
-            if (true)
+            if (!config.cloudConnectionConfig)
             {
-                // Initiate the cloud connection loop
+                return;
+            }
 
-                // Connect to the cloud
+            // Initiate the cloud connection loop
+            initiateCloudConnectionLoop();
+
+            // Connect to the cloud
+            Result result = connectCloud();
+            if (!result.isSuccess())
+            {
+                ESP_LOGW(SMART_DEVICE_TAG, "failed to connect to cloud on startup: %s", result.getError().c_str());
             }
         }
 
@@ -215,6 +249,13 @@ namespace SmartDevice
             adtService->sendMessage({device}, responseBytes);
         }
 
+        /**
+         * @brief Handle messages from the mqtt client
+         *
+         * @param client The mqtt client
+         * @param messageId The message id
+         * @param data The message data
+         */
         void mqttMessageHandler(Mqtt::MqttClient *client, int messageId, std::vector<std::byte> data)
         {
             // TODO
@@ -694,11 +735,11 @@ namespace SmartDevice
          */
         void cloudDisconnectHandler()
         {
-            ESP_LOGI(SMART_DEVICE_TAG, "disconnected from cloud, handling disconnect");
-
             // Atomically check that we're in a connected state and update the state to NOT_CONNECTED if so
             ConnectionState expectedValue = ConnectionState::CONNECTED;
             bool deviceWasConnected = setConnectionStateCompareExchange(expectedValue, ConnectionState::NOT_CONNECTED);
+
+            ESP_LOGI(SMART_DEVICE_TAG, "disconnected from cloud, handling disconnect from a connection state of %d", expectedValue);
 
             // Check if the connection state was DISCONNECTING
             if (expectedValue == ConnectionState::DISCONNECTING)
