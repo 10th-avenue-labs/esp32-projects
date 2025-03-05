@@ -11,19 +11,19 @@
 class MySerializable : public ISerializable
 {
 public:
-    int myInt;                           // Required int
-    std::string myString;                // Required string
-    bool myBool;                         // Required bool
-    unique_ptr<MySerializable> myObject; // Optional object (serializes to null if nullptr)
-    std::vector<int> myVector;           // Required array (but cal be empty)
+    int myInt;                                // Required int
+    std::string myString;                     // Required string
+    bool myBool;                              // Required bool
+    std::unique_ptr<MySerializable> myObject; // Optional object (serializes to null if nullptr)
+    std::vector<int> myVector;                // Required array (but cal be empty)
 
-    MySerializable(int myInt, const std::string &myString, bool myBool, unique_ptr<MySerializable> myObject, std::vector<int> myVector)
+    MySerializable(int myInt, const std::string &myString, bool myBool, std::unique_ptr<MySerializable> myObject, std::vector<int> myVector)
         : myInt(myInt), myString(myString), myBool(myBool), myObject(std::move(myObject)), myVector(myVector) {}
 
-    unique_ptr<cJSON, void (*)(cJSON *item)> serialize() override
+    std::unique_ptr<cJSON, void (*)(cJSON *item)> serialize() override
     {
         // Provide a simple implementation for the serialize method
-        unique_ptr<cJSON, void (*)(cJSON *item)> json(cJSON_CreateObject(), cJSON_Delete);
+        std::unique_ptr<cJSON, void (*)(cJSON *item)> json(cJSON_CreateObject(), cJSON_Delete);
         // Primitives
         cJSON_AddNumberToObject(json.get(), "myInt", myInt);
         cJSON_AddStringToObject(json.get(), "myString", myString.c_str());
@@ -50,30 +50,6 @@ public:
 
         return json;
     }
-
-    // static MySerializable deserialize(cJSON *json)
-    // {
-    //     // Provide a simple implementation for the deserialize method
-    //     int myInt = cJSON_GetObjectItem(json, "myInt")->valueint;
-    //     const char *myString = cJSON_GetObjectItem(json, "myString")->valuestring;
-    //     bool myBool = cJSON_GetObjectItem(json, "myBool")->valueint;
-    //     unique_ptr<MySerializable> myObject = nullptr;
-    //     cJSON *myObjectJson = cJSON_GetObjectItem(json, "myObject");
-    //     if (myObjectJson && !cJSON_IsNull(myObjectJson))
-    //     {
-    //         myObject = make_unique<MySerializable>(MySerializable::deserialize(myObjectJson));
-    //     }
-    //     std::vector<int> myVector;
-    //     cJSON *myVectorArray = cJSON_GetObjectItem(json, "myVector");
-    //     cJSON *myVectorElement = myVectorArray->child;
-    //     while (myVectorElement)
-    //     {
-    //         myVector.push_back(myVectorElement->valueint);
-    //         myVectorElement = myVectorElement->next;
-    //     }
-
-    //     return MySerializable(myInt, myString, myBool, std::move(myObject), myVector);
-    // }
 };
 
 extern "C" void app_main()
@@ -90,7 +66,7 @@ extern "C" void app_main()
     ESP_LOGI("main", "Serialized pretty: %s", serializedPretty.c_str());
 
     // Create a serializable object with nesting
-    MySerializable mySerializableNested{404, "Hello, brave new world!", false, make_unique<MySerializable>(std::move(mySerializable)), {}};
+    MySerializable mySerializableNested{404, "Hello, brave new world!", false, std::make_unique<MySerializable>(std::move(mySerializable)), {}};
 
     // Serialize the object to a string
     std::string serializedNested = mySerializableNested.serializeToString();
