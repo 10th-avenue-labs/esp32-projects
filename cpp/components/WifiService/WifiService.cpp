@@ -3,17 +3,17 @@
 static char *TAG = "WIFI_SERVICE";
 
 // Define static members to satisfy the compiler
-std::function<void(void)> WifiService::onConnect = nullptr;
-std::function<void(void)> WifiService::onDisconnect = nullptr;
-std::atomic<ConnectionState> WifiService::connectionState = ConnectionState::NOT_CONNECTED;
-std::condition_variable WifiService::stateChanged = std::condition_variable();
-std::mutex WifiService::stateMutex = std::mutex();
+std::function<void(void)> WifiService::WifiService::onConnect = nullptr;
+std::function<void(void)> WifiService::WifiService::onDisconnect = nullptr;
+std::atomic<WifiService::ConnectionState> WifiService::WifiService::connectionState = ConnectionState::NOT_CONNECTED;
+std::condition_variable WifiService::WifiService::stateChanged = std::condition_variable();
+std::mutex WifiService::WifiService::stateMutex = std::mutex();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization and Disposal
 ////////////////////////////////////////////////////////////////////////////////
 
-bool WifiService::init()
+bool WifiService::WifiService::init()
 {
     // Initialise the non-volatile flash storage (NVS)
     ESP_LOGI(TAG, "initializing nvs flash");
@@ -94,7 +94,7 @@ bool WifiService::init()
 // Access Point Scanning
 ////////////////////////////////////////////////////////////////////////////////
 
-ApScanResults WifiService::scanAvailableAccessPoints(uint8_t maxApsCount)
+ApScanResults WifiService::WifiService::scanAvailableAccessPoints(uint8_t maxApsCount)
 {
     // Ensure we are not in the process of connecting or disconnecting
     if (getConnectionState() == ConnectionState::CONNECTING || getConnectionState() == ConnectionState::DISCONNECTING)
@@ -159,7 +159,7 @@ ApScanResults WifiService::scanAvailableAccessPoints(uint8_t maxApsCount)
 // Connection Management
 ////////////////////////////////////////////////////////////////////////////////
 
-bool WifiService::startConnect(
+bool WifiService::WifiService::startConnect(
     ApCredentialInfo apCredentialInfo)
 {
     // Check the connection state
@@ -253,7 +253,7 @@ bool WifiService::startConnect(
     return true;
 };
 
-bool WifiService::startDisconnect()
+bool WifiService::WifiService::startDisconnect()
 {
     // Check the connection state
     if (getConnectionState() != ConnectionState::CONNECTED)
@@ -276,12 +276,12 @@ bool WifiService::startDisconnect()
 // Connection State Management
 ////////////////////////////////////////////////////////////////////////////////
 
-ConnectionState WifiService::getConnectionState()
+WifiService::ConnectionState WifiService::WifiService::getConnectionState()
 {
     return connectionState.load(std::memory_order_relaxed);
 }
 
-void WifiService::setConnectionState(ConnectionState newState)
+void WifiService::WifiService::setConnectionState(ConnectionState newState)
 {
     {
         std::lock_guard<std::mutex> lock(stateMutex);
@@ -292,7 +292,7 @@ void WifiService::setConnectionState(ConnectionState newState)
     stateChanged.notify_all();
 }
 
-bool WifiService::waitConnectionState(const std::vector<ConnectionState> &connectionStates, int timeoutMs)
+bool WifiService::WifiService::waitConnectionState(const std::vector<ConnectionState> &connectionStates, int timeoutMs)
 {
     // TODO: Implement a way to cancel the wait
 
@@ -321,7 +321,7 @@ bool WifiService::waitConnectionState(const std::vector<ConnectionState> &connec
 // Event Handlers
 ////////////////////////////////////////////////////////////////////////////////
 
-void WifiService::genericEventHandler(
+void WifiService::WifiService::genericEventHandler(
     void *arg,
     esp_event_base_t eventBase,
     int32_t eventId,
@@ -350,7 +350,7 @@ void WifiService::genericEventHandler(
         eventData);
 };
 
-void WifiService::wifiEventHandler(
+void WifiService::WifiService::wifiEventHandler(
     int32_t eventId,
     void *eventData)
 {
@@ -372,7 +372,18 @@ void WifiService::wifiEventHandler(
         // Call the onDisconnect delegate
         if (onDisconnect != nullptr)
         {
-            onDisconnect();
+            // Spawn the onDisconnect delegate on a new task
+            xTaskCreate(
+                [](void *)
+                {
+                    onDisconnect();
+                    vTaskDelete(NULL);
+                },
+                "onDisconnect",
+                4096,
+                nullptr,
+                5,
+                nullptr);
         }
         break;
     default:
@@ -381,7 +392,7 @@ void WifiService::wifiEventHandler(
     }
 };
 
-void WifiService::ipEventHandler(
+void WifiService::WifiService::ipEventHandler(
     int32_t eventId,
     void *eventData)
 {
