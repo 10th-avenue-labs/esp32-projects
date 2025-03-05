@@ -124,6 +124,8 @@ namespace Mqtt
         /**
          * @brief Disconnect from the broker
          * Note: This will not trigger a MQTT_EVENT_DISCONNECTED event.
+         *
+         * @return Result<> The result of the operation
          */
         Result<> disconnect()
         {
@@ -146,6 +148,8 @@ namespace Mqtt
 
         /**
          * @brief Reconnect the client
+         *
+         * @return Result<> The result of the operation
          */
         Result<> reconnect()
         {
