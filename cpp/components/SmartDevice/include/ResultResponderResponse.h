@@ -11,9 +11,20 @@ namespace SmartDevice
         uint16_t messageId;
         Result<std::shared_ptr<ISerializable>> result;
 
+        /**
+         * @brief Construct a new Result Responder Response object. These are responses to requests that expect a result in response
+         *
+         * @param messageId The message ID of the request
+         * @param result The result of the request
+         */
         ResultResponderResponse(uint16_t messageId, Result<std::shared_ptr<ISerializable>> result)
             : messageId(messageId), result(result) {}
 
+        /**
+         * @brief Serialize the object to a cJSON object
+         *
+         * @return std::unique_ptr<cJSON, void (*)(cJSON *item)> The serialized cJSON object
+         */
         std::unique_ptr<cJSON, void (*)(cJSON *item)> serialize() override
         {
             // Create a new cJSON object

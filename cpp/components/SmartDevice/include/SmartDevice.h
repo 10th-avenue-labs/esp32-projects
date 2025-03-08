@@ -31,6 +31,10 @@ static const char *SMART_DEVICE_TAG = "SMART_DEVICE";
 
 namespace SmartDevice
 {
+    /**
+     * @brief The connection state of the smart device
+     *
+     */
     enum ConnectionState
     {
         NOT_CONNECTED,
@@ -48,15 +52,16 @@ namespace SmartDevice
          * @param cfg The configuration to use for the smart device
          * @param deviceType The type to register the smart device as
          * @param configUpdatedDelegate An optional config updated delegate to call when the device configuration is updated
+         * @param maxWaitMs The maximum wait time for the smart device to wait for a connection with a default of 30 minutes
          */
-        SmartDevice(SmartDeviceConfig cfg, string deviceType, std::function<void(void)> configUpdatedDelegate = nullptr)
+        SmartDevice(SmartDeviceConfig cfg, string deviceType, std::function<void(void)> configUpdatedDelegate = nullptr, int maxWaitMs = 1000 * 60 * 30)
             : config(std::move(cfg)),
               deviceType(deviceType),
               configUpdatedDelegate(configUpdatedDelegate),
               waiter(WaitFunctions::ExponentialTime(2, 1000))
         {
-            // Set the max wait time to 30 minutes
-            waiter.setMaxWaitMs(1000 * 60 * 30); // 30 minutes
+            // Set the max wait time
+            waiter.setMaxWaitMs(maxWaitMs);
 
             // Set the wifi disconnect handler
             WifiService::WifiService::onDisconnect = [this]
@@ -696,7 +701,7 @@ namespace SmartDevice
         Result<> disconnectCloud()
         {
             // Check if we're already disconnected
-            // TODO: We are partially connected in some scenarios, ie wifi connected but not mqtt connected. Should still disconnect these items
+            // FIXME: We are partially connected in some scenarios, ie wifi connected but not mqtt connected. Should still disconnect these items
             if (getConnectionState() == ConnectionState::NOT_CONNECTED)
             {
                 ESP_LOGI(SMART_DEVICE_TAG, "already disconnected");
