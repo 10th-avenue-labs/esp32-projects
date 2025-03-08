@@ -39,7 +39,7 @@ public:
      * @brief Get a deserializer for a given type
      *
      * @param type The type of the object to deserialize
-     * @return std::function<std::unique_ptr<IDeserializable>(const cJSON* root)> The deserializer function
+     * @return std::function<Result<std::unique_ptr<IDeserializable>>(const cJSON *root)> The deserializer function
      */
     template <typename T>
     static std::function<Result<std::unique_ptr<IDeserializable>>(const cJSON *root)> getDeserializer()
@@ -52,6 +52,12 @@ public:
         return nullptr; // Or throw an exception if deserializer not found
     }
 
+    /**
+     * @brief Get the Deserializer for a particular type
+     *
+     * @param type The type to get the deserializer for
+     * @return std::function<Result<std::unique_ptr<IDeserializable>>(const cJSON *root)> The deserializer function
+     */
     static std::function<Result<std::unique_ptr<IDeserializable>>(const cJSON *root)> getDeserializer(const std::type_index &type)
     {
         auto it = deserializers.find(type);

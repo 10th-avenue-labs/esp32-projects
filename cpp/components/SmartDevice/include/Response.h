@@ -11,8 +11,19 @@ namespace SmartDevice
         std::string type;
         std::unique_ptr<ISerializable> data;
 
+        /**
+         * @brief Construct a new Response object
+         *
+         * @param type The type of the response
+         * @param data The serializable data to include in the response
+         */
         Response(std::string type, std::unique_ptr<ISerializable> data) : type(type), data(std::move(data)) {}
 
+        /**
+         * @brief Serialize the object to a cJSON object
+         *
+         * @return std::unique_ptr<cJSON, void (*)(cJSON *item)> The serialized cJSON object
+         */
         std::unique_ptr<cJSON, void (*)(cJSON *item)> serialize() override
         {
             cJSON *root = cJSON_CreateObject();

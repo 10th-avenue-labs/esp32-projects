@@ -15,13 +15,31 @@ namespace SmartDevice
         std::string type;
         std::unique_ptr<IDeserializable> data;
 
+        /**
+         * @brief Construct a new Request object
+         *
+         * @param type The type of the request
+         * @param data The deserializable data for the request
+         */
         Request(std::string type, std::unique_ptr<IDeserializable> data) : type(type), data(std::move(data)) {}
 
+        /**
+         * @brief Register a request type
+         *
+         * @param typeName The name of the request type
+         * @param typeIndex The type index of the data type
+         */
         static void registerRequestType(std::string typeName, std::type_index typeIndex)
         {
             dataTypesByTypeName.emplace(typeName, typeIndex);
         }
 
+        /**
+         * @brief Deserialize a request
+         *
+         * @param root The cJSON root object
+         * @return Result<std::unique_ptr<IDeserializable>> A result containing the deserialized request
+         */
         static Result<std::unique_ptr<IDeserializable>> deserialize(const cJSON *root)
         {
             // Get the fields

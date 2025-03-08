@@ -12,8 +12,19 @@ namespace SmartDevice
         std::string type;
         std::string name;
 
+        /**
+         * @brief Construct a new Device Info object
+         *
+         * @param type The type of the device
+         * @param name The name of the device
+         */
         DeviceInfo(std::string type, std::string name) : type(type), name(name) {}
 
+        /**
+         * @brief Serialize the object to a cJSON object
+         *
+         * @return std::unique_ptr<cJSON, void (*)(cJSON *item)>
+         */
         std::unique_ptr<cJSON, void (*)(cJSON *item)> serialize() override
         {
             // Create the root cJSON object
