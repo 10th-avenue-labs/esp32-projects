@@ -14,12 +14,23 @@ const char *TEST_DEVICE_TAG = "TEST_DEVICE";
 class TestDevice : public SmartDevice::SmartDevice
 {
 public:
+    /**
+     * @brief Construct a new Test Device object
+     *
+     * @param config The config to use for the TestDevice
+     */
     TestDevice(TestDeviceConfig config) : SmartDevice::SmartDevice(std::move(config), "SmartPlug") // Re-using SmartPlug device type instead of TestDevice for testing with front-end
     {
         // Register event handlers
         registerRequestHandler<TestRequest>("testRequest", std::bind(&TestDevice::handleTestRequest, this, std::placeholders::_1));
     };
 
+    /**
+     * @brief Handle test requests
+     *
+     * @param request The deserializable test request
+     * @return Result<shared_ptr<ISerializable>> A result containing the response
+     */
     Result<shared_ptr<ISerializable>> handleTestRequest(unique_ptr<IDeserializable> request)
     {
         ESP_LOGI(TEST_DEVICE_TAG, "handling test request 1");

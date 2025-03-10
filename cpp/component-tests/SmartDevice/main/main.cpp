@@ -404,6 +404,10 @@ void testEventHandleing()
     */
 }
 
+/**
+ * @brief Test connection and disconnection
+ *
+ */
 void testConnectAndDisconnect()
 {
     // Create a Test Config
@@ -472,6 +476,10 @@ void testConnectAndDisconnect()
     }
 }
 
+/**
+ * @brief Test connecting with failures
+ *
+ */
 void testConnectWithFailures()
 {
     // Create a Test Config
@@ -549,6 +557,10 @@ void testConnectWithFailures()
     }
 }
 
+/**
+ * @brief Connect and stay connected
+ *
+ */
 void connectAndStayConnected()
 {
     // Create a Test Config
@@ -608,6 +620,10 @@ void connectAndStayConnected()
     }
 }
 
+/**
+ * @brief Application entry point
+ *
+ */
 extern "C" void app_main()
 {
     /**

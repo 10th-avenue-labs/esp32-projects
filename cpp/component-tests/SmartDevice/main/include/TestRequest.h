@@ -23,6 +23,15 @@ public:
     string myString;
     vector<int> myVector;
 
+    /**
+     * @brief Construct a new Test Request object
+     *
+     * @param myInt The integer value
+     * @param myFloat The float value
+     * @param myBool The boolean value
+     * @param myString The string value
+     * @param myVector The vector of integers
+     */
     TestRequest(int myInt, float myFloat, bool myBool, string myString, vector<int> myVector)
         : myInt(myInt), myFloat(myFloat), myBool(myBool), myString(myString), myVector(myVector) {}
 
