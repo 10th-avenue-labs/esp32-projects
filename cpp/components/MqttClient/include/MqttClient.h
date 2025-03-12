@@ -56,7 +56,12 @@ namespace Mqtt
             // Register the event handler
             // FIXME: We should be using results here instead. ESP_ERROR_CHECK will crash the program if the error is not ESP_OK
             ESP_LOGI(TAG, "registering mqtt event handler");
-            ESP_ERROR_CHECK(esp_mqtt_client_register_event(client, MQTT_EVENT_ANY, mqttEventHandler, this)); // No events will be dispatched from this
+            esp_err_t registerError = esp_mqtt_client_register_event(client, MQTT_EVENT_ANY, mqttEventHandler, this);
+            if (registerError != ESP_OK)
+            {
+                // FIXME: We should have a static initializer instead of this constructor so that we can properly handle these errors
+                ESP_LOGE(TAG, "failed to register mqtt event handler, error code: %s", esp_err_to_name(registerError));
+            }
         }
 
         /**
@@ -184,7 +189,12 @@ namespace Mqtt
             disconnect();
 
             // Set the new broker URI
-            esp_mqtt_client_set_uri(client, brokerUri.c_str());
+            esp_err_t error = esp_mqtt_client_set_uri(client, brokerUri.c_str());
+            if (error != ESP_OK)
+            {
+                // FIXME: We should be returning a result here instead
+                ESP_LOGE(TAG, "failed to set mqtt client URI, error code: %s", esp_err_to_name(error));
+            }
         }
 
         ///////////////////////////////////////////////////////////////////////

@@ -423,7 +423,7 @@ void testConnectAndDisconnect()
             "jwt",
             "IP-in-the-hot-tub",
             "everytime",
-            "mqttConnectionString"));
+            "mqtt://192.168.0.100:188"));
 
     // Create a TestDevice object
     TestDevice testDevice(std::move(testConfig));
@@ -495,7 +495,7 @@ void testConnectWithFailures()
             "jwt",
             "IP-in-the-hot-tub",
             "everytime",
-            "mqttConnectionString"));
+            "mqtt://test-will-fail.mosquitto.org:1883"));
 
     // Create a TestDevice object
     TestDevice testDevice(std::move(testConfig));
