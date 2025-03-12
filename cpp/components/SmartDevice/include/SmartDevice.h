@@ -183,6 +183,7 @@ namespace SmartDevice
         // private:
         SmartDeviceConfig config;
         std::string deviceType;
+        std::function<void(void)> configUpdatedDelegate;
         Waiter waiter;
         std::unique_ptr<Mqtt::MqttClient> mqttClient;
         unique_ptr<AdtService> adtService;
@@ -191,7 +192,6 @@ namespace SmartDevice
         std::condition_variable stateChanged;
         unordered_map<string, function<Result<shared_ptr<ISerializable>>(unique_ptr<IDeserializable>)>> requestHandlers;
         bool autoReconnect = false;
-        std::function<void(void)> configUpdatedDelegate;
 
         ///////////////////////////////////////////////////////////////////////////
         // Message handling
