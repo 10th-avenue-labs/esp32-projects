@@ -10,15 +10,27 @@ static const char *SMART_PLUG_TAG = "SMART_PLUG";
 
 class SmartPlug : public SmartDevice::SmartDevice
 {
-
 public:
+    /**
+     * @brief Construct a new Smart Plug object
+     *
+     * @param config The configuration to use for the smart plug
+     * @param configUpdatedDelegate The delegate to call when the configuration is updated
+     */
     SmartPlug(
         std::unique_ptr<SmartPlugConfig> config,
         std::function<void(void)> configUpdatedDelegate = nullptr) : SmartDevice::SmartDevice(std::move(config),
                                                                                               "SmartPlug",
                                                                                               configUpdatedDelegate),
-                                                                     acDimmer(nullptr) {};
+                                                                     acDimmer(nullptr) {
+                                                                         // Register message handlers
+                                                                         // TODO
+                                                                     };
 
+    /**
+     * @brief Initialize the smart plug
+     *
+     */
     void childInitialize() override
     {
         // Initiate the ac dimmer

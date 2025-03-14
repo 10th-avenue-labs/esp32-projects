@@ -8,6 +8,13 @@ class SmartPlugConfig : public SmartDevice::SmartDeviceConfig
 public:
     unique_ptr<AcDimmerConfig> acDimmerConfig;
 
+    /**
+     * @brief Construct a new Smart Plug Config object
+     *
+     * @param acDimmerConfig The AC Dimmer configuration
+     * @param bleConfig The BLE configuration
+     * @param cloudConnectionConfig The cloud connection configuration
+     */
     SmartPlugConfig(
         std::unique_ptr<AcDimmerConfig> acDimmerConfig,
         std::unique_ptr<SmartDevice::BleConfig> bleConfig,

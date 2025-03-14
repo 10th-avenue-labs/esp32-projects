@@ -13,6 +13,16 @@ public:
     int offsetFalling;
     int brightness;
 
+    /**
+     * @brief Construct a new Ac Dimmer Config object
+     *
+     * @param zcPin The zero crossing pin
+     * @param psmPin The phase shift modulation pin
+     * @param debounceUs The debounce time in microseconds
+     * @param offsetLeading The offset for the leading edge
+     * @param offsetFalling The offset for the falling edge
+     * @param brightness The brightness (duty cycle) of the dimmer
+     */
     AcDimmerConfig(int zcPin, int psmPin, int debounceUs, int offsetLeading, int offsetFalling, int brightness)
         : zcPin(zcPin), psmPin(psmPin), debounceUs(debounceUs), offsetLeading(offsetLeading), offsetFalling(offsetFalling), brightness(brightness) {};
 
