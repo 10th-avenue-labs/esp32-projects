@@ -32,8 +32,8 @@ namespace SmartDevice
         std::unique_ptr<cJSON, void (*)(cJSON *item)> serialize() override
         {
             cJSON *root = cJSON_CreateObject();
-            cJSON_AddItemToObject(root, "bleConfig", bleConfig->serialize().release());
-            cJSON_AddItemToObject(root, "cloudConnectionConfig", cloudConnectionConfig->serialize().release());
+            cJSON_AddItemToObject(root, "bleConfig", bleConfig == nullptr ? cJSON_CreateNull() : bleConfig->serialize().release());
+            cJSON_AddItemToObject(root, "cloudConnectionConfig", cloudConnectionConfig == nullptr ? cJSON_CreateNull() : cloudConnectionConfig->serialize().release());
             return std::unique_ptr<cJSON, void (*)(cJSON *item)>(root, cJSON_Delete);
         }
 
@@ -45,30 +45,23 @@ namespace SmartDevice
          */
         static Result<std::unique_ptr<IDeserializable>> deserialize(const cJSON *root)
         {
-            cJSON *bleConfigItem = cJSON_GetObjectItem(root, "bleConfig");
-            if (!cJSON_IsObject(bleConfigItem))
-            {
-                return Result<std::unique_ptr<IDeserializable>>::createFailure("Invalid or missing bleConfig field in JSON");
-            }
-            auto bleConfigResult = BleConfig::deserialize(bleConfigItem);
+            // Deserialize the BLE configuration
+            Result<unique_ptr<IDeserializable>> bleConfigResult = IDeserializable::deserializeOptionalObjectItem(root, "bleConfig", BleConfig::deserialize);
             if (!bleConfigResult.isSuccess())
             {
                 return Result<std::unique_ptr<IDeserializable>>::createFailure("Failed to deserialize bleConfig: " + bleConfigResult.getError());
             }
             std::unique_ptr<BleConfig> bleConfig(dynamic_cast<BleConfig *>(bleConfigResult.getValue().release()));
 
-            cJSON *cloudConnectionConfigItem = cJSON_GetObjectItem(root, "cloudConnectionConfig");
-            if (!cJSON_IsObject(cloudConnectionConfigItem))
-            {
-                return Result<std::unique_ptr<IDeserializable>>::createFailure("Invalid or missing cloudConnectionConfig field in JSON");
-            }
-            auto cloudConnectionConfigResult = CloudConnectionConfig::deserialize(cloudConnectionConfigItem);
+            // Deserialize the cloud connection configuration
+            Result<unique_ptr<IDeserializable>> cloudConnectionConfigResult = IDeserializable::deserializeOptionalObjectItem(root, "cloudConnectionConfig", CloudConnectionConfig::deserialize);
             if (!cloudConnectionConfigResult.isSuccess())
             {
                 return Result<std::unique_ptr<IDeserializable>>::createFailure("Failed to deserialize cloudConnectionConfig: " + cloudConnectionConfigResult.getError());
             }
             std::unique_ptr<CloudConnectionConfig> cloudConnectionConfig(dynamic_cast<CloudConnectionConfig *>(cloudConnectionConfigResult.getValue().release()));
 
+            // Return the deserialized result
             return Result<std::unique_ptr<IDeserializable>>::createSuccess(std::make_unique<SmartDeviceConfig>(std::move(bleConfig), std::move(cloudConnectionConfig)));
         }
     };

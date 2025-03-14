@@ -54,7 +54,7 @@ namespace SmartDevice
          * @param configUpdatedDelegate An optional config updated delegate to call when the device configuration is updated
          * @param maxWaitMs The maximum wait time for the smart device to wait for a connection with a default of 30 minutes
          */
-        SmartDevice(SmartDeviceConfig cfg, string deviceType, std::function<void(void)> configUpdatedDelegate = nullptr, int maxWaitMs = 1000 * 60 * 30)
+        SmartDevice(std::unique_ptr<SmartDeviceConfig> cfg, string deviceType, std::function<void(void)> configUpdatedDelegate = nullptr, int maxWaitMs = 1000 * 60 * 30)
             : config(std::move(cfg)),
               deviceType(deviceType),
               configUpdatedDelegate(configUpdatedDelegate),
@@ -128,7 +128,7 @@ namespace SmartDevice
             // Initialize the BLE advertiser
             ESP_LOGI(SMART_DEVICE_TAG, "initializing ble advertiser");
             BleAdvertiser::init(
-                config.bleConfig->deviceName,
+                config->bleConfig->deviceName,
                 BLE_GAP_APPEARANCE_GENERIC_TAG,
                 BLE_GAP_LE_ROLE_PERIPHERAL,
                 {adtService->getBleService()},
@@ -138,6 +138,9 @@ namespace SmartDevice
             // Initialize the wifi service
             ESP_LOGI(SMART_DEVICE_TAG, "initializing wifi service");
             WifiService::WifiService::init();
+
+            // Call the child initializers if present
+            childInitialize();
         }
 
         /**
@@ -164,8 +167,9 @@ namespace SmartDevice
                 nullptr);
 
             // Check if we have a cloud configuration
-            if (!config.cloudConnectionConfig)
+            if (!config->cloudConnectionConfig)
             {
+                ESP_LOGI(SMART_DEVICE_TAG, "no cloud connection config present, skipping cloud connection");
                 return;
             }
 
@@ -180,8 +184,19 @@ namespace SmartDevice
             }
         }
 
-        // private:
-        SmartDeviceConfig config;
+    protected:
+        std::unique_ptr<SmartDeviceConfig> config;
+
+        /**
+         * @brief Optional initialization steps for children
+         *
+         */
+        virtual void childInitialize()
+        {
+            // Default implementation (does nothing)
+        }
+
+    private:
         std::string deviceType;
         std::function<void(void)> configUpdatedDelegate;
         Waiter waiter;
@@ -340,7 +355,7 @@ namespace SmartDevice
             ESP_LOGI(SMART_DEVICE_TAG, "handling GetDeviceInfo request");
 
             // Create the device info
-            DeviceInfo deviceInfo(deviceType, config.bleConfig->deviceName);
+            DeviceInfo deviceInfo(deviceType, config->bleConfig->deviceName);
 
             // Return the device info request
             return Result<shared_ptr<ISerializable>>::createSuccess(make_shared<DeviceInfo>(deviceInfo));
@@ -374,7 +389,7 @@ namespace SmartDevice
             }
 
             // Update the configuration
-            config.bleConfig->deviceName = setBleConfigRequest->deviceName;
+            config->bleConfig->deviceName = setBleConfigRequest->deviceName;
 
             // Call the config updated delegate
             if (configUpdatedDelegate)
@@ -403,7 +418,7 @@ namespace SmartDevice
             }
 
             // Swap the current clound config with the requested config
-            config.cloudConnectionConfig.swap(cloudConnectionConfig);
+            config->cloudConnectionConfig.swap(cloudConnectionConfig);
 
             // Initiate the connection loop (this will enable reconnecting)
             initiateCloudConnectionLoop();
@@ -442,7 +457,7 @@ namespace SmartDevice
             }
 
             // Swap the config back
-            config.cloudConnectionConfig.swap(cloudConnectionConfig);
+            config->cloudConnectionConfig.swap(cloudConnectionConfig);
 
             return Result<shared_ptr<ISerializable>>::createFailure(format("Failed to connect to cloud: {}", firstConnectionAttemptResult.getError().c_str()));
         }
@@ -576,7 +591,7 @@ namespace SmartDevice
             }
 
             // Verify that the cloud connection config is present
-            if (!config.cloudConnectionConfig)
+            if (!config->cloudConnectionConfig)
             {
                 setConnectionState(ConnectionState::NOT_CONNECTED);
                 return Result<>::createFailure("Cloud connection config is not present");
@@ -603,8 +618,8 @@ namespace SmartDevice
                 ESP_LOGI(SMART_DEVICE_TAG, "connecting to wifi");
 
                 // Start connecting to wifi
-                bool connectionStarted = WifiService::WifiService::startConnect({config.cloudConnectionConfig->ssid,
-                                                                                 config.cloudConnectionConfig->password});
+                bool connectionStarted = WifiService::WifiService::startConnect({config->cloudConnectionConfig->ssid,
+                                                                                 config->cloudConnectionConfig->password});
                 if (!connectionStarted)
                 {
                     setConnectionState(ConnectionState::NOT_CONNECTED);
@@ -631,7 +646,7 @@ namespace SmartDevice
             if (firstConnection)
             {
                 ESP_LOGI(SMART_DEVICE_TAG, "creating mqtt client");
-                mqttClient = make_unique<Mqtt::MqttClient>(config.cloudConnectionConfig->mqttConnectionString);
+                mqttClient = make_unique<Mqtt::MqttClient>(config->cloudConnectionConfig->mqttConnectionString);
                 mqttClient->onDisconnected = [this](Mqtt::MqttClient *)
                 { cloudDisconnectHandler(); };
             }
@@ -640,7 +655,7 @@ namespace SmartDevice
                 ESP_LOGI(SMART_DEVICE_TAG, "mqtt client already exists, updating connection string");
 
                 // Update the mqtt client connection string
-                mqttClient->setBrokerUri(config.cloudConnectionConfig->mqttConnectionString);
+                mqttClient->setBrokerUri(config->cloudConnectionConfig->mqttConnectionString);
             }
 
             // Wait for the mqtt connection state to settle such that it is not connecting or disconnecting
@@ -682,7 +697,7 @@ namespace SmartDevice
 
             // Subscribe to the topic if not done so already
             mqttClient->subscribe(
-                format("device/{}/requested_state", config.cloudConnectionConfig->deviceId),
+                format("device/{}/requested_state", config->cloudConnectionConfig->deviceId),
                 std::bind(&SmartDevice::mqttMessageHandler, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
             // Reset the waiter
