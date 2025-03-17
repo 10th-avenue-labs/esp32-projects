@@ -68,6 +68,42 @@ public:
         return nullptr; // Or throw an exception if deserializer not found
     }
 
+protected:
+    /**
+     * @brief Deserialize an optional object item
+     *
+     * @param root The root cJSON object
+     * @param key The key of the object to deserialize
+     * @param deserializer The deserializer function
+     * @return Result<std::unique_ptr<IDeserializable>> A result containing the deserialized object (which may be null) or an error
+     */
+    static Result<std::unique_ptr<IDeserializable>> deserializeOptionalObjectItem(const cJSON *root, const char *key, std::function<Result<std::unique_ptr<IDeserializable>>(const cJSON *root)> deserializer)
+    {
+        // Get the item from the root
+        cJSON *item = cJSON_GetObjectItem(root, key);
+
+        // Check if the item is null
+        if (cJSON_IsNull(item))
+        {
+            return Result<std::unique_ptr<IDeserializable>>::createSuccess(nullptr);
+        }
+
+        // Check if the item is an object
+        if (!cJSON_IsObject(item))
+        {
+            return Result<std::unique_ptr<IDeserializable>>::createFailure("Invalid or missing " + std::string(key) + " field in JSON");
+        }
+
+        // Deserialize the item
+        Result<std::unique_ptr<IDeserializable>> deserializedItem = deserializer(item);
+        if (!deserializedItem.isSuccess())
+        {
+            return Result<std::unique_ptr<IDeserializable>>::createFailure("Could not deserialize " + std::string(key) + ": " + deserializedItem.getError());
+        }
+
+        return deserializedItem;
+    }
+
 private:
     static std::unordered_map<type_index, std::function<Result<std::unique_ptr<IDeserializable>>(const cJSON *root)>> deserializers;
 };
