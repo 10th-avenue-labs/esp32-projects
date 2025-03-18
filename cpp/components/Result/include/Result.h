@@ -188,6 +188,8 @@ public:
         {
             return std::move(*value); // Only move if value is present
         }
+
+        ESP_LOGW(RESULT_TAG, "accessing null value from result");
         return nullptr; // Or handle the empty case appropriately
     }
 
@@ -232,7 +234,7 @@ public:
         // Check if the value is a string
         else if constexpr (is_same<T, string>::value)
         {
-            cJSON_AddItemToObject(root.get(), "value", cJSON_CreateString(value.value().c_str()));
+            cJSON_AddItemToObject(root.get(), "value", cJSON_CreateString(value.value()->c_str()));
         }
 
         // Check if the value implements ISerializable

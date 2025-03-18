@@ -1,6 +1,3 @@
-
-// #include "Result.h"
-// #include "ISerializable.h"
 #include "include/SmartPlug.h"
 #include "include/SmartPlugConfig.h"
 #include "Result.h"
@@ -10,18 +7,37 @@
 #include <esp_log.h>
 #include <esp_err.h>
 #include <nvs_flash.h>
+#include <nvs_handle.hpp>
 
 // Define the namespace and key for the plug configuration
 #define PLUG_CONFIG_NAMESPACE "storage"
 #define PLUG_CONFIG_KEY "config"
 
-static const char *MAIN_TAG = "SMART_PLUG";
+// Default plug configuration
+SmartPlugConfig defaultConfig = SmartPlugConfig(
+    std::make_unique<AcDimmerConfig>(
+        32,   // zcPin
+        25,   // psmPin
+        1000, // debounceUs
+        5000, // offsetLeading
+        1200, // offsetFalling
+        0     // brightness
+        ),
+    std::make_unique<SmartDevice::BleConfig>(
+        "Smart Plug" // Device Name
+        ),
+    nullptr // Cloud Connection
+);
+
+// NVS helpers
+Result<> writeNvsBlob(const string &namespaceValue, const string &key, const string &blob);
+Result<std::unique_ptr<std::string>> readNvsBlob(const string &nvsNamespace, const string &key);
+Result<> resetNvs();
 
 // Initialization helpers
 Result<std::unique_ptr<SmartPlugConfig>> getConfigOrDefault();
 
-// Meta functions
-esp_err_t reset();
+static const char *MAIN_TAG = "MAIN";
 
 extern "C" void app_main(void)
 {
@@ -42,25 +58,6 @@ extern "C" void app_main(void)
     // Log the configuration
     ESP_LOGI(MAIN_TAG, "Smart Plug Config: %s", smartPlugConfig->serializeToString(true).c_str());
 
-    // // Deserialize the configuration
-    // Result<std::unique_ptr<IDeserializable>> deserializedConfigResult = SmartPlugConfig::deserialize(smartPlugConfig->serialize().get());
-    // if (!deserializedConfigResult.isSuccess())
-    // {
-    //     ESP_LOGE(MAIN_TAG, "failed to deserialize smart plug config, error: %s", deserializedConfigResult.getError().c_str());
-    //     return;
-    // }
-    // std::unique_ptr<SmartPlugConfig> deserializedConfig = std::unique_ptr<SmartPlugConfig>(dynamic_cast<SmartPlugConfig *>(deserializedConfigResult.getValue().release()));
-
-    // // Log the deserialized configuration
-    // ESP_LOGI(MAIN_TAG, "Deserialized Smart Plug Config Device Name: %s", deserializedConfig->bleConfig->deviceName.c_str());
-    // ESP_LOGI(MAIN_TAG, "Deserialized Smart Plug Config Cloud Connection: %s", deserializedConfig->cloudConnectionConfig == nullptr ? "null" : "not null");
-    // ESP_LOGI(MAIN_TAG, "Deserialized Smart Plug Config AC Dimmer ZC Pin: %d", deserializedConfig->acDimmerConfig->zcPin);
-    // ESP_LOGI(MAIN_TAG, "Deserialized Smart Plug Config AC Dimmer PSM Pin: %d", deserializedConfig->acDimmerConfig->psmPin);
-    // ESP_LOGI(MAIN_TAG, "Deserialized Smart Plug Config AC Dimmer Debounce Us: %d", deserializedConfig->acDimmerConfig->debounceUs);
-    // ESP_LOGI(MAIN_TAG, "Deserialized Smart Plug Config AC Dimmer Offset Leading: %d", deserializedConfig->acDimmerConfig->offsetLeading);
-    // ESP_LOGI(MAIN_TAG, "Deserialized Smart Plug Config AC Dimmer Offset Falling: %d", deserializedConfig->acDimmerConfig->offsetFalling);
-    // ESP_LOGI(MAIN_TAG, "Deserialized Smart Plug Config AC Dimmer Brightness: %d", deserializedConfig->acDimmerConfig->brightness);
-
     // Create a SmartPlug
     SmartPlug smartplug = SmartPlug(std::move(smartPlugConfig));
 
@@ -68,7 +65,166 @@ extern "C" void app_main(void)
     smartplug.initialize();
 
     // Start the smart plug
-    // smartplug.start();
+    smartplug.start();
+
+    // Wait indefinitely
+    // TODO: Implement a way to stop the task
+    while (true)
+    {
+        vTaskDelay(portMAX_DELAY);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// NVS helpers
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Write a blob to the NVS
+ *
+ * @param namespaceValue The namespace to write to
+ * @param key The key to write the blob to
+ * @param blob The blob to write
+ * @return Result<> A result indicating success or failure
+ */
+Result<> writeNvsBlob(const string &namespaceValue, const string &key, const string &blob)
+{
+    // Get a handle to the Namespace in the NVS
+    esp_err_t error;
+    unique_ptr<nvs::NVSHandle> handle = nvs::open_nvs_handle(
+        namespaceValue.c_str(), // Namespace
+        NVS_READWRITE,          // Open mode
+        &error                  // Error code
+    );
+    if (error != ESP_OK)
+    {
+        return Result<>::createFailure(format("failed to open nvs handle: {}", esp_err_to_name(error)));
+    }
+
+    // Write the serialized plug configuration to the NVS
+    error = handle->set_blob(key.c_str(), blob.c_str(), blob.length());
+    if (error != ESP_OK)
+    {
+        return Result<>::createFailure(format("failed to write blob with key '{}' to nvs: {}", key.c_str(), esp_err_to_name(error)));
+    }
+
+    // Commit the changes
+    error = handle->commit();
+    if (error != ESP_OK)
+    {
+        return Result<>::createFailure(format("failed to commit changes to nvs: {}", esp_err_to_name(error)));
+    }
+
+    return Result<>::createSuccess();
+}
+
+/**
+ * @brief Read a blob from the NVS
+ *
+ * @param nvsNamespace The namespace to read from
+ * @param key The key to read the blob from
+ * @return Result<std::unique_ptr<std::string>> A result containing the blob or an error message. Nullptr if the key is not initialized
+ */
+Result<std::unique_ptr<std::string>> readNvsBlob(const string &nvsNamespace, const string &key)
+{
+    // Initialise the non-volatile flash storage (NVS)
+    ESP_LOGI(MAIN_TAG, "initializing nvs flash");
+    esp_err_t response = nvs_flash_init();
+
+    // Attempt to recover if an error occurred
+    if (response != ESP_OK)
+    {
+        // Check if a recoverable error occured
+        if (response == ESP_ERR_NVS_NO_FREE_PAGES ||
+            response == ESP_ERR_NVS_NEW_VERSION_FOUND)
+        {
+            // Erase and re-try if necessary
+            // Note: This will erase the nvs flash.
+            // TODO: We should consider alternative impls here. Erasing the NVS could be a very unwanted side-effect
+            ESP_LOGI(MAIN_TAG, "erasing nvs flash");
+            ESP_ERROR_CHECK(nvs_flash_erase());
+            response = nvs_flash_init();
+
+            if (response != ESP_OK)
+            {
+                return Result<std::unique_ptr<std::string>>::createFailure(format("failed to initialize nvs flash: {}", esp_err_to_name(response)));
+            };
+        }
+    }
+
+    // Get a handle to the Namespace in the NVS
+    esp_err_t error;
+    std::unique_ptr<nvs::NVSHandle> handle = nvs::open_nvs_handle(
+        nvsNamespace.c_str(), // Namespace
+        NVS_READWRITE,        // Open mode
+        &error                // Error code
+    );
+    if (error != ESP_OK)
+    {
+        return Result<std::unique_ptr<std::string>>::createFailure(format("failed to open nvs handle: {}", esp_err_to_name(error)));
+    }
+
+    // Read the size of the blob from the NVS
+    size_t size = 0;
+    error = handle->get_item_size(nvs::ItemType::BLOB, key.c_str(), size);
+    switch (error)
+    {
+    case ESP_OK:
+        break;
+    case ESP_ERR_NVS_NOT_FOUND:
+    {
+        ESP_LOGI(MAIN_TAG, "the key '%s' is not initialized yet", key.c_str());
+
+        return Result<std::unique_ptr<std::string>>::createSuccess(nullptr);
+        break;
+    }
+    default:
+        return Result<std::unique_ptr<std::string>>::createFailure(format("failed to read blob size: {}", esp_err_to_name(error)));
+    }
+
+    // Read the blob from the NVS
+    void *blob = malloc(size + 1); // We add 1 to fit the null terminator at the end
+    error = handle->get_blob(key.c_str(), blob, size);
+    if (error != ESP_OK)
+    {
+        return Result<std::unique_ptr<std::string>>::createFailure(format("failed to read blob with key '{}' from nvs: {}", key.c_str(), esp_err_to_name(error)));
+    }
+    if (blob == nullptr)
+    {
+        return Result<std::unique_ptr<std::string>>::createFailure("failed to read blob from nvs");
+    }
+
+    // Add the null terminator to the blob
+    ((char *)blob)[size] = '\0';
+
+    // Cast the blob to a string
+    std::string blobString = std::string((char *)blob);
+
+    // Deallocate the blob
+    free(blob);
+
+    return Result<std::unique_ptr<std::string>>::createSuccess(std::make_unique<std::string>(blobString));
+}
+
+/**
+ * @brief Reset the NVS
+ *
+ * @return Result<> A result indicating success or failure
+ */
+Result<> resetNvs()
+{
+    // Erase the plug configuration from NVS
+    esp_err_t error = nvs_flash_erase();
+    if (error != ESP_OK)
+    {
+        return Result<>::createFailure(format("failed to erase nvs: {}", esp_err_to_name(error)));
+    }
+
+    // Reboot the device
+    // FIXME: Enable this in prod on a pin interrupt
+    // esp_restart();
+
+    return Result<>::createSuccess();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,82 +237,45 @@ extern "C" void app_main(void)
 /// Initialization helpers
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @brief Get the Smart Plug configuration from the NVS or the  default if it doesn't exist
+ *
+ * @return Result<std::unique_ptr<SmartPlugConfig>> A result containing the configuration or an error message
+ */
 Result<std::unique_ptr<SmartPlugConfig>> getConfigOrDefault()
 {
-    // Create a default AC Dimmer configuration
-    std::unique_ptr<AcDimmerConfig> acDimmerConfig = std::make_unique<AcDimmerConfig>(
-        32,   // zcPin
-        25,   // psmPin
-        1000, // debounceUs
-        5000, // offsetLeading
-        1200, // offsetFalling
-        0     // brightness
-    );
-
-    // Create a default plug configuration
-    SmartPlugConfig config = SmartPlugConfig(
-        std::move(acDimmerConfig),
-        make_unique<SmartDevice::BleConfig>("Smart Plug"),
-        nullptr);
-
-    return Result<std::unique_ptr<SmartPlugConfig>>::createSuccess(make_unique<SmartPlugConfig>(std::move(config)));
-
-    // // Read the plug configuration from NVS if it exists
-    // Result<shared_ptr<PlugConfig>> plugConfigResult = PlugConfig::readPlugConfig(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY);
-    // if (!plugConfigResult.isSuccess())
-    // {
-    //     return plugConfigResult;
-    // }
-
-    // // Check if a configuration was found
-    // if (plugConfigResult.getValue() != nullptr)
-    // {
-    //     ESP_LOGI(TAG, "found plug configuration");
-    //     return plugConfigResult;
-    // }
-
-    // // Create a default plug configuration if one doesn't already exist
-    // // TODO: Consider defining the default function somewhere else
-    // ESP_LOGI(TAG, "no plug configuration found, creating a default one");
-    // config = make_unique<PlugConfig>(
-    //     PlugConfig{
-    //         // Config for BLE
-    //         make_shared<BleConfig>(
-    //             "Smart Plug"),
-    //         // Config for non-dimmable LED
-    //         make_shared<AcDimmerConfig>(
-    //             32,
-    //             25,
-    //             1000,
-    //             5000,
-    //             1200,
-    //             0),
-    //         // Config for WiFi
-    //         nullptr,
-    //         // Config for MQTT
-    //         make_shared<MqttConfig>(
-    //             "mqtt://10.11.2.96:1883")});
-
-    // return Result<shared_ptr<PlugConfig>>::createSuccess(move(config));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// Meta functions
-////////////////////////////////////////////////////////////////////////////////
-
-esp_err_t reset()
-{
-    // Erase the plug configuration from NVS
-    esp_err_t error = nvs_flash_erase();
-    if (error != ESP_OK)
+    // Read the existing config from NVS if it exists
+    Result<std::unique_ptr<string>> existingConfigResult = readNvsBlob(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY);
+    if (!existingConfigResult.isSuccess())
     {
-        ESP_LOGE(MAIN_TAG, "failed to erase nvs, error code: %s", esp_err_to_name(error));
-        return error;
+        return Result<std::unique_ptr<SmartPlugConfig>>::createFailure(format("failed to read existing config: {}", existingConfigResult.getError()));
     }
 
-    // Reboot the device
-    // FIXME: Enable this in prod on a pin interrupt
-    // esp_restart();
+    // Take ownership of the result value
+    std::unique_ptr<string> existingConfig = existingConfigResult.getValue();
 
-    return ESP_OK;
+    // Check if no configuration was found
+    if (existingConfig == nullptr)
+    {
+        ESP_LOGI(MAIN_TAG, "no existing configuration found, using default configuration");
+
+        return Result<std::unique_ptr<SmartPlugConfig>>::createSuccess(std::make_unique<SmartPlugConfig>(std::move(defaultConfig)));
+    }
+
+    // Parse the serialized configuration as json
+    const cJSON *json = cJSON_Parse(existingConfig->c_str());
+    if (json == nullptr)
+    {
+        return Result<std::unique_ptr<SmartPlugConfig>>::createFailure("failed to parse json");
+    }
+
+    // Deserialize the plug configuration
+    Result<std::unique_ptr<IDeserializable>> configResult = SmartPlugConfig::deserialize(json);
+    if (!configResult.isSuccess())
+    {
+        return Result<std::unique_ptr<SmartPlugConfig>>::createFailure(format("failed to deserialize plug config: {}", configResult.getError()));
+    }
+
+    ESP_LOGI(MAIN_TAG, "successfully loaded existing configuration");
+    return Result<std::unique_ptr<SmartPlugConfig>>::createSuccess(std::unique_ptr<SmartPlugConfig>(dynamic_cast<SmartPlugConfig *>(configResult.getValue().release())));
 }
