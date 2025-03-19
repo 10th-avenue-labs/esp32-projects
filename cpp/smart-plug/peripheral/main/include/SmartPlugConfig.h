@@ -23,6 +23,14 @@ public:
                                                                                      acDimmerConfig(std::move(acDimmerConfig)) {};
 
     /**
+     * @brief Copy constructor for the SmartPlugConfig
+     *
+     * @param other The SmartPlugConfig to copy
+     */
+    SmartPlugConfig(const SmartPlugConfig &other) : SmartDevice::SmartDeviceConfig(other),
+                                                    acDimmerConfig(other.acDimmerConfig == nullptr ? nullptr : std::make_unique<AcDimmerConfig>(*other.acDimmerConfig)) {};
+
+    /**
      * @brief Serialize the object to a cJSON object
      *
      * @return std::unique_ptr<cJSON, void (*)(cJSON *item)> The serialized cJSON object

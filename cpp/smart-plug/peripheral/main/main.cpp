@@ -34,6 +34,9 @@ Result<> writeNvsBlob(const string &namespaceValue, const string &key, const str
 Result<std::unique_ptr<std::string>> readNvsBlob(const string &nvsNamespace, const string &key);
 Result<> resetNvs();
 
+// Config update handler
+void configUpdatedHandler(std::unique_ptr<SmartPlugConfig> config);
+
 // Initialization helpers
 Result<std::unique_ptr<SmartPlugConfig>> getConfigOrDefault();
 
@@ -41,7 +44,13 @@ static const char *MAIN_TAG = "MAIN";
 
 extern "C" void app_main(void)
 {
-    // Register deserializers
+    // Register deserializers for Smart Device
+    IDeserializable::registerDeserializer<SmartDevice::SmartDeviceConfig>(SmartDevice::SmartDeviceConfig::deserialize);
+    IDeserializable::registerDeserializer<SmartDevice::BleConfig>(SmartDevice::BleConfig::deserialize);
+    IDeserializable::registerDeserializer<SmartDevice::CloudConnectionConfig>(SmartDevice::CloudConnectionConfig::deserialize);
+    IDeserializable::registerDeserializer<SmartDevice::Request>(SmartDevice::Request::deserialize);
+
+    // Register deserializers for Smart Plug
     IDeserializable::registerDeserializer<AcDimmerConfig>(AcDimmerConfig::deserialize);
     IDeserializable::registerDeserializer<SmartPlugConfig>(SmartPlugConfig::deserialize);
 
@@ -59,7 +68,7 @@ extern "C" void app_main(void)
     ESP_LOGI(MAIN_TAG, "Smart Plug Config: %s", smartPlugConfig->serializeToString(true).c_str());
 
     // Create a SmartPlug
-    SmartPlug smartplug = SmartPlug(std::move(smartPlugConfig));
+    SmartPlug smartplug = SmartPlug(std::move(smartPlugConfig), configUpdatedHandler);
 
     // Initiate the smart plug
     smartplug.initialize();
@@ -231,7 +240,23 @@ Result<> resetNvs()
 /// Config update handler
 ////////////////////////////////////////////////////////////////////////////////
 
-// TODO
+void configUpdatedHandler(unique_ptr<SmartPlugConfig> config)
+{
+    ESP_LOGI(MAIN_TAG, "config updated");
+
+    // Serialize the configuration
+    string serializedConfig = config->serializeToString();
+
+    // Write the serialized configuration to the NVS
+    Result<> writeResult = writeNvsBlob(PLUG_CONFIG_NAMESPACE, PLUG_CONFIG_KEY, serializedConfig);
+    if (!writeResult.isSuccess())
+    {
+        ESP_LOGE(MAIN_TAG, "failed to write config to nvs: %s", writeResult.getError().c_str());
+        return;
+    }
+
+    ESP_LOGI(MAIN_TAG, "config written to nvs: %s", serializedConfig.c_str());
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Initialization helpers

@@ -25,6 +25,15 @@ namespace SmartDevice
             : bleConfig(std::move(bleConfig)), cloudConnectionConfig(std::move(cloudConnectionConfig)) {};
 
         /**
+         * @brief Copy constructor for the SmartDeviceConfig
+         *
+         * @param other The SmartDeviceConfig to copy
+         */
+        SmartDeviceConfig(const SmartDeviceConfig &other)
+            : bleConfig(other.bleConfig == nullptr ? nullptr : std::make_unique<BleConfig>(*other.bleConfig)),
+              cloudConnectionConfig(other.cloudConnectionConfig == nullptr ? nullptr : std::make_unique<CloudConnectionConfig>(*other.cloudConnectionConfig)) {};
+
+        /**
          * @brief Serialize the object to a cJSON object
          *
          * @return std::unique_ptr<cJSON, void (*)(cJSON *item)> The serialized cJSON object
