@@ -240,6 +240,11 @@ Result<> resetNvs()
 /// Config update handler
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @brief Handle updates to the Smart Plug configuration, saving the new configuration to the NVS
+ *
+ * @param config The updated configuration
+ */
 void configUpdatedHandler(unique_ptr<SmartPlugConfig> config)
 {
     ESP_LOGI(MAIN_TAG, "config updated");
