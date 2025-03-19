@@ -8,7 +8,7 @@
 
 static const char *SMART_PLUG_TAG = "SMART_PLUG";
 
-class SmartPlug : public SmartDevice::SmartDevice
+class SmartPlug : public SmartDevice::SmartDevice<SmartPlugConfig>
 {
 public:
     /**
@@ -19,13 +19,13 @@ public:
      */
     SmartPlug(
         std::unique_ptr<SmartPlugConfig> config,
-        std::function<void(void)> configUpdatedDelegate = nullptr) : SmartDevice::SmartDevice(std::move(config),
-                                                                                              "SmartPlug",
-                                                                                              configUpdatedDelegate),
-                                                                     acDimmer(nullptr) {
-                                                                         // Register message handlers
-                                                                         // TODO
-                                                                     };
+        std::function<void(std::unique_ptr<SmartPlugConfig>)> configUpdatedDelegate = nullptr) : SmartDevice::SmartDevice(std::move(config),
+                                                                                                                          "SmartPlug",
+                                                                                                                          configUpdatedDelegate),
+                                                                                                 acDimmer(nullptr) {
+                                                                                                     // Register message handlers
+                                                                                                     // TODO
+                                                                                                 };
 
     /**
      * @brief Initialize the smart plug
@@ -45,6 +45,6 @@ public:
     };
 
 private:
-    SmartPlugConfig &config = static_cast<SmartPlugConfig &>(*SmartDevice::config);
+    SmartPlugConfig &config = *SmartDevice::config;
     unique_ptr<AcDimmer> acDimmer;
 };

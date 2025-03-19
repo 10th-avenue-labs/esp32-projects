@@ -154,11 +154,9 @@ esp_err_t AdtService::sendMessage(vector<shared_ptr<BleDevice>> devices, vector<
 
     // Calculate the maximum data size
     uint8_t dataSize = mtu - transmissionHeaderSize - MTU_RESERVED_BYTES; // 249
-    ESP_LOGI(TAG, "data size: %d", dataSize);
 
     // Get the total bytes that must be transmitted
     size_t totalBytes = data.size();
-    ESP_LOGI(TAG, "total bytes: %d", totalBytes);
 
     // Calculate the number of chunks
     int totalChunks = custom_ceil(((double) totalBytes) / dataSize);
@@ -171,7 +169,9 @@ esp_err_t AdtService::sendMessage(vector<shared_ptr<BleDevice>> devices, vector<
 
     // Create a message ID
     uint16_t messageId = (uint16_t)rand() ^ (((uint16_t)rand()) << 8);
-    ESP_LOGI(TAG, "message ID: %d", messageId);
+
+    // Log information about the message
+    ESP_LOGI(TAG, "sending message with %d bytes across %d chunks with message ID: %d", totalBytes, totalChunks, messageId);
 
     // Create the start event header
     vector<byte> startEventHeader = vector<byte>(transmissionHeaderSize);

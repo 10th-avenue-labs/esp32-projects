@@ -64,7 +64,7 @@ namespace SmartDevice
             auto dataDeserializer = it->second == typeid(void) ? voidReturner : IDeserializable::getDeserializer(it->second);
             if (!dataDeserializer)
             {
-                return Result<std::unique_ptr<IDeserializable>>::createFailure("Failed to get data deserializer");
+                return Result<std::unique_ptr<IDeserializable>>::createFailure(format("Failed to get data deserializer for request type '{}'", type));
             }
 
             // Deserialize the data

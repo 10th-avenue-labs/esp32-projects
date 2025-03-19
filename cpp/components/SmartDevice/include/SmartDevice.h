@@ -43,6 +43,7 @@ namespace SmartDevice
         DISCONNECTING
     };
 
+    template <typename ConfigType, typename = std::enable_if_t<std::is_base_of_v<SmartDeviceConfig, ConfigType>>>
     class SmartDevice
     {
     public:
@@ -54,7 +55,7 @@ namespace SmartDevice
          * @param configUpdatedDelegate An optional config updated delegate to call when the device configuration is updated
          * @param maxWaitMs The maximum wait time for the smart device to wait for a connection with a default of 30 minutes
          */
-        SmartDevice(std::unique_ptr<SmartDeviceConfig> cfg, string deviceType, std::function<void(void)> configUpdatedDelegate = nullptr, int maxWaitMs = 1000 * 60 * 30)
+        SmartDevice(std::unique_ptr<ConfigType> cfg, std::string deviceType, std::function<void(std::unique_ptr<ConfigType>)> configUpdatedDelegate = nullptr, int maxWaitMs = 1000 * 60 * 30)
             : config(std::move(cfg)),
               deviceType(deviceType),
               configUpdatedDelegate(configUpdatedDelegate),
@@ -84,7 +85,7 @@ namespace SmartDevice
          *
          * @param delegate The delegate to call when the config is updated
          */
-        void setConfigUpdatedDelegate(std::function<void(void)> delegate)
+        void setConfigUpdatedDelegate(std::function<void(std::unique_ptr<ConfigType>)> delegate)
         {
             configUpdatedDelegate = delegate;
         }
@@ -121,7 +122,6 @@ namespace SmartDevice
                 ADT_SERVICE_RECEIVE_CHARACTERISTIC_UUID,
                 [this](uint16_t messageId, std::vector<std::byte> data, std::shared_ptr<BleDevice> device)
                 {
-                    ESP_LOGI(SMART_DEVICE_TAG, "lambda request handlers length: %d", requestHandlers.size());
                     this->adtMessageHandler(messageId, std::move(data), std::move(device));
                 });
 
@@ -161,7 +161,7 @@ namespace SmartDevice
                     BleAdvertiser::advertise();
                 },
                 "ble_advertiser",
-                4096,
+                8192,
                 nullptr,
                 5,
                 nullptr);
@@ -185,7 +185,7 @@ namespace SmartDevice
         }
 
     protected:
-        std::unique_ptr<SmartDeviceConfig> config;
+        std::unique_ptr<ConfigType> config;
 
         /**
          * @brief Optional initialization steps for children
@@ -198,7 +198,7 @@ namespace SmartDevice
 
     private:
         std::string deviceType;
-        std::function<void(void)> configUpdatedDelegate;
+        std::function<void(std::unique_ptr<ConfigType>)> configUpdatedDelegate;
         Waiter waiter;
         std::unique_ptr<Mqtt::MqttClient> mqttClient;
         unique_ptr<AdtService> adtService;
@@ -233,12 +233,11 @@ namespace SmartDevice
                 ESP_LOGE(SMART_DEVICE_TAG, "failed to handle message: %s", result.getError().c_str());
 
                 // Create a response
-                Result errorResult = Result<std::shared_ptr<ISerializable>>::createFailure(format("Internal error occurred while attempting to handle request: %s", result.getError().c_str()));
+                Result errorResult = Result<std::shared_ptr<ISerializable>>::createFailure(format("Internal error occurred while attempting to handle request: {}", result.getError().c_str()));
                 Response response("Response", make_unique<ResultResponderResponse>(messageId, errorResult));
 
                 // Serialize the response request
                 string serializedResponse = response.serializeToString();
-                ESP_LOGI(SMART_DEVICE_TAG, "serialized response: %s", serializedResponse.c_str());
 
                 // Convert the request to a vector of bytes
                 vector<byte> responseBytes(
@@ -258,7 +257,6 @@ namespace SmartDevice
 
             // Serialize the response request
             string serializedResponse = response.serializeToString();
-            ESP_LOGI(SMART_DEVICE_TAG, "serialized response: %s", serializedResponse.c_str());
 
             // Convert the request to a vector of bytes
             vector<byte> responseBytes(
@@ -300,13 +298,11 @@ namespace SmartDevice
          */
         Result<Result<std::shared_ptr<ISerializable>>> handleRequest(string requestString)
         {
-            ESP_LOGI(SMART_DEVICE_TAG, "handling request: %s", requestString.c_str());
-
             // Get the request deserializer
             auto requestDeserializer = IDeserializable::getDeserializer<Request>();
             if (!requestDeserializer)
             {
-                return Result<Result<std::shared_ptr<ISerializable>>>::createFailure("Failed to get request deserializer");
+                return Result<Result<std::shared_ptr<ISerializable>>>::createFailure("Failed to get Request deserializer");
             }
 
             // Deserialize the request
@@ -318,7 +314,6 @@ namespace SmartDevice
 
             // Transfer ownership from the result and cast the request
             std::unique_ptr<Request> deserializedRequest = std::unique_ptr<Request>(dynamic_cast<Request *>(deserializedRequestResult.getValue().release()));
-            ESP_LOGI(SMART_DEVICE_TAG, "request type: %s", deserializedRequest->type.c_str());
 
             // Get the request handler
             auto it = requestHandlers.find(deserializedRequest->type);
@@ -394,7 +389,7 @@ namespace SmartDevice
             // Call the config updated delegate
             if (configUpdatedDelegate)
             {
-                configUpdatedDelegate();
+                configUpdatedDelegate(std::make_unique<ConfigType>(*config));
             }
 
             return Result<shared_ptr<ISerializable>>::createSuccess(nullptr);
@@ -433,7 +428,7 @@ namespace SmartDevice
                 // Call the config updated delegate
                 if (configUpdatedDelegate)
                 {
-                    configUpdatedDelegate();
+                    configUpdatedDelegate(std::make_unique<ConfigType>(*config));
                 }
 
                 return Result<shared_ptr<ISerializable>>::createSuccess(nullptr);
